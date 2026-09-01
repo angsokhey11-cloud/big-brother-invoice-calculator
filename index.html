@@ -37,6 +37,7 @@ select {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 14px;
 }
 
 .exchange-rate {
@@ -115,6 +116,13 @@ input {
   font-weight: bold;
 }
 
+.converted {
+  margin-top: 5px;
+  text-align: right;
+  font-size: 13px;
+  color: #777;
+}
+
 .grand-total {
   background: white;
   border-radius: 12px;
@@ -124,6 +132,16 @@ input {
   justify-content: space-between;
   font-size: 18px;
   font-weight: bold;
+}
+
+.grand-converted {
+  background: white;
+  padding: 0 18px 15px 18px;
+  margin-top: -12px;
+  border-radius: 0 0 12px 12px;
+  text-align: right;
+  font-size: 13px;
+  color: #777;
 }
 
 .clear-btn {
@@ -188,6 +206,10 @@ input {
     <span id="grandTotal">៛0</span>
   </div>
 
+  <div class="grand-converted">
+    <span id="grandConverted">≈ $0.00</span>
+  </div>
+
   <button class="clear-btn" onclick="clearAll()">
     Clear
   </button>
@@ -210,6 +232,7 @@ const products = [
 ];
 
 let selectedProducts = [];
+
 
 function addProduct() {
 
@@ -244,6 +267,7 @@ function addProduct() {
   createProduct(selected);
 }
 
+
 function createProduct(name) {
 
   let container = document.getElementById("productList");
@@ -259,6 +283,7 @@ function createProduct(name) {
 
       <div>
         <small>QTY</small>
+
         <input
           type="number"
           min="0"
@@ -269,6 +294,7 @@ function createProduct(name) {
 
       <div>
         <small>PRICE</small>
+
         <input
           type="number"
           min="0"
@@ -280,41 +306,112 @@ function createProduct(name) {
     </div>
 
     <div class="total">
-      Total: <span class="line-total">៛0</span>
+      Total:
+      <span class="line-total">៛0</span>
+    </div>
+
+    <div class="converted">
+      <span class="line-converted">≈ $0.00</span>
     </div>
   `;
 
   container.appendChild(div);
 }
 
+
 function calculate() {
 
   let total = 0;
 
+  let currency =
+    document.getElementById("currency").value;
+
+  let exchangeRate =
+    Number(document.getElementById("exchangeRate").value) || 0;
+
+
   document.querySelectorAll(".product").forEach(product => {
 
-    let inputs = product.querySelectorAll("input");
+    let inputs =
+      product.querySelectorAll("input");
 
-    let qty = Number(inputs[0].value) || 0;
-    let price = Number(inputs[1].value) || 0;
+    let qty =
+      Number(inputs[0].value) || 0;
 
-    let lineTotal = qty * price;
+    let price =
+      Number(inputs[1].value) || 0;
+
+    let lineTotal =
+      qty * price;
 
     total += lineTotal;
 
+
+    // Main total
     product.querySelector(".line-total").textContent =
-      formatMoney(lineTotal);
+      formatMoney(lineTotal, currency);
+
+
+    // Converted total
+    let converted = 0;
+
+    if (exchangeRate > 0) {
+
+      if (currency === "USD") {
+
+        // USD → KHR
+        converted =
+          lineTotal * exchangeRate;
+
+        product.querySelector(".line-converted").textContent =
+          "≈ " + formatMoney(converted, "KHR");
+
+      } else {
+
+        // KHR → USD
+        converted =
+          lineTotal / exchangeRate;
+
+        product.querySelector(".line-converted").textContent =
+          "≈ " + formatMoney(converted, "USD");
+      }
+
+    }
 
   });
 
+
+  // Grand total
   document.getElementById("grandTotal").textContent =
-    formatMoney(total);
+    formatMoney(total, currency);
+
+
+  // Grand total conversion
+  if (exchangeRate > 0) {
+
+    if (currency === "USD") {
+
+      let convertedGrand =
+        total * exchangeRate;
+
+      document.getElementById("grandConverted").textContent =
+        "≈ " + formatMoney(convertedGrand, "KHR");
+
+    } else {
+
+      let convertedGrand =
+        total / exchangeRate;
+
+      document.getElementById("grandConverted").textContent =
+        "≈ " + formatMoney(convertedGrand, "USD");
+    }
+
+  }
+
 }
 
-function formatMoney(value) {
 
-  let currency =
-    document.getElementById("currency").value;
+function formatMoney(value, currency) {
 
   if (currency === "USD") {
 
@@ -329,15 +426,19 @@ function formatMoney(value) {
   }
 
   return "៛" + Math.round(value).toLocaleString();
+
 }
+
 
 document
   .getElementById("currency")
   .addEventListener("change", calculate);
 
+
 document
   .getElementById("exchangeRate")
   .addEventListener("input", calculate);
+
 
 function clearAll() {
 
@@ -346,6 +447,7 @@ function clearAll() {
   document.getElementById("productList").innerHTML = "";
 
   calculate();
+
 }
 
 </script>
