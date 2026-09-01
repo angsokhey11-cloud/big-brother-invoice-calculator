@@ -78,6 +78,13 @@ label {
   margin-bottom: 5px;
 }
 
+.customer-status {
+  font-size: 12px;
+  color: #718096;
+  margin-top: 5px;
+  min-height: 15px;
+}
+
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -251,6 +258,11 @@ label {
 
 .share-btn {
   background: #25d366;
+  color: white;
+}
+
+.save-btn {
+  background: #173b70;
   color: white;
 }
 
@@ -438,7 +450,17 @@ label {
 
     <div class="customer-field">
       <label for="customerName">Customer Name</label>
-      <input type="text" id="customerName" placeholder="Enter customer name">
+      <input
+        type="text"
+        id="customerName"
+        list="customerOptions"
+        placeholder="Type or select customer"
+        autocomplete="off"
+      >
+      <datalist id="customerOptions"></datalist>
+      <div id="customerStatus" class="customer-status">
+        Loading customers...
+      </div>
     </div>
 
     <div class="grid-2 customer-field">
@@ -559,12 +581,16 @@ label {
 
   <!-- ACTIONS -->
   <div class="actions no-print">
-    <button class="action-btn print-btn" onclick="printInvoice()">
+    <button type="button" class="action-btn print-btn" onclick="printInvoice(event)">
       🖨 Print / Save PDF
     </button>
 
     <button class="action-btn share-btn" onclick="shareInvoice()">
       ✈️ Share to Telegram
+    </button>
+
+    <button type="button" class="action-btn save-btn" onclick="saveInvoiceImage(event)">
+      🖼️ Save Invoice Image
     </button>
   </div>
 
@@ -573,6 +599,8 @@ label {
   </button>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
 /* ==========================================
@@ -591,6 +619,129 @@ function setTodayDate() {
 }
 
 setTodayDate();
+
+
+/* ==========================================
+   CUSTOMER DATABASE
+   Google Sheets -> Apps Script Web App
+========================================== */
+
+const CUSTOMER_API_URL =
+  "https://script.google.com/macros/s/AKfycbzKPsKptXGdxm9bZ8VJpWAc1XnFTCsfCOGzfn6GCmYYt-yHVw-DXsEHTrpnZf_EOFd4TA/exec";
+
+let customers = [];
+
+
+/* ==========================================
+   LOAD CUSTOMERS
+========================================== */
+
+async function loadCustomers() {
+  const status = document.getElementById("customerStatus");
+  const list = document.getElementById("customerOptions");
+
+  if (!status || !list) return;
+
+  status.textContent = "Loading customers...";
+  status.style.color = "#718096";
+
+  try {
+    const response = await fetch(CUSTOMER_API_URL, {
+      method: "GET",
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("Customer database returned an error.");
+    }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      throw new Error("Invalid customer data.");
+    }
+
+    customers = data
+      .map(customer => ({
+        no: String(customer.no || ""),
+        name: String(customer.name || "").trim(),
+        phone: String(customer.phone || "").trim(),
+        address: String(customer.address || "").trim()
+      }))
+      .filter(customer => customer.name);
+
+    list.innerHTML = "";
+
+    customers.forEach(customer => {
+      const option = document.createElement("option");
+      option.value = customer.name;
+
+      if (customer.phone) {
+        option.label = customer.phone;
+      }
+
+      list.appendChild(option);
+    });
+
+    status.textContent =
+      customers.length + " customers loaded from Google Sheets";
+    status.style.color = "#2f855a";
+
+  } catch (error) {
+    console.error("Customer database error:", error);
+
+    customers = [];
+    list.innerHTML = "";
+
+    status.textContent =
+      "Customer database unavailable — you can still type manually.";
+    status.style.color = "#b7791f";
+  }
+}
+
+
+/* ==========================================
+   CUSTOMER SELECTION / AUTO-FILL
+========================================== */
+
+function findCustomerByName(name) {
+  const cleanName = String(name || "").trim().toLowerCase();
+
+  if (!cleanName) return null;
+
+  return customers.find(customer =>
+    customer.name.toLowerCase() === cleanName
+  ) || null;
+}
+
+function fillCustomerInformation() {
+  const nameInput = document.getElementById("customerName");
+  const phoneInput = document.getElementById("customerPhone");
+  const addressInput = document.getElementById("customerAddress");
+  const status = document.getElementById("customerStatus");
+
+  if (!nameInput || !phoneInput || !addressInput) return;
+
+  const customer = findCustomerByName(nameInput.value);
+
+  if (!customer) {
+    /*
+      IMPORTANT:
+      Do not clear phone/address here.
+      This keeps the customer fields fully manual if the user
+      types a customer that is not in Google Sheets.
+    */
+    return;
+  }
+
+  phoneInput.value = customer.phone;
+  addressInput.value = customer.address;
+
+  if (status) {
+    status.textContent = "Customer information loaded";
+    status.style.color = "#2f855a";
+  }
+}
 
 
 /* ==========================================
@@ -1004,7 +1155,12 @@ document.addEventListener("DOMContentLoaded", () => {
   updateInvoiceDate();
 });
 
-function printInvoice() {
+function printInvoice(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
   calculate();
 
   const dateInput = document.getElementById("invoiceDate");
@@ -1015,11 +1171,164 @@ function printInvoice() {
     );
   }
 
-  // window.print() is supported by modern mobile browsers.
-  // A short timeout lets the invoice finish recalculating first.
-  setTimeout(() => {
-    window.print();
-  }, 100);
+  /*
+    IMPORTANT FOR MOBILE:
+    Call window.print() directly from the user's button tap.
+    Some mobile browsers/webviews ignore delayed print calls.
+  */
+  try {
+    if (typeof window.print === "function") {
+      window.print();
+      return;
+    }
+  } catch (error) {
+    console.log("Direct print unavailable:", error);
+  }
+
+  /*
+    Fallback for browsers/webviews that don't expose window.print().
+    Because this runs directly from the user's tap, the new window is
+    much less likely to be blocked as a popup.
+  */
+  try {
+    const printWindow = window.open("", "_blank");
+
+    if (!printWindow) {
+      alert("Please allow pop-ups for this invoice to print.");
+      return;
+    }
+
+    const printableHtml = document.documentElement.outerHTML;
+
+    printWindow.document.open();
+    printWindow.document.write(printableHtml);
+    printWindow.document.close();
+
+    printWindow.onload = () => {
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 300);
+    };
+  } catch (error) {
+    alert("Printing is not supported by this browser. Please open the invoice in Chrome or Safari and try again.");
+  }
+}
+
+
+/* ==========================================
+   SAVE INVOICE AS IMAGE
+========================================== */
+
+async function saveInvoiceImage(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  calculate();
+
+  if (typeof html2canvas !== "function") {
+    alert("Image saver is not available. Please refresh the page and try again.");
+    return;
+  }
+
+  const invoice = document.querySelector(".calculator");
+  if (!invoice) return;
+
+  const button = event && event.currentTarget
+    ? event.currentTarget
+    : document.querySelector(".save-btn");
+
+  const originalText = button ? button.innerHTML : "";
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = "⏳ Saving...";
+    }
+
+    // Make a clean copy so the saved picture does not include buttons.
+    const clone = invoice.cloneNode(true);
+
+    clone.querySelectorAll(".no-print, .actions, .clear-btn, .product-selector")
+      .forEach(el => el.remove());
+
+    // Copy the current values into the cloned form fields.
+    const originalFields = invoice.querySelectorAll("input, select, textarea");
+    const clonedFields = clone.querySelectorAll("input, select, textarea");
+
+    originalFields.forEach((field, index) => {
+      const cloned = clonedFields[index];
+      if (!cloned) return;
+
+      if (field.tagName === "SELECT") {
+        cloned.value = field.value;
+      } else {
+        cloned.value = field.value;
+      }
+    });
+
+    clone.style.width = invoice.offsetWidth + "px";
+    clone.style.maxWidth = "none";
+    clone.style.margin = "0";
+    clone.style.background = "#eef2f7";
+    clone.style.padding = "15px";
+    clone.style.position = "fixed";
+    clone.style.left = "-100000px";
+    clone.style.top = "0";
+    clone.style.zIndex = "-1";
+
+    document.body.appendChild(clone);
+
+    const canvas = await html2canvas(clone, {
+      backgroundColor: "#eef2f7",
+      scale: Math.min(3, Math.max(2, window.devicePixelRatio || 1)),
+      useCORS: true,
+      logging: false,
+      scrollX: 0,
+      scrollY: 0
+    });
+
+    clone.remove();
+
+    const invoiceNo =
+      document.getElementById("invoiceNumber").value.trim() || "Invoice";
+
+    const safeName = invoiceNo
+      .replace(/[^a-z0-9_-]+/gi, "-")
+      .replace(/^-+|-+$/g, "") || "Invoice";
+
+    const fileName = `BIG-BROTHER-${safeName}.png`;
+
+    canvas.toBlob(blob => {
+      if (!blob) {
+        alert("Could not create the invoice image. Please try again.");
+        return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.rel = "noopener";
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }, "image/png");
+
+  } catch (error) {
+    console.error("Save invoice image failed:", error);
+    alert("Could not save the invoice image. Please try again.");
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = originalText;
+    }
+  }
 }
 
 
@@ -1061,14 +1370,41 @@ Grand Total: ${total}
 Thank you for your business!`;
 
   /*
-    Telegram's official share URL opens Telegram's share screen
-    on supported mobile devices. It also works as a web fallback.
+    Try Telegram's native app first using Telegram's official tg://
+    deep-link. If the app is not installed or the browser blocks the
+    custom scheme, fall back to Telegram's HTTPS share page.
   */
-  const telegramUrl =
-    "https://t.me/share/url?url=&text=" +
-    encodeURIComponent(message);
+  const encodedText = encodeURIComponent(message);
 
-  window.location.href = telegramUrl;
+  const telegramAppUrl =
+    "tg://msg_url?url=&text=" + encodedText;
+
+  const telegramWebUrl =
+    "https://t.me/share/url?url=&text=" + encodedText;
+
+  let appOpened = false;
+
+  const onVisibilityChange = () => {
+    if (document.hidden) {
+      appOpened = true;
+    }
+  };
+
+  document.addEventListener("visibilitychange", onVisibilityChange, {
+    once: true
+  });
+
+  // Native Telegram app first.
+  window.location.href = telegramAppUrl;
+
+  // If Telegram did not open, use the web version.
+  setTimeout(() => {
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+
+    if (!appOpened && !document.hidden) {
+      window.location.href = telegramWebUrl;
+    }
+  }, 1200);
 }
 
 
