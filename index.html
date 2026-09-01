@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Brother Invoice Calculator</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 15px;
+  font-family: Arial, sans-serif;
+  background: #f3f5f9;
+}
+
+.calculator {
+  max-width: 500px;
+  margin: auto;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.add-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #5b78f6;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.product-list {
+  margin-top: 15px;
+}
+
+.product {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  border: 1px solid #ddd;
+}
+
+.product-name {
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.total {
+  margin-top: 12px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.grand-total {
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.clear-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #ddd;
+  font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+  <h2>BIG BROTHER</h2>
+
+  <div class="top-bar">
+    <b>Invoice Calculator</b>
+
+    <select id="currency">
+      <option value="KHR">KHR</option>
+      <option value="USD">USD</option>
+    </select>
+  </div>
+
+  <button class="add-btn" onclick="addProduct()">
+    ＋ Add Product
+  </button>
+
+  <div id="productList" class="product-list"></div>
+
+  <div class="grand-total">
+    <span>Grand Total</span>
+    <span id="grandTotal">៛0</span>
+  </div>
+
+  <button class="clear-btn" onclick="clearAll()">
+    Clear
+  </button>
+
+</div>
+
+<script>
+
+const products = [
+  "Kirisu Milk 2L",
+  "Kirisu Milk 830ml",
+  "Kirisu Yogurt 135g",
+  "Farm Fresh 2L",
+  "Ausfresh 2L",
+  "Greenfield 1.90L",
+  "Greenfield 1L",
+  "VP Milk 2L",
+  "O'More 2L",
+  "Champei Milk 220ml"
+];
+
+let selectedProducts = [];
+
+function addProduct() {
+
+  if (selectedProducts.length >= products.length) {
+    alert("All products have already been added.");
+    return;
+  }
+
+  let available = products.filter(
+    product => !selectedProducts.includes(product)
+  );
+
+  let product = prompt(
+    "Choose product:\n\n" +
+    available.map((p, i) => (i + 1) + ". " + p).join("\n")
+  );
+
+  let number = parseInt(product);
+
+  if (
+    isNaN(number) ||
+    number < 1 ||
+    number > available.length
+  ) {
+    return;
+  }
+
+  let selected = available[number - 1];
+
+  selectedProducts.push(selected);
+
+  createProduct(selected);
+}
+
+function createProduct(name) {
+
+  let container = document.getElementById("productList");
+
+  let div = document.createElement("div");
+
+  div.className = "product";
+
+  div.innerHTML = `
+    <div class="product-name">${name}</div>
+
+    <div class="inputs">
+
+      <div>
+        <small>QTY</small>
+        <input
+          type="number"
+          min="0"
+          value="0"
+          oninput="calculate()"
+        >
+      </div>
+
+      <div>
+        <small>PRICE</small>
+        <input
+          type="number"
+          min="0"
+          value="0"
+          oninput="calculate()"
+        >
+      </div>
+
+    </div>
+
+    <div class="total">
+      Total: <span class="line-total">៛0</span>
+    </div>
+  `;
+
+  container.appendChild(div);
+}
+
+function calculate() {
+
+  let total = 0;
+
+  document.querySelectorAll(".product").forEach(product => {
+
+    let inputs = product.querySelectorAll("input");
+
+    let qty = Number(inputs[0].value) || 0;
+    let price = Number(inputs[1].value) || 0;
+
+    let lineTotal = qty * price;
+
+    total += lineTotal;
+
+    product.querySelector(".line-total").textContent =
+      formatMoney(lineTotal);
+
+  });
+
+  document.getElementById("grandTotal").textContent =
+    formatMoney(total);
+}
+
+function formatMoney(value) {
+
+  let currency =
+    document.getElementById("currency").value;
+
+  if (currency === "USD") {
+
+    return "$" + value.toLocaleString(
+      "en-US",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    );
+
+  }
+
+  return "៛" + Math.round(value).toLocaleString();
+}
+
+document
+  .getElementById("currency")
+  .addEventListener("change", calculate);
+
+function clearAll() {
+
+  selectedProducts = [];
+
+  document.getElementById("productList").innerHTML = "";
+
+  calculate();
+}
+
+</script>
+
+</body>
+</html>
