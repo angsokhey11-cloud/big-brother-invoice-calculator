@@ -393,27 +393,16 @@ input {
 ========================================== */
 
 const products = [
-
-  "Kirisu Milk 2L",
-
-  "Kirisu Milk 830ml",
-
-  "Kirisu Yogurt 135g",
-
-  "Farm Fresh 2L",
-
-  "Ausfresh 2L",
-
-  "VP Milk 2L",
-
-  "Greenfield 1.90L",
-
-  "Greenfield 1L",
-
-  "O'More 2L",
-
-  "Champei Milk 220ml"
-
+  { name: "Kirisu Milk 2L", usdPrice: 4.50 },
+  { name: "Kirisu Milk 830ml", usdPrice: 2.20 },
+  { name: "Kirisu Yogurt 135g", usdPrice: 0.66 },
+  { name: "Farm Fresh 2L", usdPrice: 4.10 },
+  { name: "Ausfresh 2L", usdPrice: 4.30 },
+  { name: "VP Milk 2L", usdPrice: 3.80 },
+  { name: "Greenfield 1.90L", usdPrice: 3.80 },
+  { name: "Greenfield 1L", usdPrice: 2.00 },
+  { name: "O'More 2L", usdPrice: 4.20 },
+  { name: "Champei Milk 220ml", usdPrice: 0.50 }
 ];
 
 
@@ -437,42 +426,35 @@ function showProductSelector() {
     document.getElementById("productChoice");
 
   choice.innerHTML = `
-    <option value="">
-      Select Product
-    </option>
+    <option value="">Select Product</option>
   `;
 
   const availableProducts =
-    products.filter(
-      product =>
-        !selectedProducts.includes(product)
+    products.filter(product =>
+      !selectedProducts.includes(product.name)
     );
+
+  if (availableProducts.length === 0) {
+
+    alert("All products have already been added.");
+
+    return;
+  }
 
   availableProducts.forEach(product => {
 
     const option =
       document.createElement("option");
 
-    option.value = product;
+    option.value = product.name;
 
-    option.textContent = product;
+    option.textContent = product.name;
 
     choice.appendChild(option);
 
   });
 
-  if (availableProducts.length === 0) {
-
-    alert(
-      "All products have already been added."
-    );
-
-    return;
-
-  }
-
   selector.style.display = "block";
-
 }
 
 
@@ -485,23 +467,33 @@ function addSelectedProduct() {
   const choice =
     document.getElementById("productChoice");
 
+  const productName = choice.value;
+
+  if (!productName) {
+    return;
+  }
+
   const product =
-    choice.value;
+    products.find(p => p.name === productName);
 
   if (!product) {
     return;
   }
 
-  selectedProducts.push(product);
+  selectedProducts.push(product.name);
 
-  createProduct(product);
+  createProduct(
+    product.name,
+    product.usdPrice
+  );
 
   choice.value = "";
 
-  document.getElementById(
-    "productSelector"
-  ).style.display = "none";
+  document
+    .getElementById("productSelector")
+    .style.display = "none";
 
+  calculate();
 }
 
 
@@ -509,7 +501,7 @@ function addSelectedProduct() {
    CREATE PRODUCT
 ========================================== */
 
-function createProduct(name) {
+function createProduct(name, defaultPrice) {
 
   const container =
     document.getElementById("productList");
@@ -538,7 +530,6 @@ function createProduct(name) {
 
     </div>
 
-
     <div class="inputs">
 
       <div>
@@ -557,7 +548,6 @@ function createProduct(name) {
 
       </div>
 
-
       <div>
 
         <span class="input-label">
@@ -567,8 +557,9 @@ function createProduct(name) {
         <input
           type="number"
           min="0"
-          value="0"
+          value="${defaultPrice}"
           inputmode="decimal"
+          step="0.01"
           oninput="calculate()"
         >
 
@@ -576,12 +567,12 @@ function createProduct(name) {
 
     </div>
 
-
     <div class="product-total">
 
       Total:
+
       <span class="line-total">
-        ៛0
+        $0.00
       </span>
 
     </div>
