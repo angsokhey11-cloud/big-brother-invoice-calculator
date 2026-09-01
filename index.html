@@ -626,8 +626,782 @@ input:focus {
   }
 }
 
+
+/* ==========================================
+   MOBILE SPACE / COMPACT INVOICE
+   ========================================== */
+
+@media (max-width: 600px) {
+  body {
+    padding: 5px;
+  }
+
+  .calculator {
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 22px;
+    margin: 5px 0 10px;
+  }
+
+  .top-bar {
+    margin-bottom: 8px;
+  }
+
+  .card {
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    margin-bottom: 8px;
+  }
+
+  .customer-field {
+    margin-top: 7px;
+  }
+
+  .grid-2 {
+    gap: 7px;
+  }
+
+  select,
+  input {
+    padding: 9px;
+    font-size: 15px;
+  }
+
+  .product {
+    padding: 10px;
+    margin-bottom: 7px;
+  }
+
+  .product-header {
+    gap: 7px;
+  }
+
+  .product-name {
+    font-size: 15px;
+  }
+
+  .inputs {
+    gap: 7px;
+    margin-top: 8px;
+  }
+
+  .product-total {
+    margin-top: 7px;
+    font-size: 14px;
+  }
+
+  .totals-box {
+    padding: 10px;
+    margin-top: 8px;
+  }
+
+  .total-row {
+    padding: 5px 0;
+    font-size: 15px;
+  }
+
+  .grand-total {
+    margin-top: 5px;
+    padding-top: 9px;
+    font-size: 18px;
+  }
+
+  .convert-box {
+    padding: 10px;
+    margin-top: 8px;
+  }
+
+  .convert-result {
+    padding: 9px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .add-btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .product-selector {
+    margin-top: 6px;
+    padding: 7px;
+  }
+
+  .product-selector select {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Product picker should stay compact and not cover the invoice. */
+.product-selector {
+  position: relative;
+  z-index: 20;
+}
+
+#productChoice {
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* ==========================================
+   EXTRA COMPACT PRODUCT ITEMS
+   ========================================== */
+
+.product {
+  padding: 8px !important;
+  margin-bottom: 6px !important;
+  border-radius: 10px !important;
+}
+
+.product-header {
+  margin-bottom: 4px !important;
+  min-height: 18px;
+}
+
+.product-name {
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+}
+
+.remove-btn {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  padding: 0 !important;
+  font-size: 13px !important;
+}
+
+.inputs {
+  gap: 6px !important;
+  margin-top: 4px !important;
+}
+
+.input-label {
+  font-size: 11px !important;
+  margin-bottom: 2px !important;
+}
+
+.product input {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 5px 8px !important;
+  font-size: 14px !important;
+}
+
+.product-total {
+  margin-top: 4px !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+/* Even tighter on phones */
+@media (max-width: 600px) {
+  .product {
+    padding: 7px !important;
+    margin-bottom: 5px !important;
+  }
+
+  .product-name {
+    font-size: 13px !important;
+  }
+
+  .remove-btn {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+  }
+
+  .product input {
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 4px 7px !important;
+    font-size: 13px !important;
+  }
+
+  .product-total {
+    font-size: 11px !important;
+  }
+}
+
+
+/* ==========================================
+   TABLE-STYLE PRODUCT LIST
+   Compact like the reference picture
+   ========================================== */
+.product-table-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 58px 72px 86px;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
+  margin-top: 7px;
+  border: 1px solid #c8d5e6;
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  background: #edf3fa;
+  color: #173f73;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.product-table-head span:first-child {
+  text-align: left;
+}
+
+.product-list {
+  margin-top: 0;
+}
+
+.product {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 58px 72px 86px;
+  gap: 6px;
+  align-items: center;
+  min-height: 44px;
+  padding: 5px 8px !important;
+  margin: 0 !important;
+  border: 1px solid #c8d5e6 !important;
+  border-left: 3px solid #2867d7 !important;
+  border-radius: 0 !important;
+  background: #fff;
+  box-shadow: none !important;
+}
+
+.product:last-child {
+  border-radius: 0 0 9px 9px !important;
+}
+
+.product-name-cell {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.product-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+}
+
+.product-input-cell input {
+  width: 100%;
+  height: 31px !important;
+  min-height: 31px !important;
+  padding: 4px 5px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.product-total-cell {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.remove-btn {
+  flex: 0 0 auto;
+  width: 21px !important;
+  height: 21px !important;
+  min-width: 21px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  font-size: 12px !important;
+  line-height: 21px;
+}
+
+@media (max-width: 600px) {
+  .product-table-head {
+    grid-template-columns: minmax(0, 1fr) 48px 62px 76px;
+    gap: 4px;
+    padding: 5px 6px;
+    font-size: 10px;
+  }
+
+  .product {
+    grid-template-columns: minmax(0, 1fr) 48px 62px 76px;
+    gap: 4px;
+    min-height: 39px;
+    padding: 4px 6px !important;
+  }
+
+  .product-name {
+    font-size: 11px !important;
+  }
+
+  .product-input-cell input {
+    height: 29px !important;
+    min-height: 29px !important;
+    padding: 3px 4px !important;
+    font-size: 11px !important;
+  }
+
+  .product-total-cell {
+    font-size: 11px;
+  }
+
+  .remove-btn {
+    width: 19px !important;
+    height: 19px !important;
+    min-width: 19px !important;
+    line-height: 19px;
+    font-size: 11px !important;
+  }
+}
+
+
+/* ==========================================
+   OPTIONAL DISCOUNT / PAYMENT / EXCHANGE
+   Hidden by default to keep invoice compact.
+   ========================================== */
+
+.optional-payment-details {
+  display: none;
+}
+
+.optional-payment-details.visible {
+  display: block;
+}
+
+.optional-exchange {
+  display: none;
+}
+
+.optional-exchange.visible {
+  display: block;
+}
+
+.optional-toggle {
+  display: none !important;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 9px;
+  padding: 11px 10px;
+  border: 1px solid #9bb7dc;
+  border-radius: 9px;
+  background: #f7faff;
+  color: #173f73;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.optional-toggle:hover {
+  background: #eef5ff;
+}
+
+.optional-toggle input {
+  width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  margin: 0;
+  padding: 0 !important;
+  accent-color: #2867d7;
+  cursor: pointer;
+}
+
+.optional-toggle .toggle-arrow {
+  margin-left: auto;
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.optional-toggle:has(input:checked) .toggle-arrow {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 600px) {
+  .optional-toggle {
+    padding: 9px 8px;
+    gap: 7px;
+    font-size: 12px;
+  }
+
+  .optional-toggle input {
+    width: 17px !important;
+    height: 17px !important;
+  }
+}
+
+@media print {
+  .optional-toggle {
+    display: none !important;
+  }
+}
+
+
+/* ==========================================
+   COMPACT THREE-OPTION DROPDOWN
+========================================== */
+
+.optional-menu {
+  position: relative;
+  margin: 8px 0;
+  z-index: 30;
+}
+
+.optional-menu-btn {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1.5px solid #9bb7dc;
+  border-radius: 10px;
+  background: #fff;
+  color: #174a91;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.optional-menu-btn:hover {
+  border-color: #2867d7;
+  background: #f7faff;
+}
+
+.optional-menu-panel {
+  display: none;
+  margin-top: 5px;
+  padding: 7px;
+  border: 1.5px solid #9bb7dc;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 5px 15px rgba(23, 59, 112, 0.12);
+}
+
+.optional-menu-panel.open {
+  display: block;
+}
+
+.optional-check {
+  min-height: 40px;
+  padding: 7px 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 7px;
+  color: #173b70;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.optional-check + .optional-check {
+  border-top: 1px solid #e1e8f2;
+}
+
+.optional-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #2867d7;
+}
+
+@media (max-width: 600px) {
+  .optional-menu {
+    margin: 6px 0;
+  }
+
+  .optional-menu-btn {
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .optional-check {
+    min-height: 38px;
+    font-size: 13px;
+  }
+}
+
+
+/* ==========================================
+   MORE OPTIONS - SINGLE CONTROL
+========================================== */
+
+.optional-menu {
+  position: relative;
+  width: 100%;
+  margin: 8px 0;
+  z-index: 50;
+}
+
+.optional-menu-btn {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1.5px solid #9bb7dc;
+  border-radius: 10px;
+  background: #fff;
+  color: #174a91;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.optional-menu-btn:hover {
+  border-color: #2867d7;
+  background: #f7faff;
+}
+
+.optional-menu-panel {
+  display: none;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 5px;
+  padding: 7px;
+  border: 1.5px solid #9bb7dc;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 5px 15px rgba(23, 59, 112, 0.12);
+}
+
+.optional-menu-panel.open {
+  display: block;
+}
+
+.optional-check {
+  min-height: 40px;
+  padding: 7px 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 7px;
+  color: #173b70;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.optional-check + .optional-check {
+  border-top: 1px solid #e1e8f2;
+}
+
+.optional-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #2867d7;
+}
+
+@media (max-width: 600px) {
+  .optional-menu {
+    margin: 6px 0;
+  }
+
+  .optional-menu-btn {
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .optional-check {
+    min-height: 38px;
+    font-size: 13px;
+  }
+}
+
+@media print {
+  .optional-menu {
+    display: none !important;
+  }
+}
+
+
+/* ==========================================
+   MORE OPTIONS - COMPACT DROPDOWN ONLY
+========================================== */
+
+.optional-menu {
+  position: relative;
+  width: 100%;
+  margin: 7px 0;
+  z-index: 50;
+}
+
+.optional-menu-btn {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1.5px solid #9bb7dc;
+  border-radius: 10px;
+  background: #fff;
+  color: #174a91;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.optional-menu-panel {
+  display: none;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 5px;
+  padding: 5px;
+  border: 1.5px solid #9bb7dc;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 5px 15px rgba(23, 59, 112, 0.12);
+}
+
+.optional-menu-panel.open {
+  display: block;
+}
+
+.optional-check {
+  min-height: 38px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #173b70;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.optional-check + .optional-check {
+  border-top: 1px solid #e1e8f2;
+}
+
+.optional-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #2867d7;
+}
+
+@media (max-width: 600px) {
+  .optional-menu {
+    margin: 5px 0;
+  }
+
+  .optional-menu-btn {
+    min-height: 38px;
+    font-size: 13px;
+  }
+
+  .optional-check {
+    min-height: 36px;
+    font-size: 13px;
+  }
+}
+
+@media print {
+  .optional-menu {
+    display: none !important;
+  }
+}
+
+
+/* ==========================================
+   MORE OPTIONS - FINAL VISIBILITY RULES
+========================================== */
+
+#optionalPaymentDetails {
+  display: none;
+}
+
+#optionalPaymentDetails[style*="display: block"] {
+  display: block !important;
+}
+
+#exchangeCalculationBox {
+  display: none;
+}
+
+#exchangeCalculationBox[style*="display: block"] {
+  display: block !important;
+}
+
+
+/* ==========================================
+   DISCOUNT CURRENCY FIELD
+========================================== */
+
+.discount-input-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 150px;
+  min-height: 40px;
+  border: 1px solid #9bb7dc;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.discount-input-wrap span {
+  padding-left: 9px;
+  color: #173b70;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.discount-input-wrap input {
+  width: 100%;
+  max-width: none !important;
+  min-height: 38px;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  text-align: right;
+  padding: 7px 9px 7px 4px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .discount-input-wrap {
+    width: 135px;
+    min-height: 36px;
+  }
+
+  .discount-input-wrap span {
+    font-size: 13px;
+    padding-left: 8px;
+  }
+
+  .discount-input-wrap input {
+    min-height: 34px;
+    font-size: 13px;
+  }
+}
+
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+/* Keep optional financial sections hidden when invoice opens. */
+document.addEventListener("DOMContentLoaded", function () {
+  togglePaymentDetails();
+});
+
+</script>
 </head>
 
 <body>
@@ -749,56 +1523,111 @@ input:focus {
   </div>
 
   <!-- PRODUCTS -->
+  <div class="product-table-head no-print">
+    <span>Item Name</span>
+    <span>QTY</span>
+    <span>Price</span>
+    <span>Total Price</span>
+  </div>
   <div id="productList" class="product-list"></div>
 
   <!-- TOTALS -->
-  <div class="totals-box">
+  
+<!-- MORE OPTIONS -->
+<div class="optional-menu no-print">
+  <button type="button"
+          class="optional-menu-btn"
+          onclick="toggleOptionalMenu()"
+          aria-expanded="false">
+    <span>☰ More Options</span>
+    <span id="optionalMenuArrow">▼</span>
+  </button>
+
+  <div id="optionalMenuPanel" class="optional-menu-panel">
+    <label class="optional-check">
+      <input type="checkbox"
+             id="showDiscount"
+             onchange="toggleOptionalSection('discount')">
+      <span>Discount</span>
+    </label>
+
+    <label class="optional-check">
+      <input type="checkbox"
+             id="showPayment"
+             onchange="toggleOptionalSection('payment')">
+      <span>Amount Paid & Change</span>
+    </label>
+
+    <label class="optional-check">
+      <input type="checkbox"
+             id="showExchange"
+             onchange="toggleOptionalSection('exchange')">
+      <span>Exchange Calculation</span>
+    </label>
+  </div>
+</div>
+
+<div class="totals-box">
 
     <div class="total-row">
       <span>Subtotal</span>
       <span id="subtotal">$0.00</span>
     </div>
 
-    <div class="total-row discount-row">
-      <span>Discount</span>
-      <input
-        type="number"
-        id="discount"
-        min="0"
-        value="0"
-        step="0.01"
-        inputmode="decimal"
-        oninput="calculate()"
-      >
-    </div>
+    <!-- HIDDEN UNTIL CHECKED -->
+    <div id="optionalPaymentDetails" class="optional-payment-details">
 
-    <div class="total-row grand-total">
-      <span>Grand Total</span>
-      <span id="grandTotal">$0.00</span>
-    </div>
+      <div class="total-row discount-row">
+        <span>Discount</span>
+        <div class="discount-input-wrap">
+          <span id="discountCurrencySymbol">$</span>
+          <input
+            type="number"
+            id="discount"
+            min="0"
+            value="0"
+            step="0.01"
+            inputmode="decimal"
+            oninput="calculate()"
+          >
+        </div>
+      </div>
 
-    <div class="total-row payment-row">
-      <span>Amount Paid</span>
-      <input
-        type="number"
-        id="amountPaid"
-        min="0"
-        value="0"
-        step="0.01"
-        inputmode="decimal"
-        oninput="calculate()"
-      >
-    </div>
+      <div class="total-row grand-total">
+        <span>Grand Total</span>
+        <span id="grandTotal">$0.00</span>
+      </div>
 
-    <div class="total-row change-row">
-      <span>Change</span>
-      <span id="changeAmount">$0.00</span>
+      <div class="total-row payment-row">
+        <span>Amount Paid</span>
+        <input
+          type="number"
+          id="amountPaid"
+          min="0"
+          value="0"
+          step="0.01"
+          inputmode="decimal"
+          oninput="calculate()"
+        >
+      </div>
+
+      <div class="total-row change-row">
+        <span>Change</span>
+        <span id="changeAmount">$0.00</span>
+      </div>
+
     </div>
 
   </div>
 
-  <!-- EXCHANGE CALCULATION -->
-  <div class="convert-box">
+  
+
+
+<!-- EXCHANGE CALCULATION -->
+  <div
+    id="exchangeCalculationBox"
+    class="convert-box optional-exchange"
+  >
     <div class="section-title">Exchange Calculation</div>
 
     <div id="convertResult" class="convert-result">
@@ -1242,59 +2071,141 @@ function formatMoney(value, currency) {
 ========================================== */
 
 function showProductSelector(event) {
-  if (event) { event.preventDefault(); event.stopPropagation(); }
-  const selector = document.getElementById("productSelector");
-  const choice = document.getElementById("productChoice");
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
-  choice.innerHTML = `
-    <option value="">Select Product</option>
-  `;
+  const selector =
+    document.getElementById("productSelector");
 
-  const availableProducts = products.filter(product =>
-    !selectedProducts.some(item => item.id === product.name)
-  );
+  const choice =
+    document.getElementById("productChoice");
+
+  const availableProducts =
+    products.filter(product =>
+      !selectedProducts.some(
+        item => item.id === product.name
+      )
+    );
 
   if (availableProducts.length === 0) {
     alert("All products have already been added.");
     return;
   }
 
+  /*
+   * Open the product dropdown immediately.
+   * The user can select a product without needing
+   * another Add button.
+   */
+  selector.style.display = "block";
+
+  choice.innerHTML = `
+    <option value="">Select Product</option>
+  `;
+
   availableProducts.forEach(product => {
-    const option = document.createElement("option");
+    const option =
+      document.createElement("option");
+
     option.value = product.name;
     option.textContent = product.name;
+
     choice.appendChild(option);
   });
 
-  selector.style.display = "block";
+  /*
+   * Put the cursor/focus directly on the dropdown.
+   * On mobile this opens the native picker when supported.
+   */
+  choice.focus();
+
+  /*
+   * Scroll just enough to keep the picker visible.
+   */
+  setTimeout(() => {
+    selector.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
+  }, 50);
 }
 
 
 /* ==========================================
-   ADD SELECTED PRODUCT
+   ADD SELECTED PRODUCT - INSTANT
 ========================================== */
 
 function addSelectedProduct() {
-  const choice = document.getElementById("productChoice");
-  const productName = choice.value;
+  const choice =
+    document.getElementById("productChoice");
+
+  const productName =
+    choice.value;
 
   if (!productName) return;
 
-  const product = products.find(p => p.name === productName);
+  const product =
+    products.find(
+      p => p.name === productName
+    );
 
   if (!product) return;
 
+  /*
+   * Add immediately when the user selects it.
+   */
   selectedProducts.push({
     id: product.name,
     usdPrice: product.usdPrice
   });
 
-  createProduct(product.name, product.usdPrice);
-
-  choice.value = "";
-  document.getElementById("productSelector").style.display = "none";
+  createProduct(
+    product.name,
+    product.usdPrice
+  );
 
   calculate();
+
+  /*
+   * Refresh the same dropdown so the user can
+   * immediately choose another product.
+   *
+   * No need to press "+ Add Product" again.
+   */
+  const availableProducts =
+    products.filter(product =>
+      !selectedProducts.some(
+        item => item.id === product.name
+      )
+    );
+
+  choice.innerHTML = `
+    <option value="">＋ Select another product</option>
+  `;
+
+  availableProducts.forEach(product => {
+    const option =
+      document.createElement("option");
+
+    option.value = product.name;
+    option.textContent = product.name;
+
+    choice.appendChild(option);
+  });
+
+  /*
+   * Keep the picker open if products remain.
+   * Hide it automatically when every product is used.
+   */
+  if (availableProducts.length === 0) {
+    document.getElementById(
+      "productSelector"
+    ).style.display = "none";
+  } else {
+    choice.focus();
+  }
 }
 
 
@@ -1314,49 +2225,55 @@ function createProduct(name, defaultUsdPrice) {
   const displayPrice = usdToSelected(defaultUsdPrice, currency);
 
   div.innerHTML = `
-    <div class="product-header">
+    <div class="product-name-cell">
       <div class="product-name">${escapeHtml(name)}</div>
-
       <button
+        type="button"
         class="remove-btn no-print"
         onclick="removeProduct(this)"
+        aria-label="Remove ${escapeHtml(name)}"
       >×</button>
     </div>
 
-    <div class="inputs">
-
-      <div>
-        <span class="input-label">QTY</span>
-        <input
-          type="number"
-          min="0"
-          value="0"
-          inputmode="decimal"
-          oninput="calculate()"
-        >
-      </div>
-
-      <div>
-        <span class="input-label">PRICE</span>
-        <input
-          type="number"
-          min="0"
-          value="${displayPrice}"
-          step="${currency === "KHR" ? "1" : "0.01"}"
-          inputmode="decimal"
-          oninput="priceChanged(this)"
-        >
-      </div>
-
+    <div class="product-input-cell">
+      <input
+        type="number"
+        min="0"
+        value=""
+        placeholder="0"
+        inputmode="decimal"
+        aria-label="Quantity for ${escapeHtml(name)}"
+        oninput="calculate()"
+      >
     </div>
 
-    <div class="product-total">
-      Total:
+    <div class="product-input-cell">
+      <input
+        type="number"
+        min="0"
+        value="${displayPrice}"
+        step="${currency === "KHR" ? "1" : "0.01"}"
+        inputmode="decimal"
+        aria-label="Price for ${escapeHtml(name)}"
+        oninput="priceChanged(this)"
+      >
+    </div>
+
+    <div class="product-total-cell">
       <span class="line-total">${formatMoney(0, currency)}</span>
     </div>
   `;
 
   container.appendChild(div);
+
+  /*
+   * After selecting the product, immediately move the user
+   * into QTY. No extra button or click is required.
+   */
+  const qtyInput = div.querySelectorAll("input")[0];
+  if (qtyInput) {
+    setTimeout(() => qtyInput.focus(), 80);
+  }
 }
 
 
@@ -1403,10 +2320,76 @@ function removeProduct(button) {
 
 
 /* ==========================================
+   OPTIONAL PAYMENT DETAILS
+========================================== */
+
+function togglePaymentDetails() {
+  const checkbox =
+    document.getElementById("showPaymentDetails");
+
+  const details =
+    document.getElementById("optionalPaymentDetails");
+
+  const exchange =
+    document.getElementById("exchangeCalculationBox");
+
+  const visible =
+    checkbox && checkbox.checked;
+
+  if (details) {
+    details.classList.toggle(
+      "visible",
+      visible
+    );
+  }
+
+  if (exchange) {
+    exchange.classList.toggle(
+      "visible",
+      visible
+    );
+  }
+}
+
+
+/* ==========================================
    CALCULATE
 ========================================== */
 
+/* ==========================================
+   DISCOUNT CURRENCY
+========================================== */
+
+function updateDiscountCurrency() {
+  const currency =
+    getCurrency();
+
+  const symbol =
+    document.getElementById("discountCurrencySymbol");
+
+  const discount =
+    document.getElementById("discount");
+
+  if (!symbol) return;
+
+  if (currency === "KHR") {
+    symbol.textContent = "៛";
+
+    if (discount) {
+      discount.step = "1";
+    }
+  } else {
+    symbol.textContent = "$";
+
+    if (discount) {
+      discount.step = "0.01";
+    }
+  }
+}
+
 function calculate() {
+  updateDiscountCurrency();
+
   let total = 0;
   const currency = getCurrency();
 
@@ -2190,6 +3173,179 @@ async function shareInvoice(event) {
 }
 
 
+
+/* ==========================================
+   THREE OPTIONAL CALCULATION OPTIONS
+========================================== */
+
+
+
+/* ==========================================
+   MORE OPTIONS ONLY
+========================================== */
+
+function toggleOptionalMenu() {
+  const panel = document.getElementById("optionalMenuPanel");
+  const button = document.querySelector(".optional-menu-btn");
+  const arrow = document.getElementById("optionalMenuArrow");
+
+  if (!panel) return;
+
+  const open = panel.classList.toggle("open");
+
+  if (button) {
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  if (arrow) {
+    arrow.textContent = open ? "▲" : "▼";
+  }
+}
+
+function toggleOptionalSection(section) {
+
+  const showDiscount =
+    document.getElementById("showDiscount")?.checked || false;
+
+  const showPayment =
+    document.getElementById("showPayment")?.checked || false;
+
+  const showExchange =
+    document.getElementById("showExchange")?.checked || false;
+
+  /* Discount */
+  const discountRow =
+    document.querySelector(".discount-row");
+
+  if (discountRow) {
+    discountRow.style.display =
+      showDiscount ? "" : "none";
+  }
+
+  /*
+   * Discount + Payment rows live inside this wrapper.
+   * Show the wrapper whenever either option is selected.
+   * This is the missing piece in the previous version.
+   */
+  const paymentDetails =
+    document.getElementById("optionalPaymentDetails");
+
+  if (paymentDetails) {
+    paymentDetails.style.display =
+      (showDiscount || showPayment)
+        ? "block"
+        : "none";
+  }
+
+  /* Amount Paid + Change */
+  const paymentRow =
+    document.querySelector(".payment-row");
+
+  const changeRow =
+    document.querySelector(".change-row");
+
+  if (paymentRow) {
+    paymentRow.style.display =
+      showPayment ? "" : "none";
+  }
+
+  if (changeRow) {
+    changeRow.style.display =
+      showPayment ? "" : "none";
+  }
+
+  /* Exchange Calculation */
+  const exchangeBox =
+    document.getElementById("exchangeCalculationBox");
+
+  if (exchangeBox) {
+    exchangeBox.style.display =
+      showExchange ? "block" : "none";
+  }
+
+  /* Recalculate */
+  if (typeof calculate === "function") {
+    calculate();
+  }
+
+  /*
+   * Close the dropdown after selecting an option.
+   * The checkbox stays checked.
+   */
+  const panel =
+    document.getElementById("optionalMenuPanel");
+
+  const menuButton =
+    document.querySelector(".optional-menu-btn");
+
+  const arrow =
+    document.getElementById("optionalMenuArrow");
+
+  if (panel) {
+    panel.classList.remove("open");
+  }
+
+  if (menuButton) {
+    menuButton.setAttribute("aria-expanded", "false");
+  }
+
+  if (arrow) {
+    arrow.textContent = "▼";
+  }
+}
+
+/* ==========================================
+   INITIALIZE MORE OPTIONS
+========================================== */
+
+function initializeMoreOptions() {
+
+  const paymentDetails =
+    document.getElementById("optionalPaymentDetails");
+
+  const discountRow =
+    document.querySelector(".discount-row");
+
+  const paymentRow =
+    document.querySelector(".payment-row");
+
+  const changeRow =
+    document.querySelector(".change-row");
+
+  const exchangeBox =
+    document.getElementById("exchangeCalculationBox");
+
+  /* All optional sections start hidden. */
+  if (paymentDetails) {
+    paymentDetails.style.display = "none";
+  }
+
+  if (discountRow) {
+    discountRow.style.display = "none";
+  }
+
+  if (paymentRow) {
+    paymentRow.style.display = "none";
+  }
+
+  if (changeRow) {
+    changeRow.style.display = "none";
+  }
+
+  if (exchangeBox) {
+    exchangeBox.style.display = "none";
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeMoreOptions
+  );
+} else {
+  initializeMoreOptions();
+}
+
 /* ==========================================
    CLEAR EVERYTHING
 ========================================== */
@@ -2245,6 +3401,22 @@ document.getElementById("exchangeRate")
 /* INITIAL CALCULATION */
 
 calculate();
+
+/* Update discount currency immediately when USD/KHR changes. */
+document.addEventListener("DOMContentLoaded", function () {
+  const currency =
+    document.getElementById("currency");
+
+  if (currency) {
+    currency.addEventListener(
+      "change",
+      updateDiscountCurrency
+    );
+  }
+
+  updateDiscountCurrency();
+});
+
 </script>
 
 </body>
