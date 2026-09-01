@@ -402,6 +402,7 @@ label {
 }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body>
@@ -511,7 +512,7 @@ label {
   </div>
 
   <!-- ADD PRODUCT -->
-  <button class="add-btn no-print" onclick="showProductSelector()">
+  <button type="button" class="add-btn no-print" onclick="showProductSelector(event)">
     ＋ Add Product
   </button>
 
@@ -589,8 +590,12 @@ label {
       ✈️ Share to Telegram
     </button>
 
-    <button type="button" class="action-btn save-btn" onclick="saveInvoiceImage(event)">
-      🖼️ Save Invoice Image
+    <button type="button" class="action-btn save-btn" onclick="saveToPhone(event)">
+      📱 Save to Phone
+    </button>
+
+    <button type="button" class="action-btn save-btn" onclick="saveToDrive(event)">
+      ☁️ Save to Drive
     </button>
   </div>
 
@@ -626,6 +631,12 @@ setTodayDate();
    Google Sheets -> Apps Script Web App
 ========================================== */
 
+const DRIVE_SAVE_API =
+  "https://script.google.com/macros/s/AKfycbzKPsKptXGdxm9bZ8VJpWAc1XnFTCsfCOGzfn6GCmYYt-yHVw-DXsEHTrpnZf_EOFd4TA/exec";
+
+const DRIVE_FOLDER_ID =
+  "1wgNyhkR7-QQphRAAou2v-etx0LinDl21";
+
 const CUSTOMER_API_URL =
   "https://script.google.com/macros/s/AKfycbzKPsKptXGdxm9bZ8VJpWAc1XnFTCsfCOGzfn6GCmYYt-yHVw-DXsEHTrpnZf_EOFd4TA/exec";
 
@@ -634,8 +645,8 @@ let customers = [];
 
 /* ==========================================
    LOAD CUSTOMERS
-   Uses JSONP so GitHub Pages can read the
-   Google Apps Script response without CORS.
+   JSONP works from GitHub Pages without
+   requiring CORS headers.
 ========================================== */
 
 function loadCustomers() {
@@ -648,88 +659,74 @@ function loadCustomers() {
   status.style.color = "#718096";
 
   const callbackName =
-    "receiveCustomers_" + Date.now();
+    "bbCustomers_" + Date.now();
 
   const script =
     document.createElement("script");
 
-  let finished = false;
+  let done = false;
 
-  window[callbackName] = function(data) {
-    if (finished) return;
-    finished = true;
+  function finish(message, color) {
+    if (done) return;
+    done = true;
 
-    try {
-      if (!Array.isArray(data)) {
-        throw new Error("Invalid customer data.");
-      }
+    status.textContent = message;
+    status.style.color = color;
 
-      customers = data
-        .map(customer => ({
-          no: String(customer.no || ""),
-          name: String(customer.name || "").trim(),
-          phone: String(customer.phone || "").trim(),
-          address: String(customer.address || "").trim()
-        }))
-        .filter(customer => customer.name);
-
-      list.innerHTML = "";
-
-      customers.forEach(customer => {
-        const option =
-          document.createElement("option");
-
-        option.value = customer.name;
-
-        if (customer.phone) {
-          option.label = customer.phone;
-        }
-
-        list.appendChild(option);
-      });
-
-      status.textContent =
-        customers.length +
-        " customers loaded from Google Sheets";
-
-      status.style.color = "#2f855a";
-
-    } catch (error) {
-      console.error("Customer data error:", error);
-
-      customers = [];
-      list.innerHTML = "";
-
-      status.textContent =
-        "Customer database unavailable — you can still type manually.";
-
-      status.style.color = "#b7791f";
-    }
-
-    cleanup();
-  };
-
-  script.onerror = function() {
-    if (finished) return;
-    finished = true;
-
-    customers = [];
-    list.innerHTML = "";
-
-    status.textContent =
-      "Customer database unavailable — you can still type manually.";
-
-    status.style.color = "#b7791f";
-
-    cleanup();
-  };
-
-  function cleanup() {
     delete window[callbackName];
+
     if (script.parentNode) {
       script.parentNode.removeChild(script);
     }
   }
+
+  window[callbackName] = function(data) {
+    if (!Array.isArray(data)) {
+      customers = [];
+      finish(
+        "Customer database unavailable — you can still type manually.",
+        "#b7791f"
+      );
+      return;
+    }
+
+    customers = data
+      .map(row => ({
+        no: String(row.no || ""),
+        name: String(row.name || "").trim(),
+        phone: String(row.phone || "").trim(),
+        address: String(row.address || "").trim()
+      }))
+      .filter(row => row.name);
+
+    list.innerHTML = "";
+
+    customers.forEach(customer => {
+      const option = document.createElement("option");
+      option.value = customer.name;
+      option.label =
+        [customer.phone, customer.address]
+          .filter(Boolean)
+          .join(" • ");
+
+      list.appendChild(option);
+    });
+
+    finish(
+      customers.length
+        ? `${customers.length} customers loaded from Google Sheets`
+        : "No customers found — you can still type manually.",
+      customers.length ? "#2f855a" : "#b7791f"
+    );
+  };
+
+  script.onerror = function() {
+    customers = [];
+    finish(
+      "Customer database unavailable — you can still type manually.",
+      "#b7791f"
+    );
+  };
 
   script.src =
     CUSTOMER_API_URL +
@@ -740,21 +737,15 @@ function loadCustomers() {
 
   document.body.appendChild(script);
 
-  // Don't leave the user stuck on "Loading customers..."
   setTimeout(() => {
-    if (!finished) {
-      finished = true;
+    if (!done) {
       customers = [];
-      list.innerHTML = "";
-
-      status.textContent =
-        "Customer database unavailable — you can still type manually.";
-
-      status.style.color = "#b7791f";
-
-      cleanup();
+      finish(
+        "Customer database unavailable — you can still type manually.",
+        "#b7791f"
+      );
     }
-  }, 10000);
+  }, 12000);
 }
 
 
@@ -762,50 +753,28 @@ function loadCustomers() {
    CUSTOMER SELECTION / AUTO-FILL
 ========================================== */
 
-
-========================================== */
-
-function findCustomerByName(name) {
-  const cleanName = String(name || "").trim().toLowerCase();
-
-  if (!cleanName) return null;
-
-  return customers.find(customer =>
-    customer.name.toLowerCase() === cleanName
-  ) || null;
-}
-
 function fillCustomerInformation() {
-  const nameInput = document.getElementById("customerName");
-  const phoneInput = document.getElementById("customerPhone");
-  const addressInput = document.getElementById("customerAddress");
-  const status = document.getElementById("customerStatus");
+  const input =
+    document.getElementById("customerName");
 
-  if (!nameInput || !phoneInput || !addressInput) return;
+  const name =
+    input ? input.value.trim() : "";
 
-  const customer = findCustomerByName(nameInput.value);
+  const customer =
+    customers.find(
+      item =>
+        item.name.toLowerCase() === name.toLowerCase()
+    );
 
-  if (!customer) {
-    /*
-      IMPORTANT:
-      Do not clear phone/address here.
-      This keeps the customer fields fully manual if the user
-      types a customer that is not in Google Sheets.
-    */
-    return;
-  }
+  if (!customer) return;
 
-  phoneInput.value = customer.phone;
-  addressInput.value = customer.address;
+  document.getElementById("customerPhone").value =
+    customer.phone || "";
 
-  if (status) {
-    status.textContent = "Customer information loaded";
-    status.style.color = "#2f855a";
-  }
+  document.getElementById("customerAddress").value =
+    customer.address || "";
 }
 
-
-/* CUSTOMER INPUT */
 
 document
   .getElementById("customerName")
@@ -884,7 +853,8 @@ function formatMoney(value, currency) {
    SHOW PRODUCT SELECTOR
 ========================================== */
 
-function showProductSelector() {
+function showProductSelector(event) {
+  if (event) { event.preventDefault(); event.stopPropagation(); }
   const selector = document.getElementById("productSelector");
   const choice = document.getElementById("productChoice");
 
@@ -1296,53 +1266,39 @@ function printInvoice(event) {
 
 async function createInvoiceImage() {
   if (typeof html2canvas !== "function") {
-    throw new Error("Image library is not available.");
-  }
-
-  const invoice = document.querySelector(".calculator");
-
-  if (!invoice) {
-    throw new Error("Invoice not found.");
+    throw new Error("Image library is not loaded.");
   }
 
   calculate();
 
+  const invoice = document.querySelector(".calculator");
+  if (!invoice) throw new Error("Invoice not found.");
+
   const clone = invoice.cloneNode(true);
 
-  clone
-    .querySelectorAll(
-      ".no-print, .actions, .clear-btn, .product-selector"
-    )
-    .forEach(el => el.remove());
+  clone.querySelectorAll(
+    ".no-print, .actions, .clear-btn, .product-selector"
+  ).forEach(el => el.remove());
 
+  // Copy current field values into the clone.
   const originalFields =
-    invoice.querySelectorAll(
-      "input, select, textarea"
-    );
-
+    invoice.querySelectorAll("input, select, textarea");
   const clonedFields =
-    clone.querySelectorAll(
-      "input, select, textarea"
-    );
+    clone.querySelectorAll("input, select, textarea");
 
-  originalFields.forEach((field, index) => {
-    const cloned = clonedFields[index];
-
-    if (!cloned) return;
-
-    cloned.value = field.value;
+  originalFields.forEach((field, i) => {
+    if (clonedFields[i]) {
+      clonedFields[i].value = field.value;
+    }
   });
 
-  clone.style.width =
-    invoice.offsetWidth + "px";
-
-  clone.style.maxWidth = "none";
-  clone.style.margin = "0";
-  clone.style.background = "#eef2f7";
-  clone.style.padding = "15px";
   clone.style.position = "fixed";
   clone.style.left = "-100000px";
   clone.style.top = "0";
+  clone.style.width = invoice.offsetWidth + "px";
+  clone.style.maxWidth = "none";
+  clone.style.margin = "0";
+  clone.style.background = "#eef2f7";
   clone.style.zIndex = "-1";
 
   document.body.appendChild(clone);
@@ -1350,28 +1306,17 @@ async function createInvoiceImage() {
   try {
     const canvas = await html2canvas(clone, {
       backgroundColor: "#eef2f7",
-      scale: Math.min(
-        3,
-        Math.max(2, window.devicePixelRatio || 1)
-      ),
+      scale: Math.min(3, Math.max(2, window.devicePixelRatio || 1)),
       useCORS: true,
-      logging: false,
-      scrollX: 0,
-      scrollY: 0
+      logging: false
     });
 
     return await new Promise((resolve, reject) => {
       canvas.toBlob(blob => {
-        if (blob) {
-          resolve(blob);
-        } else {
-          reject(
-            new Error("Could not create invoice image.")
-          );
-        }
+        if (blob) resolve(blob);
+        else reject(new Error("Could not create image."));
       }, "image/png");
     });
-
   } finally {
     clone.remove();
   }
@@ -1379,87 +1324,201 @@ async function createInvoiceImage() {
 
 
 /* ==========================================
-   SAVE INVOICE AS IMAGE
+   SAVE INVOICE
 ========================================== */
 
-async function saveInvoiceImage(event) {
+async function saveToPhone(event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
 
   const button =
-    event && event.currentTarget
-      ? event.currentTarget
-      : document.querySelector(".save-btn");
+    event?.currentTarget ||
+    document.querySelector(".save-btn");
 
-  const originalText =
+  const oldText =
     button ? button.innerHTML : "";
 
   try {
     if (button) {
       button.disabled = true;
-      button.innerHTML = "⏳ Saving...";
+      button.innerHTML = "⏳ Preparing image...";
     }
 
-    const blob =
-      await createInvoiceImage();
+    const blob = await createInvoiceImage();
 
     const invoiceNo =
-      document
-        .getElementById("invoiceNumber")
-        .value
-        .trim() || "Invoice";
-
-    const safeName =
-      invoiceNo
-        .replace(/[^a-z0-9_-]+/gi, "-")
-        .replace(/^-+|-+$/g, "") ||
+      document.getElementById("invoiceNumber").value.trim() ||
       "Invoice";
 
-    const fileName =
-      `BIG-BROTHER-${safeName}.png`;
+    const customer =
+      document.getElementById("customerName").value.trim() ||
+      "Customer";
 
-    const url =
-      URL.createObjectURL(blob);
+    const date =
+      formatInvoiceDate(
+        document.getElementById("invoiceDate").value
+      );
 
-    const link =
-      document.createElement("a");
+    const safeInvoice =
+      invoiceNo.replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "") ||
+      "Invoice";
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
 
     link.href = url;
-    link.download = fileName;
-    link.rel = "noopener";
+    link.download =
+      `BIG-BROTHER-${safeInvoice}-${date}.png`;
 
     document.body.appendChild(link);
     link.click();
     link.remove();
 
-    setTimeout(
-      () => URL.revokeObjectURL(url),
-      3000
-    );
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+    alert("Invoice image saved to your phone/device.");
 
   } catch (error) {
-    console.error(
-      "Save invoice image failed:",
-      error
-    );
-
-    alert(
-      "Could not save the invoice image. Please try again."
-    );
+    console.error("Save to phone failed:", error);
+    alert("Could not save the invoice image. Please try again.");
 
   } finally {
     if (button) {
       button.disabled = false;
-      button.innerHTML = originalText;
+      button.innerHTML = oldText;
     }
   }
 }
 
 
+async function saveToDrive(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  const button =
+    event?.currentTarget ||
+    document.querySelector(".save-btn");
+
+  const oldText =
+    button ? button.innerHTML : "";
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = "⏳ Saving to Drive...";
+    }
+
+    const blob = await createInvoiceImage();
+
+    const invoiceNo =
+      document.getElementById("invoiceNumber").value.trim() ||
+      "Invoice";
+
+    const customer =
+      document.getElementById("customerName").value.trim() ||
+      "Customer";
+
+    const date =
+      formatInvoiceDate(
+        document.getElementById("invoiceDate").value
+      );
+
+    const safeInvoice =
+      invoiceNo.replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "") ||
+      "Invoice";
+
+    const safeCustomer =
+      customer.replace(/[^a-z0-9\u0080-\uFFFF_-]+/gi, "-").replace(/^-+|-+$/g, "") ||
+      "Customer";
+
+    const fileName =
+      `BIG-BROTHER-${safeInvoice}-${safeCustomer}-${date}.png`;
+
+    const base64 =
+      await blobToBase64(blob);
+
+    const response =
+      await fetch(DRIVE_SAVE_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+          action: "saveInvoiceImage",
+          folderId: DRIVE_FOLDER_ID,
+          fileName: fileName,
+          mimeType: "image/png",
+          imageBase64: base64,
+          invoiceNo: invoiceNo,
+          customerName: customer,
+          date: date
+        })
+      });
+
+    if (!response.ok) {
+      throw new Error("Drive server returned " + response.status);
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(
+        result.error || "Google Drive could not save the invoice."
+      );
+    }
+
+    alert("Invoice image saved to Google Drive successfully.");
+
+  } catch (error) {
+    console.error("Drive save failed:", error);
+
+    alert(
+      "Could not save to Google Drive.\n\n" +
+      "Please make sure the Apps Script has been redeployed as a new version."
+    );
+
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = oldText;
+    }
+  }
+}
+
+
+/* Backward-compatible name used by older share code. */
+async function saveInvoiceImage(event) {
+  return saveToDrive(event);
+}
+
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const result = String(reader.result || "");
+      const comma = result.indexOf(",");
+
+      resolve(
+        comma >= 0
+          ? result.substring(comma + 1)
+          : result
+      );
+    };
+
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+
 /* ==========================================
-   SHARE INVOICE AS PICTURE
+   SHARE INVOICE
 ========================================== */
 
 async function shareInvoice(event) {
@@ -1469,11 +1528,10 @@ async function shareInvoice(event) {
   }
 
   const button =
-    event && event.currentTarget
-      ? event.currentTarget
-      : document.querySelector(".share-btn");
+    event?.currentTarget ||
+    document.querySelector(".share-btn");
 
-  const originalText =
+  const oldText =
     button ? button.innerHTML : "";
 
   try {
@@ -1482,49 +1540,27 @@ async function shareInvoice(event) {
       button.innerHTML = "⏳ Preparing...";
     }
 
-    const blob =
-      await createInvoiceImage();
+    const blob = await createInvoiceImage();
 
     const invoiceNo =
-      document
-        .getElementById("invoiceNumber")
-        .value
-        .trim() || "Invoice";
+      document.getElementById("invoiceNumber").value.trim() ||
+      "Invoice";
 
     const customer =
-      document
-        .getElementById("customerName")
-        .value
-        .trim() || "Customer";
-
-    const date =
-      formatInvoiceDate(
-        document.getElementById("invoiceDate").value
-      );
-
-    const message =
-      `BIG BROTHER Invoice ${invoiceNo}\n` +
-      `Customer: ${customer}\n` +
-      `Date: ${date}`;
-
-    const fileName =
-      `BIG-BROTHER-${invoiceNo
-        .replace(/[^a-z0-9_-]+/gi, "-")
-        .replace(/^-+|-+$/g, "") || "Invoice"}.png`;
+      document.getElementById("customerName").value.trim() ||
+      "Customer";
 
     const file =
       new File(
         [blob],
-        fileName,
+        `BIG-BROTHER-${invoiceNo.replace(/[^a-z0-9_-]+/gi, "-")}.png`,
         { type: "image/png" }
       );
 
-    /*
-      MOBILE:
-      Use the native Web Share sheet with the
-      actual invoice image. Telegram can be
-      selected as the destination app.
-    */
+    const text =
+      `BIG BROTHER Invoice ${invoiceNo}\nCustomer: ${customer}`;
+
+    // Mobile: native share sheet with the actual invoice picture.
     if (
       navigator.share &&
       navigator.canShare &&
@@ -1532,107 +1568,58 @@ async function shareInvoice(event) {
     ) {
       await navigator.share({
         title: "BIG BROTHER Invoice",
-        text: message,
+        text: text,
         files: [file]
       });
-
       return;
     }
 
-    /*
-      DESKTOP:
-      Browsers generally cannot attach a local
-      image directly to Telegram Web through
-      Telegram's URL API. Copy the invoice image
-      to the clipboard, then open Telegram Web.
-      The user can paste the picture with Ctrl+V.
-    */
+    // PC: copy actual PNG to clipboard, then open Telegram Web.
     if (
       navigator.clipboard &&
       window.ClipboardItem
     ) {
       try {
-        const item =
+        await navigator.clipboard.write([
           new ClipboardItem({
             "image/png": blob
-          });
-
-        await navigator.clipboard.write([item]);
-
-        const telegramWeb =
-          "https://web.telegram.org/";
+          })
+        ]);
 
         window.open(
-          telegramWeb,
+          "https://web.telegram.org/",
           "_blank",
           "noopener"
         );
 
         alert(
-          "Invoice picture copied. In Telegram, open the chat and press Ctrl+V to paste the invoice image."
+          "Invoice picture copied. In Telegram, open the chat and press Ctrl+V to paste it."
         );
-
         return;
-
-      } catch (clipboardError) {
-        console.warn(
-          "Clipboard image copy failed:",
-          clipboardError
-        );
+      } catch (copyError) {
+        console.warn(copyError);
       }
     }
 
-    /*
-      Final fallback: save the picture so the
-      user can attach it manually in Telegram.
-    */
-    const url =
-      URL.createObjectURL(blob);
-
-    const link =
-      document.createElement("a");
-
-    link.href = url;
-    link.download = fileName;
-    link.click();
-
-    setTimeout(
-      () => URL.revokeObjectURL(url),
-      3000
-    );
-
+    // Final fallback: save the PNG and open Telegram.
+    await saveInvoiceImage();
     window.open(
       "https://web.telegram.org/",
       "_blank",
       "noopener"
     );
 
-    alert(
-      "Invoice image saved. Attach it in Telegram."
-    );
-
   } catch (error) {
-    /*
-      AbortError means the user simply closed
-      the native share sheet. Do not show an error.
-    */
-    if (error && error.name === "AbortError") {
-      return;
-    }
+    if (error?.name === "AbortError") return;
 
-    console.error(
-      "Share invoice failed:",
-      error
-    );
-
+    console.error(error);
     alert(
-      "Could not share the invoice image. Please try Save Invoice Image first."
+      "Could not share the invoice picture. Try Save Invoice first."
     );
-
   } finally {
     if (button) {
       button.disabled = false;
-      button.innerHTML = originalText;
+      button.innerHTML = oldText;
     }
   }
 }
