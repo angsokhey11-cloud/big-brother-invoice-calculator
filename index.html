@@ -1,174 +1,46 @@
 <!DOCTYPE html>
-<html>
-<h2>BIG BROTHER</h2>
-<div class="invoice-info">
-
-  <div class="invoice-title">
-    INVOICE
-  </div>
-
-  <div class="invoice-row">
-    <div>
-      <label>Invoice No.</label>
-      <input
-        type="text"
-        id="invoiceNumber"
-        value="INV-0001"
-      >
-    </div>
-
-    <div>
-      <label>Date</label>
-      <input
-        type="date"
-        id="invoiceDate"
-      >
-    </div>
-  </div>
-
-  <div class="customer-field">
-
-  <label>Customer Name</label>
-  <input
-    type="text"
-    id="customerName"
-    placeholder="Enter customer name"
-  >
-
-  <div class="customer-row">
-
-    <div>
-      <label>Phone</label>
-      <input
-        type="tel"
-        id="customerPhone"
-        placeholder="Enter phone number"
-      >
-    </div>
-
-    <div>
-      <label>Address</label>
-      <input
-        type="text"
-        id="customerAddress"
-        placeholder="Enter address"
-      >
-    </div>
-
-  </div>
-
-</div>
-
-</div>
+<html lang="en">
 <head>
-
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>BIG BROTHER Invoice Calculator</title>
+<title>BIG BROTHER Invoice</title>
 
 <style>
-.invoice-info {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 15px;
-}
-.totals-box {
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  margin-top: 15px;
-}
-
-.subtotal-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
-  font-size: 16px;
-}
-
-.discount-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  font-size: 16px;
-}
-
-.discount-row input {
-  width: 120px;
-  padding: 8px;
-  text-align: right;
-}
-
-.totals-box .grand-total {
-  margin-top: 10px;
-  padding: 15px 0 0;
-  border-top: 1px solid #ddd;
-}
-.invoice-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.invoice-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.invoice-info label {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 5px;
-}
-
-.invoice-info input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-}
-
-.customer-field {
-  margin-top: 5px;
-}
-
-@media (max-width: 450px) {
-  .invoice-row {
-    grid-template-columns: 1fr;
-  }
-}
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   padding: 15px;
   font-family: Arial, sans-serif;
   background: #f3f5f9;
+  color: #111;
 }
 
 .calculator {
   width: 100%;
-  max-width: 500px;
+  max-width: 560px;
   margin: auto;
 }
 
-/* TITLE */
-
 h1 {
   text-align: center;
-  font-size: 25px;
-  margin: 15px 0 25px;
+  font-size: 26px;
+  margin: 8px 0 18px;
 }
 
-/* TOP BAR */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
 
 .top-bar {
   display: flex;
@@ -182,28 +54,35 @@ h1 {
   font-weight: bold;
 }
 
-select {
-  padding: 10px 14px;
-  border-radius: 9px;
+select,
+input {
+  width: 100%;
+  padding: 11px;
   border: 1px solid #ccc;
-  background: white;
-  font-size: 15px;
-}
-
-/* EXCHANGE RATE */
-
-.exchange-box {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 15px;
-}
-
-.exchange-title {
-  font-weight: bold;
+  border-radius: 8px;
   font-size: 16px;
-  margin-bottom: 10px;
+  background: white;
+}
+
+select {
+  width: auto;
+  min-width: 90px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.customer-field {
+  margin-top: 10px;
 }
 
 .exchange-row {
@@ -221,31 +100,40 @@ select {
   min-width: 0;
 }
 
-/* BUTTON */
-
-.add-btn {
+.add-btn,
+.action-btn {
   width: 100%;
   padding: 14px;
   border: none;
   border-radius: 10px;
-  background: #5b78f6;
-  color: white;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
 }
 
-.add-btn:active {
-  transform: scale(0.99);
+.add-btn {
+  background: #5b78f6;
+  color: white;
 }
 
-/* PRODUCT LIST */
-
-.product-list {
-  margin-top: 15px;
+.product-selector {
+  margin-top: 10px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+  display: none;
 }
 
-/* PRODUCT */
+.product-selector button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #eee;
+  cursor: pointer;
+}
 
 .product {
   background: white;
@@ -259,6 +147,7 @@ select {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
 .product-name {
@@ -271,11 +160,10 @@ select {
   background: #eee;
   color: #555;
   border-radius: 7px;
-  padding: 5px 9px;
+  padding: 6px 10px;
   cursor: pointer;
+  flex-shrink: 0;
 }
-
-/* INPUTS */
 
 .inputs {
   display: grid;
@@ -284,73 +172,88 @@ select {
   margin-top: 12px;
 }
 
-.input-label {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 5px;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-/* PRODUCT TOTAL */
-
 .product-total {
   text-align: right;
   font-weight: bold;
   margin-top: 12px;
 }
 
-/* GRAND TOTAL */
-
-.grand-total {
+.totals-box {
   background: white;
   border-radius: 12px;
-  padding: 18px;
+  padding: 15px;
   margin-top: 15px;
+}
 
+.total-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  padding: 7px 0;
+  font-size: 16px;
+}
 
-  font-size: 18px;
+.discount-row input {
+  max-width: 150px;
+  text-align: right;
+}
+
+.grand-total {
+  border-top: 1px solid #ddd;
+  margin-top: 8px;
+  padding-top: 14px;
+  font-size: 19px;
   font-weight: bold;
 }
 
-/* EXCHANGE CALCULATION */
+.payment-row input {
+  max-width: 170px;
+  text-align: right;
+}
+
+.change-row {
+  font-weight: bold;
+}
 
 .convert-box {
   background: white;
   border: 1px solid #ddd;
   border-radius: 12px;
-  padding: 16px;
+  padding: 15px;
   margin-top: 12px;
-}
-
-.convert-title {
-  font-weight: bold;
-  margin-bottom: 10px;
 }
 
 .convert-result {
   font-size: 17px;
   font-weight: bold;
   text-align: center;
-  padding: 10px;
+  padding: 12px;
   background: #f3f5f9;
   border-radius: 8px;
+  line-height: 1.6;
 }
 
-/* CLEAR */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.print-btn {
+  background: #111;
+  color: white;
+}
+
+.share-btn {
+  background: #25d366;
+  color: white;
+}
 
 .clear-btn {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 10px;
   padding: 13px;
   border: none;
   border-radius: 10px;
@@ -359,64 +262,117 @@ input {
   cursor: pointer;
 }
 
-/* PRODUCT SELECT POPUP */
+@media (max-width: 450px) {
+  body { padding: 10px; }
 
-.product-selector {
-  margin-top: 12px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 12px;
-  display: none;
+  h1 {
+    font-size: 23px;
+    margin-bottom: 14px;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .inputs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
 }
 
-.product-selector select {
-  width: 100%;
-}
+@media print {
+  body {
+    background: white;
+    padding: 0;
+  }
 
+  .calculator {
+    max-width: 100%;
+  }
+
+  .no-print,
+  .add-btn,
+  .product-selector,
+  .remove-btn,
+  .actions,
+  .clear-btn {
+    display: none !important;
+  }
+
+  .card,
+  .product,
+  .totals-box,
+  .convert-box {
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  input,
+  select {
+    border: none;
+    padding: 2px 0;
+    appearance: none;
+  }
+}
 </style>
-
 </head>
 
 <body>
-
 <div class="calculator">
 
   <h1>BIG BROTHER</h1>
 
   <div class="top-bar">
-
-    <div class="invoice-title">
-      Invoice Calculator
-    </div>
-
-    <select id="currency">
-
-      <option value="KHR">
-        KHR
-      </option>
-
-      <option value="USD">
-        USD
-      </option>
-
+    <div class="invoice-title">Invoice</div>
+    <select id="currency" aria-label="Currency">
+      <option value="USD">USD</option>
+      <option value="KHR">KHR</option>
     </select>
-
   </div>
 
+  <!-- INVOICE INFORMATION -->
+  <div class="card">
+    <div class="section-title">Invoice Information</div>
 
-  <!-- EXCHANGE RATE -->
+    <div class="grid-2">
+      <div>
+        <label for="invoiceNumber">Invoice No.</label>
+        <input type="text" id="invoiceNumber" value="INV-0001">
+      </div>
 
-  <div class="exchange-box">
-
-    <div class="exchange-title">
-      Exchange Rate
+      <div>
+        <label for="invoiceDate">Date</label>
+        <input type="date" id="invoiceDate">
+      </div>
     </div>
 
+    <div class="customer-field">
+      <label for="customerName">Customer Name</label>
+      <input type="text" id="customerName" placeholder="Enter customer name">
+    </div>
+
+    <div class="grid-2 customer-field">
+      <div>
+        <label for="customerPhone">Phone</label>
+        <input type="tel" id="customerPhone" placeholder="Enter phone number">
+      </div>
+
+      <div>
+        <label for="customerAddress">Address</label>
+        <input type="text" id="customerAddress" placeholder="Enter address">
+      </div>
+    </div>
+  </div>
+
+  <!-- EXCHANGE RATE -->
+  <div class="card">
+    <div class="section-title">Exchange Rate</div>
+
     <div class="exchange-row">
-
       <span>1 USD =</span>
-
       <input
         id="exchangeRate"
         class="exchange-input"
@@ -425,145 +381,102 @@ input {
         value="4060"
         inputmode="decimal"
       >
-
       <span>KHR</span>
-
     </div>
-
   </div>
-
 
   <!-- ADD PRODUCT -->
-
-  <button
-    class="add-btn"
-    onclick="showProductSelector()"
-  >
-
+  <button class="add-btn no-print" onclick="showProductSelector()">
     ＋ Add Product
-
   </button>
 
-
-  <!-- PRODUCT SELECTOR -->
-
-  <div
-    id="productSelector"
-    class="product-selector"
-  >
-
-    <select
-      id="productChoice"
-      onchange="addSelectedProduct()"
-    >
-
-      <option value="">
-        Select Product
-      </option>
-
+  <div id="productSelector" class="product-selector no-print">
+    <select id="productChoice" onchange="addSelectedProduct()">
+      <option value="">Select Product</option>
     </select>
-
   </div>
-
 
   <!-- PRODUCTS -->
+  <div id="productList" class="product-list"></div>
 
-  <div
-    id="productList"
-    class="product-list"
-  ></div>
+  <!-- TOTALS -->
+  <div class="totals-box">
 
-
-  <!-- GRAND TOTAL -->
-
- <div class="grand-total">
-  <span>Grand Total</span>
-  <span id="grandTotal">$0.00</span>
-</div>
-
-<div class="payment-row">
-
-  <span>Amount Paid</span>
-
-  <input
-    type="number"
-    id="amountPaid"
-    min="0"
-    value="0"
-    step="0.01"
-    oninput="calculate()"
-  >
-
-</div>
-
-<div class="change-row">
-
-  <span>Change</span>
-
-  <span id="changeAmount">$0.00</span>
-
-</div>
-
-</div>
-
-  <div class="discount-row">
-    <div>
-      <span>Discount</span>
+    <div class="total-row">
+      <span>Subtotal</span>
+      <span id="subtotal">$0.00</span>
     </div>
 
-    <input
-      type="number"
-      id="discount"
-      min="0"
-      value="0"
-      step="0.01"
-      oninput="calculate()"
-    >
+    <div class="total-row discount-row">
+      <span>Discount</span>
+      <input
+        type="number"
+        id="discount"
+        min="0"
+        value="0"
+        step="0.01"
+        inputmode="decimal"
+        oninput="calculate()"
+      >
+    </div>
+
+    <div class="total-row grand-total">
+      <span>Grand Total</span>
+      <span id="grandTotal">$0.00</span>
+    </div>
+
+    <div class="total-row payment-row">
+      <span>Amount Paid</span>
+      <input
+        type="number"
+        id="amountPaid"
+        min="0"
+        value="0"
+        step="0.01"
+        inputmode="decimal"
+        oninput="calculate()"
+      >
+    </div>
+
+    <div class="total-row change-row">
+      <span>Change</span>
+      <span id="changeAmount">$0.00</span>
+    </div>
+
   </div>
-
-  <div class="grand-total">
-    <span>Grand Total</span>
-    <span id="grandTotal">$0.00</span>
-  </div>
-
-</div>
-
 
   <!-- EXCHANGE CALCULATION -->
-
   <div class="convert-box">
+    <div class="section-title">Exchange Calculation</div>
 
-    <div class="convert-title">
-      Exchange Calculation
+    <div id="convertResult" class="convert-result">
+      $0.00 = ៛0
     </div>
-
-    <div
-      id="convertResult"
-      class="convert-result"
-    >
-      ៛0 = $0.00
-    </div>
-
   </div>
 
+  <!-- ACTIONS -->
+  <div class="actions no-print">
+    <button class="action-btn print-btn" onclick="printInvoice()">
+      🖨 Print / Save PDF
+    </button>
 
-  <!-- CLEAR -->
+    <button class="action-btn share-btn" onclick="shareInvoice()">
+      📲 Share Invoice
+    </button>
+  </div>
 
-  <button
-    class="clear-btn"
-    onclick="clearAll()"
-  >
-
+  <button class="clear-btn no-print" onclick="clearAll()">
     Clear
-
   </button>
 
 </div>
 
-
 <script>
-function setTodayDate() {
+/* ==========================================
+   TODAY'S DATE
+========================================== */
 
+function setTodayDate() {
   const today = new Date();
 
   const year = today.getFullYear();
@@ -576,8 +489,10 @@ function setTodayDate() {
 
 setTodayDate();
 
+
 /* ==========================================
    PRODUCT LIST
+   Default prices are USD.
 ========================================== */
 
 const products = [
@@ -586,19 +501,55 @@ const products = [
   { name: "Kirisu Yogurt 135g", usdPrice: 0.66 },
   { name: "Farm Fresh 2L", usdPrice: 4.10 },
   { name: "Ausfresh 2L", usdPrice: 4.30 },
-  { name: "VP Milk 2L", usdPrice: 3.80 },
   { name: "Greenfield 1.90L", usdPrice: 3.80 },
   { name: "Greenfield 1L", usdPrice: 2.00 },
+  { name: "VP Milk 2L", usdPrice: 3.80 },
   { name: "O'More 2L", usdPrice: 4.20 },
   { name: "Champei Milk 220ml", usdPrice: 0.50 }
 ];
 
+let selectedProducts = [];
+
 
 /* ==========================================
-   SELECTED PRODUCTS
+   HELPERS
 ========================================== */
 
-let selectedProducts = [];
+function getCurrency() {
+  return document.getElementById("currency").value;
+}
+
+function getExchangeRate() {
+  return Number(document.getElementById("exchangeRate").value) || 0;
+}
+
+function usdToSelected(usdValue, currency) {
+  if (currency === "KHR") {
+    return usdValue * getExchangeRate();
+  }
+
+  return usdValue;
+}
+
+function selectedToUsd(value, currency) {
+  if (currency === "KHR") {
+    const rate = getExchangeRate();
+    return rate > 0 ? value / rate : 0;
+  }
+
+  return value;
+}
+
+function formatMoney(value, currency) {
+  if (currency === "USD") {
+    return "$" + Number(value).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  return "៛" + Math.round(Number(value)).toLocaleString("en-US");
+}
 
 
 /* ==========================================
@@ -606,40 +557,27 @@ let selectedProducts = [];
 ========================================== */
 
 function showProductSelector() {
-
-  const selector =
-    document.getElementById("productSelector");
-
-  const choice =
-    document.getElementById("productChoice");
+  const selector = document.getElementById("productSelector");
+  const choice = document.getElementById("productChoice");
 
   choice.innerHTML = `
     <option value="">Select Product</option>
   `;
 
-  const availableProducts =
-    products.filter(product =>
-      !selectedProducts.includes(product.name)
-    );
+  const availableProducts = products.filter(product =>
+    !selectedProducts.some(item => item.id === product.name)
+  );
 
   if (availableProducts.length === 0) {
-
     alert("All products have already been added.");
-
     return;
   }
 
   availableProducts.forEach(product => {
-
-    const option =
-      document.createElement("option");
-
+    const option = document.createElement("option");
     option.value = product.name;
-
     option.textContent = product.name;
-
     choice.appendChild(option);
-
   });
 
   selector.style.display = "block";
@@ -651,35 +589,24 @@ function showProductSelector() {
 ========================================== */
 
 function addSelectedProduct() {
-
-  const choice =
-    document.getElementById("productChoice");
-
+  const choice = document.getElementById("productChoice");
   const productName = choice.value;
 
-  if (!productName) {
-    return;
-  }
+  if (!productName) return;
 
-  const product =
-    products.find(p => p.name === productName);
+  const product = products.find(p => p.name === productName);
 
-  if (!product) {
-    return;
-  }
+  if (!product) return;
 
-  selectedProducts.push(product.name);
+  selectedProducts.push({
+    id: product.name,
+    usdPrice: product.usdPrice
+  });
 
-  createProduct(
-    product.name,
-    product.usdPrice
-  );
+  createProduct(product.name, product.usdPrice);
 
   choice.value = "";
-
-  document
-    .getElementById("productSelector")
-    .style.display = "none";
+  document.getElementById("productSelector").style.display = "none";
 
   calculate();
 }
@@ -689,43 +616,31 @@ function addSelectedProduct() {
    CREATE PRODUCT
 ========================================== */
 
-function createProduct(name, defaultPrice) {
-
-  const container =
-    document.getElementById("productList");
-
-  const div =
-    document.createElement("div");
+function createProduct(name, defaultUsdPrice) {
+  const container = document.getElementById("productList");
+  const div = document.createElement("div");
 
   div.className = "product";
-
   div.dataset.product = name;
+  div.dataset.usdPrice = defaultUsdPrice;
+
+  const currency = getCurrency();
+  const displayPrice = usdToSelected(defaultUsdPrice, currency);
 
   div.innerHTML = `
-
     <div class="product-header">
-
-      <div class="product-name">
-        ${name}
-      </div>
+      <div class="product-name">${escapeHtml(name)}</div>
 
       <button
-        class="remove-btn"
+        class="remove-btn no-print"
         onclick="removeProduct(this)"
-      >
-        ×
-      </button>
-
+      >×</button>
     </div>
 
     <div class="inputs">
 
       <div>
-
-        <span class="input-label">
-          QTY
-        </span>
-
+        <span class="input-label">QTY</span>
         <input
           type="number"
           min="0"
@@ -733,42 +648,54 @@ function createProduct(name, defaultPrice) {
           inputmode="decimal"
           oninput="calculate()"
         >
-
       </div>
 
       <div>
-
-        <span class="input-label">
-          PRICE
-        </span>
-
+        <span class="input-label">PRICE</span>
         <input
           type="number"
           min="0"
-          value="${defaultPrice}"
+          value="${displayPrice}"
+          step="${currency === "KHR" ? "1" : "0.01"}"
           inputmode="decimal"
-          step="0.01"
-          oninput="calculate()"
+          oninput="priceChanged(this)"
         >
-
       </div>
 
     </div>
 
     <div class="product-total">
-
       Total:
-
-      <span class="line-total">
-        $0.00
-      </span>
-
+      <span class="line-total">${formatMoney(0, currency)}</span>
     </div>
-
   `;
 
   container.appendChild(div);
+}
 
+
+/* ==========================================
+   PRICE CHANGE
+   User can freely adjust the price.
+========================================== */
+
+function priceChanged(input) {
+  const product = input.closest(".product");
+  const currency = getCurrency();
+  const enteredPrice = Number(input.value) || 0;
+
+  product.dataset.usdPrice =
+    selectedToUsd(enteredPrice, currency);
+
+  const item = selectedProducts.find(
+    p => p.id === product.dataset.product
+  );
+
+  if (item) {
+    item.usdPrice = Number(product.dataset.usdPrice);
+  }
+
+  calculate();
 }
 
 
@@ -777,22 +704,15 @@ function createProduct(name, defaultPrice) {
 ========================================== */
 
 function removeProduct(button) {
-
-  const product =
-    button.closest(".product");
-
-  const name =
-    product.dataset.product;
+  const product = button.closest(".product");
+  const name = product.dataset.product;
 
   selectedProducts =
-    selectedProducts.filter(
-      item => item !== name
-    );
+    selectedProducts.filter(item => item.id !== name);
 
   product.remove();
 
   calculate();
-
 }
 
 
@@ -801,197 +721,179 @@ function removeProduct(button) {
 ========================================== */
 
 function calculate() {
-
   let total = 0;
+  const currency = getCurrency();
 
-  const currency =
-    document.getElementById(
-      "currency"
-    ).value;
+  document.querySelectorAll(".product").forEach(product => {
 
+    const inputs = product.querySelectorAll("input");
 
-  document
-    .querySelectorAll(".product")
-    .forEach(product => {
+    const qty = Number(inputs[0].value) || 0;
+    const price = Number(inputs[1].value) || 0;
 
-      const inputs =
-        product.querySelectorAll("input");
+    const lineTotal = qty * price;
+    total += lineTotal;
 
-      const qty =
-        Number(inputs[0].value) || 0;
-
-      const price =
-        Number(inputs[1].value) || 0;
-
-      const lineTotal =
-        qty * price;
-
-      total += lineTotal;
+    product.querySelector(".line-total").textContent =
+      formatMoney(lineTotal, currency);
+  });
 
 
-      product
-        .querySelector(".line-total")
-        .textContent =
-          formatMoney(
-            lineTotal,
-            currency
-          );
+  /* SUBTOTAL */
 
-    });
+  document.getElementById("subtotal").textContent =
+    formatMoney(total, currency);
 
 
-/* SUBTOTAL + DISCOUNT + GRAND TOTAL */
+  /* DISCOUNT */
 
-const discount =
-  Number(document.getElementById("discount").value) || 0;
+  const discount =
+    Number(document.getElementById("discount").value) || 0;
 
-const finalTotal =
-  Math.max(0, total - discount);
+  const finalTotal =
+    Math.max(0, total - discount);
 
-document.getElementById("subtotal").textContent =
-  formatMoney(total, currency);
 
-document.getElementById("grandTotal").textContent =
-  formatMoney(finalTotal, currency);
+  /* GRAND TOTAL */
+
+  document.getElementById("grandTotal").textContent =
+    formatMoney(finalTotal, currency);
+
+
+  /* AMOUNT PAID + CHANGE */
+
+  const amountPaid =
+    Number(document.getElementById("amountPaid").value) || 0;
+
+  const change =
+    Math.max(0, amountPaid - finalTotal);
+
+  document.getElementById("changeAmount").textContent =
+    formatMoney(change, currency);
+
 
   /* EXCHANGE */
 
   calculateExchange(finalTotal, currency);
-
-}
-
-
-/* ==========================================
-   EXCHANGE CALCULATION
-========================================== */
-
-function calculateExchange(
-  total,
-  currency
-) {
-
-  const rate =
-    Number(
-      document.getElementById(
-        "exchangeRate"
-      ).value
-    ) || 0;
-
-
-  const result =
-    document.getElementById(
-      "convertResult"
-    );
-
-
-  if (rate <= 0) {
-
-    result.textContent =
-      "Enter exchange rate";
-
-    return;
-
-  }
-
-
-  if (currency === "USD") {
-
-    const khr =
-      total * rate;
-
-    result.textContent =
-      "$" +
-      total.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      )
-      +
-      " = ៛" +
-      Math.round(khr)
-        .toLocaleString();
-
-  }
-
-
-  else {
-
-    const usd =
-      total / rate;
-
-    result.textContent =
-      "៛" +
-      Math.round(total)
-        .toLocaleString()
-      +
-      " = $" +
-      usd.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
-
-  }
-
-}
-
-
-/* ==========================================
-   FORMAT MONEY
-========================================== */
-
-function formatMoney(
-  value,
-  currency
-) {
-
-  if (currency === "USD") {
-
-    return "$" +
-      value.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
-
-  }
-
-
-  return "៛" +
-    Math.round(value)
-      .toLocaleString();
-
 }
 
 
 /* ==========================================
    CURRENCY CHANGE
+   Convert existing product prices so that
+   the actual price remains the same.
 ========================================== */
 
-document
-  .getElementById("currency")
-  .addEventListener(
-    "change",
-    calculate
-  );
+function changeCurrency() {
+  const currency = getCurrency();
+  const rate = getExchangeRate();
+
+  if (currency === "KHR" && rate <= 0) {
+    alert("Please enter a valid exchange rate.");
+    document.getElementById("currency").value = "USD";
+    return;
+  }
+
+  document.querySelectorAll(".product").forEach(product => {
+    const inputs = product.querySelectorAll("input");
+
+    const usdPrice = Number(product.dataset.usdPrice) || 0;
+
+    inputs[1].value =
+      usdToSelected(usdPrice, currency);
+
+    inputs[1].step =
+      currency === "KHR" ? "1" : "0.01";
+  });
+
+  calculate();
+}
 
 
 /* ==========================================
-   EXCHANGE RATE CHANGE
+   EXCHANGE CALCULATION
+   Always shows BOTH currencies.
 ========================================== */
 
-document
-  .getElementById("exchangeRate")
-  .addEventListener(
-    "input",
-    calculate
-  );
+function calculateExchange(finalTotal, currency) {
+  const rate = getExchangeRate();
+  const result = document.getElementById("convertResult");
+
+  if (rate <= 0) {
+    result.textContent = "Enter exchange rate";
+    return;
+  }
+
+  let usd;
+  let khr;
+
+  if (currency === "USD") {
+    usd = finalTotal;
+    khr = finalTotal * rate;
+  } else {
+    khr = finalTotal;
+    usd = finalTotal / rate;
+  }
+
+  result.innerHTML =
+    `<div>${formatMoney(usd, "USD")}</div>` +
+    `<div>=</div>` +
+    `<div>${formatMoney(khr, "KHR")}</div>`;
+}
+
+
+/* ==========================================
+   PRINT
+========================================== */
+
+function printInvoice() {
+  calculate();
+  window.print();
+}
+
+
+/* ==========================================
+   SHARE
+========================================== */
+
+function shareInvoice() {
+  calculate();
+
+  const invoiceNo =
+    document.getElementById("invoiceNumber").value || "Invoice";
+
+  const customer =
+    document.getElementById("customerName").value || "Customer";
+
+  const date =
+    document.getElementById("invoiceDate").value || "";
+
+  const total =
+    document.getElementById("grandTotal").textContent;
+
+  const message =
+`BIG BROTHER INVOICE
+Invoice No.: ${invoiceNo}
+Date: ${date}
+Customer: ${customer}
+
+Grand Total: ${total}
+
+Thank you for your business!`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: "BIG BROTHER Invoice",
+      text: message
+    }).catch(() => {});
+  } else {
+    const whatsappUrl =
+      "https://wa.me/?text=" +
+      encodeURIComponent(message);
+
+    window.open(whatsappUrl, "_blank");
+  }
+}
 
 
 /* ==========================================
@@ -999,25 +901,53 @@ document
 ========================================== */
 
 function clearAll() {
+  if (!confirm("Clear this invoice?")) return;
 
   selectedProducts = [];
 
-  document
-    .getElementById(
-      "productList"
-    )
-    .innerHTML = "";
+  document.getElementById("productList").innerHTML = "";
+  document.getElementById("productSelector").style.display = "none";
 
-  document
-    .getElementById(
-      "productSelector"
-    )
-    .style.display = "none";
+  document.getElementById("discount").value = 0;
+  document.getElementById("amountPaid").value = 0;
 
+  document.getElementById("invoiceNumber").value = "INV-0001";
+  document.getElementById("customerName").value = "";
+  document.getElementById("customerPhone").value = "";
+  document.getElementById("customerAddress").value = "";
+
+  setTodayDate();
   calculate();
-
 }
 
+
+/* ==========================================
+   SAFE TEXT
+========================================== */
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+
+/* ==========================================
+   EVENTS
+========================================== */
+
+document.getElementById("currency")
+  .addEventListener("change", changeCurrency);
+
+document.getElementById("exchangeRate")
+  .addEventListener("input", function() {
+    changeCurrency();
+  });
+
+
+/* INITIAL CALCULATION */
+
+calculate();
 </script>
 
 </body>
