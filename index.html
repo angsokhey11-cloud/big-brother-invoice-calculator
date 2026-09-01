@@ -1961,9 +1961,15 @@ async function shareInvoice(event) {
       document.getElementById("customerName").value.trim() ||
       "Customer";
 
+    const safeInvoice =
+      invoiceNo
+        .replace(/[^a-z0-9_-]+/gi, "-")
+        .replace(/^-+|-+$/g, "") ||
+      "Invoice";
+
     const file = new File(
       [blob],
-      `BIG-BROTHER-${invoiceNo.replace(/[^a-z0-9_-]+/gi, "-")}.png`,
+      `BIG-BROTHER-${safeInvoice}.png`,
       { type: "image/png" }
     );
 
@@ -1971,22 +1977,77 @@ async function shareInvoice(event) {
       `BIG BROTHER Invoice ${invoiceNo}\nCustomer: ${customer}`;
 
     /*
-     * MOBILE:
-     * Use the phone's native share sheet first.
-     * Telegram will appear as an app when Telegram is installed.
+     * IMPORTANT:
+     * On phones we NEVER open Telegram Web.
      *
-     * We intentionally do NOT send mobile users to Telegram Web.
+     * The only reliable browser method for sending an actual
+     * image into the Telegram APP is the phone's native
+     * Web Share API.
+     *
+     * Telegram must be installed on the phone. The phone's
+     * share sheet will show Telegram as an app destination.
      */
-    const isMobile =
-      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    const mobileDevice =
+      /Android|iPhone|iPad|iPod|Mobile/i.test(
+        navigator.userAgent
+      );
 
-    if (isMobile && navigator.share) {
+    const touchDevice =
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0;
+
+    const isMobile =
+      mobileDevice || touchDevice;
+
+    if (isMobile) {
+
+      if (!navigator.share) {
+        alert(
+          "Your browser does not support sharing invoice pictures.\n\n" +
+          "Please open the invoice in Google Chrome or Safari, " +
+          "with the Telegram app installed."
+        );
+        return;
+      }
+
+      /*
+       * First try sharing ONLY the image.
+       * This is the most compatible format for Telegram.
+       */
       try {
-        /*
-         * Some mobile browsers incorrectly report canShare().
-         * Try navigator.share() directly so Telegram can receive
-         * the actual invoice image through the phone's share system.
-         */
+        if (
+          navigator.canShare &&
+          !navigator.canShare({ files: [file] })
+        ) {
+          throw new Error("This browser cannot share image files.");
+        }
+
+        await navigator.share({
+          files: [file],
+          title: "BIG BROTHER Invoice"
+        });
+
+        return;
+
+      } catch (imageShareError) {
+
+        if (
+          imageShareError?.name === "AbortError"
+        ) {
+          return;
+        }
+
+        console.warn(
+          "Image share failed:",
+          imageShareError
+        );
+      }
+
+      /*
+       * Some Android browsers support files only when text is
+       * included as well. Try the combined version.
+       */
+      try {
         await navigator.share({
           title: "BIG BROTHER Invoice",
           text: text,
@@ -1994,73 +2055,71 @@ async function shareInvoice(event) {
         });
 
         return;
-      } catch (shareError) {
-        /*
-         * User cancelled the share sheet.
-         */
-        if (shareError?.name === "AbortError") {
+
+      } catch (combinedShareError) {
+
+        if (
+          combinedShareError?.name === "AbortError"
+        ) {
+          return;
+        }
+
+        console.warn(
+          "Combined image share failed:",
+          combinedShareError
+        );
+      }
+
+      /*
+       * Last mobile fallback:
+       * open the PHONE share sheet with invoice text.
+       *
+       * We deliberately do NOT use:
+       * https://web.telegram.org/
+       * or Telegram Web on mobile.
+       *
+       * If the browser cannot share files, it is not possible
+       * for a normal webpage to force a local image attachment
+       * into Telegram using a tg:// URL.
+       */
+      try {
+        await navigator.share({
+          title: "BIG BROTHER Invoice",
+          text: text
+        });
+
+        return;
+
+      } catch (textShareError) {
+
+        if (
+          textShareError?.name === "AbortError"
+        ) {
           return;
         }
 
         console.warn(
           "Native mobile share failed:",
-          shareError
+          textShareError
         );
-      }
 
-      /*
-       * If the browser cannot share the image directly,
-       * save the invoice first and then try to launch
-       * the Telegram APP using its tg:// deep link.
-       */
-      try {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-
-        link.href = url;
-        link.download =
-          `BIG-BROTHER-${invoiceNo.replace(/[^a-z0-9_-]+/gi, "-")}.png`;
-
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-
-        const telegramText =
-          encodeURIComponent(
-            `BIG BROTHER Invoice ${invoiceNo}\nCustomer: ${customer}`
-          );
-
-        /*
-         * This opens the Telegram APP when it is installed.
-         * The saved invoice image can then be attached from
-         * the phone's Photos/Files.
-         */
-        window.location.href =
-          `tg://msg?text=${telegramText}`;
-
-        setTimeout(() => {
-          alert(
-            "The invoice was saved to your phone. " +
-            "If Telegram did not open, please install Telegram " +
-            "or open it manually and attach the saved invoice image."
-          );
-        }, 1200);
+        alert(
+          "This browser cannot send the invoice picture directly.\n\n" +
+          "Please open this invoice in Google Chrome or Safari " +
+          "and make sure Telegram is installed."
+        );
 
         return;
-      } catch (fallbackError) {
-        console.warn(
-          "Telegram app launch failed:",
-          fallbackError
-        );
       }
     }
 
     /*
-     * DESKTOP:
-     * Copy the actual invoice image to the clipboard,
-     * then open Telegram Web.
+     * DESKTOP ONLY
+     *
+     * Desktop browsers cannot normally hand a local image
+     * directly to the Telegram desktop app from a website.
+     * Copy the invoice picture to the clipboard and open
+     * Telegram Web so Ctrl+V can paste the image.
      */
     if (
       navigator.clipboard &&
@@ -2080,17 +2139,22 @@ async function shareInvoice(event) {
         );
 
         alert(
-          "Invoice picture copied. In Telegram, open the chat and press Ctrl+V to paste it."
+          "Invoice picture copied.\n\n" +
+          "Open the customer chat in Telegram and press Ctrl+V."
         );
 
         return;
+
       } catch (copyError) {
-        console.warn(copyError);
+        console.warn(
+          "Clipboard image copy failed:",
+          copyError
+        );
       }
     }
 
     /*
-     * Final desktop fallback.
+     * Desktop final fallback.
      */
     await saveInvoiceImage();
 
@@ -2101,16 +2165,23 @@ async function shareInvoice(event) {
     );
 
   } catch (error) {
-    if (error?.name === "AbortError") return;
 
-    console.error(error);
+    if (error?.name === "AbortError") {
+      return;
+    }
+
+    console.error(
+      "Telegram share failed:",
+      error
+    );
 
     alert(
-      "Could not share the invoice picture. " +
-      "Try Save to Phone first."
+      "Could not share the invoice picture.\n\n" +
+      "Please try again."
     );
 
   } finally {
+
     if (button) {
       button.disabled = false;
       button.innerHTML = oldText;
