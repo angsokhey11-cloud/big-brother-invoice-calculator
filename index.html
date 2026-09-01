@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
 <title>BIG BROTHER</title>
 
+
 <style>
-* { box-sizing: border-box; }
+
+* {
+  box-sizing: border-box;
+}
+
 
 body {
   margin: 0;
@@ -16,11 +27,13 @@ body {
   color: #172033;
 }
 
+
 .calculator {
   width: 100%;
   max-width: 560px;
   margin: auto;
 }
+
 
 h1 {
   text-align: center;
@@ -30,6 +43,7 @@ h1 {
   letter-spacing: 1px;
 }
 
+
 .card {
   background: #fff;
   border: 1px solid #ddd;
@@ -38,11 +52,13 @@ h1 {
   margin-bottom: 12px;
 }
 
+
 .section-title {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 12px;
 }
+
 
 .top-bar {
   display: flex;
@@ -51,10 +67,12 @@ h1 {
   margin-bottom: 12px;
 }
 
+
 .invoice-title {
   font-size: 17px;
   font-weight: bold;
 }
+
 
 select,
 input {
@@ -67,16 +85,19 @@ input {
   color: #172033;
 }
 
+
 select {
   width: auto;
   min-width: 90px;
 }
+
 
 label {
   display: block;
   font-size: 13px;
   margin-bottom: 5px;
 }
+
 
 .customer-status {
   font-size: 12px;
@@ -85,15 +106,18 @@ label {
   min-height: 15px;
 }
 
+
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
+
 .customer-field {
   margin-top: 10px;
 }
+
 
 .exchange-row {
   display: flex;
@@ -101,14 +125,17 @@ label {
   gap: 8px;
 }
 
+
 .exchange-row span {
   white-space: nowrap;
 }
+
 
 .exchange-input {
   flex: 1;
   min-width: 0;
 }
+
 
 .add-btn,
 .action-btn {
@@ -121,10 +148,12 @@ label {
   cursor: pointer;
 }
 
+
 .add-btn {
   background: #5b78f6;
   color: white;
 }
+
 
 .product-selector {
   margin-top: 10px;
@@ -134,6 +163,7 @@ label {
   padding: 12px;
   display: none;
 }
+
 
 .product-selector button {
   width: 100%;
@@ -145,6 +175,7 @@ label {
   cursor: pointer;
 }
 
+
 .product {
   background: white;
   border: 1px solid #ddd;
@@ -153,6 +184,7 @@ label {
   margin-bottom: 12px;
 }
 
+
 .product-header {
   display: flex;
   justify-content: space-between;
@@ -160,10 +192,12 @@ label {
   gap: 10px;
 }
 
+
 .product-name {
   font-weight: bold;
   font-size: 16px;
 }
+
 
 .remove-btn {
   border: none;
@@ -175,6 +209,7 @@ label {
   flex-shrink: 0;
 }
 
+
 .inputs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -182,11 +217,13 @@ label {
   margin-top: 12px;
 }
 
+
 .product-total {
   text-align: right;
   font-weight: bold;
   margin-top: 12px;
 }
+
 
 .totals-box {
   background: white;
@@ -194,6 +231,7 @@ label {
   padding: 15px;
   margin-top: 15px;
 }
+
 
 .total-row {
   display: flex;
@@ -204,10 +242,12 @@ label {
   font-size: 16px;
 }
 
+
 .discount-row input {
   max-width: 150px;
   text-align: right;
 }
+
 
 .grand-total {
   border-top: 1px solid #ddd;
@@ -217,14 +257,17 @@ label {
   font-weight: bold;
 }
 
+
 .payment-row input {
   max-width: 170px;
   text-align: right;
 }
 
+
 .change-row {
   font-weight: bold;
 }
+
 
 .convert-box {
   background: white;
@@ -233,6 +276,7 @@ label {
   padding: 15px;
   margin-top: 12px;
 }
+
 
 .convert-result {
   font-size: 17px;
@@ -244,6 +288,7 @@ label {
   line-height: 1.6;
 }
 
+
 .actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -251,20 +296,24 @@ label {
   margin-top: 12px;
 }
 
+
 .print-btn {
   background: #111;
   color: white;
 }
+
 
 .share-btn {
   background: #25d366;
   color: white;
 }
 
+
 .save-btn {
   background: #173b70;
   color: white;
 }
+
 
 .clear-btn {
   width: 100%;
@@ -277,105 +326,12 @@ label {
   cursor: pointer;
 }
 
-@media (max-width: 450px) {
-  body { padding: 8px; }
-
-  h1 {
-    font-size: 23px;
-    margin-bottom: 14px;
-  }
-
-  /* Keep invoice number + date together on mobile */
-  .invoice-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .invoice-grid input {
-    font-size: 14px;
-    padding: 9px;
-  }
-
-  .inputs {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .actions {
-    grid-template-columns: 1fr;
-  }
-
-  .top-bar {
-    gap: 8px;
-  }
-
-  .invoice-title {
-    font-size: 16px;
-  }
-
-  .card,
-  .product,
-  .totals-box,
-  .convert-box {
-    padding: 12px;
-  }
-}
-
-
-@media print {
-  #invoiceDate {
-    color: transparent;
-    position: relative;
-  }
-
-  #invoiceDate::after {
-    content: attr(data-print-date);
-    color: #111;
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-}
-
-@media print {
-  body {
-    background: white;
-    padding: 0;
-    color: #111;
-  }
-
-  .calculator {
-    max-width: 100%;
-  }
-
-  .no-print,
-  .add-btn,
-  .product-selector,
-  .remove-btn,
-  .actions,
-  .clear-btn {
-    display: none !important;
-  }
-
-  .card,
-  .product,
-  .totals-box,
-  .convert-box {
-    border: 1px solid #ccc;
-    break-inside: avoid;
-  }
-
-  input,
-  select {
-    border: none;
-    padding: 2px 0;
-    appearance: none;
-  }
-}
 
 .date-input-wrap {
   position: relative;
   width: 100%;
 }
+
 
 #invoiceDateDisplay {
   width: 100%;
@@ -385,9 +341,6 @@ label {
   z-index: 1;
 }
 
-#invoiceDate {
-  z-index: 2;
-}
 
 #invoiceDate {
   position: absolute;
@@ -399,38 +352,187 @@ label {
   cursor: pointer;
   border: 0;
   padding: 0;
+  z-index: 2;
+}
+
+
+@media (max-width: 450px) {
+
+  body {
+    padding: 8px;
+  }
+
+
+  h1 {
+    font-size: 23px;
+    margin-bottom: 14px;
+  }
+
+
+  .invoice-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+
+  .invoice-grid input {
+    font-size: 14px;
+    padding: 9px;
+  }
+
+
+  .inputs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+
+  .top-bar {
+    gap: 8px;
+  }
+
+
+  .invoice-title {
+    font-size: 16px;
+  }
+
+
+  .card,
+  .product,
+  .totals-box,
+  .convert-box {
+    padding: 12px;
+  }
+
+}
+
+
+@media print {
+
+  body {
+    background: white;
+    padding: 0;
+    color: #111;
+  }
+
+
+  .calculator {
+    max-width: 100%;
+  }
+
+
+  .no-print,
+  .add-btn,
+  .product-selector,
+  .remove-btn,
+  .actions,
+  .clear-btn {
+    display: none !important;
+  }
+
+
+  .card,
+  .product,
+  .totals-box,
+  .convert-box {
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+
+  input,
+  select {
+    border: none;
+    padding: 2px 0;
+    appearance: none;
+  }
+
+
+  #invoiceDate {
+    display: none;
+  }
+
+
+  #invoiceDateDisplay {
+    display: block;
+    border: none;
+    padding: 2px 0;
+  }
+
 }
 
 </style>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 </head>
 
+
 <body>
+
+
 <div class="calculator">
+
 
   <h1>BIG BROTHER</h1>
 
+
   <div class="top-bar">
-    <div class="invoice-title">Invoice</div>
-    <select id="currency" aria-label="Currency">
+
+    <div class="invoice-title">
+      Invoice
+    </div>
+
+    <select
+      id="currency"
+      aria-label="Currency"
+    >
       <option value="USD">USD</option>
       <option value="KHR">KHR</option>
     </select>
+
   </div>
 
+
   <!-- INVOICE INFORMATION -->
+
   <div class="card">
-    <div class="section-title">Invoice Information</div>
+
+    <div class="section-title">
+      Invoice Information
+    </div>
+
 
     <div class="grid-2 invoice-grid">
-      <div>
-        <label for="invoiceNumber">Invoice No.</label>
-        <input type="text" id="invoiceNumber" value="INV-0001">
-      </div>
 
       <div>
-        <label for="invoiceDateDisplay">Date</label>
+
+        <label for="invoiceNumber">
+          Invoice No.
+        </label>
+
+        <input
+          type="text"
+          id="invoiceNumber"
+          value="INV-0001"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="invoiceDateDisplay">
+          Date
+        </label>
+
         <div class="date-input-wrap">
+
           <input
             type="text"
             id="invoiceDateDisplay"
@@ -438,6 +540,7 @@ label {
             placeholder="01-Sep-2026"
             readonly
           >
+
           <input
             type="date"
             id="invoiceDate"
@@ -445,12 +548,20 @@ label {
             aria-hidden="true"
             tabindex="-1"
           >
+
         </div>
+
       </div>
+
     </div>
 
+
     <div class="customer-field">
-      <label for="customerName">Customer Name</label>
+
+      <label for="customerName">
+        Customer Name
+      </label>
+
       <input
         type="text"
         id="customerName"
@@ -458,47 +569,114 @@ label {
         placeholder="Type or select customer"
         autocomplete="off"
       >
+
       <datalist id="customerOptions"></datalist>
-      <div id="customerStatus" class="customer-status">
+
+      <div
+        id="customerStatus"
+        class="customer-status"
+      >
         Loading customers...
       </div>
+
     </div>
 
+
     <div class="grid-2 customer-field">
-      <div>
-        <label for="customerPhone">Phone</label>
-        <input type="tel" id="customerPhone" placeholder="Enter phone number">
-      </div>
 
       <div>
-        <label for="customerAddress">Address</label>
-        <input type="text" id="customerAddress" placeholder="Enter address">
+
+        <label for="customerPhone">
+          Phone
+        </label>
+
+        <input
+          type="tel"
+          id="customerPhone"
+          placeholder="Enter phone number"
+        >
+
       </div>
+
+
+      <div>
+
+        <label for="customerAddress">
+          Address
+        </label>
+
+        <input
+          type="text"
+          id="customerAddress"
+          placeholder="Enter address"
+        >
+
+      </div>
+
     </div>
 
+
     <div class="grid-2 customer-field">
-      <div>
-        <label for="salesName">Sale Name</label>
-        <input type="text" id="salesName" placeholder="Enter salesperson">
-      </div>
 
       <div>
-        <label for="paymentMethod">Payment Method</label>
+
+        <label for="salesName">
+          Sale Name
+        </label>
+
+        <input
+          type="text"
+          id="salesName"
+          placeholder="Enter salesperson"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="paymentMethod">
+          Payment Method
+        </label>
+
         <select id="paymentMethod">
-          <option value="Cash">Cash</option>
-          <option value="Bank">Bank</option>
-          <option value="Credit">Credit</option>
+
+          <option value="Cash">
+            Cash
+          </option>
+
+          <option value="Bank">
+            Bank
+          </option>
+
+          <option value="Credit">
+            Credit
+          </option>
+
         </select>
+
       </div>
+
     </div>
+
   </div>
 
+
   <!-- EXCHANGE RATE -->
+
   <div class="card">
-    <div class="section-title">Exchange Rate</div>
+
+    <div class="section-title">
+      Exchange Rate
+    </div>
+
 
     <div class="exchange-row">
-      <span>1 USD =</span>
+
+      <span>
+        1 USD =
+      </span>
+
       <input
         id="exchangeRate"
         class="exchange-input"
@@ -507,34 +685,75 @@ label {
         value="4060"
         inputmode="decimal"
       >
-      <span>KHR</span>
+
+      <span>
+        KHR
+      </span>
+
     </div>
+
   </div>
 
+
   <!-- ADD PRODUCT -->
-  <button type="button" class="add-btn no-print" onclick="showProductSelector(event)">
+
+  <button
+    type="button"
+    class="add-btn no-print"
+    onclick="showProductSelector(event)"
+  >
     ＋ Add Product
   </button>
 
-  <div id="productSelector" class="product-selector no-print">
-    <select id="productChoice" onchange="addSelectedProduct()">
-      <option value="">Select Product</option>
+
+  <div
+    id="productSelector"
+    class="product-selector no-print"
+  >
+
+    <select
+      id="productChoice"
+      onchange="addSelectedProduct()"
+    >
+
+      <option value="">
+        Select Product
+      </option>
+
     </select>
+
   </div>
 
+
   <!-- PRODUCTS -->
-  <div id="productList" class="product-list"></div>
+
+  <div id="productList"></div>
+
 
   <!-- TOTALS -->
+
   <div class="totals-box">
 
+
     <div class="total-row">
-      <span>Subtotal</span>
-      <span id="subtotal">$0.00</span>
+
+      <span>
+        Subtotal
+      </span>
+
+      <span id="subtotal">
+        $0.00
+      </span>
+
     </div>
 
+
     <div class="total-row discount-row">
-      <span>Discount</span>
+
+      <span>
+        Discount
+      </span>
+
       <input
         type="number"
         id="discount"
@@ -544,15 +763,29 @@ label {
         inputmode="decimal"
         oninput="calculate()"
       >
+
     </div>
+
 
     <div class="total-row grand-total">
-      <span>Grand Total</span>
-      <span id="grandTotal">$0.00</span>
+
+      <span>
+        Grand Total
+      </span>
+
+      <span id="grandTotal">
+        $0.00
+      </span>
+
     </div>
 
+
     <div class="total-row payment-row">
-      <span>Amount Paid</span>
+
+      <span>
+        Amount Paid
+      </span>
+
       <input
         type="number"
         id="amountPaid"
@@ -562,383 +795,1076 @@ label {
         inputmode="decimal"
         oninput="calculate()"
       >
+
     </div>
+
 
     <div class="total-row change-row">
-      <span>Change</span>
-      <span id="changeAmount">$0.00</span>
+
+      <span>
+        Change
+      </span>
+
+      <span id="changeAmount">
+        $0.00
+      </span>
+
     </div>
 
+
   </div>
+
 
   <!-- EXCHANGE CALCULATION -->
-  <div class="convert-box">
-    <div class="section-title">Exchange Calculation</div>
 
-    <div id="convertResult" class="convert-result">
+  <div class="convert-box">
+
+    <div class="section-title">
+      Exchange Calculation
+    </div>
+
+
+    <div
+      id="convertResult"
+      class="convert-result"
+    >
       $0.00 = ៛0
     </div>
+
   </div>
 
+
   <!-- ACTIONS -->
+
   <div class="actions no-print">
-    <button type="button" class="action-btn print-btn" onclick="printInvoice(event)">
+
+
+    <button
+      type="button"
+      class="action-btn print-btn"
+      onclick="printInvoice(event)"
+    >
       🖨 Print / Save PDF
     </button>
 
-    <button type="button" class="action-btn share-btn" onclick="shareInvoice(event)">
+
+    <button
+      type="button"
+      class="action-btn share-btn"
+      onclick="shareInvoice(event)"
+    >
       ✈️ Share to Telegram
     </button>
 
-    <button type="button" class="action-btn save-btn" onclick="saveToPhone(event)">
+
+    <button
+      type="button"
+      class="action-btn save-btn"
+      onclick="saveToPhone(event)"
+    >
       📱 Save to Phone
     </button>
 
-    <button type="button" class="action-btn save-btn" onclick="saveToDrive(event)">
+
+    <button
+      type="button"
+      class="action-btn save-btn"
+      onclick="saveToDrive(event)"
+    >
       ☁️ Save to Drive
     </button>
+
+
   </div>
 
-  <button class="clear-btn no-print" onclick="clearAll()">
+
+  <button
+    class="clear-btn no-print"
+    onclick="clearAll()"
+  >
     Clear
   </button>
 
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 
 <script>
-/* ==========================================
-   TODAY'S DATE
-========================================== */
-
-function setTodayDate() {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-
-  document.getElementById("invoiceDate").value =
-    `${year}-${month}-${day}`;
-}
-
-setTodayDate();
-
 
 /* ==========================================
-   CUSTOMER DATABASE
-   Google Sheets -> Apps Script Web App
+   API SETTINGS
 ========================================== */
+
 
 const DRIVE_SAVE_API =
   "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
 
+
 const DRIVE_FOLDER_ID =
   "1wgNyhkR7-QQphRAAou2v-etx0LinDl21";
+
 
 const CUSTOMER_API_URL =
   "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
 
+
 let customers = [];
 
 
+
 /* ==========================================
-   LOAD CUSTOMERS
-   JSONP works from GitHub Pages without
-   requiring CORS headers.
+   TODAY'S DATE
 ========================================== */
 
-function loadCustomers() {
-  const status = document.getElementById("customerStatus");
-  const list = document.getElementById("customerOptions");
 
-  if (!status || !list) return;
+function setTodayDate() {
 
-  status.textContent = "Loading customers...";
-  status.style.color = "#718096";
+  const today = new Date();
 
-  const callbackName =
-    "bbCustomers_" + Date.now();
+  const year =
+    today.getFullYear();
 
-  const script =
-    document.createElement("script");
+  const month =
+    String(today.getMonth() + 1)
+      .padStart(2, "0");
 
-  let done = false;
+  const day =
+    String(today.getDate())
+      .padStart(2, "0");
 
-  function finish(message, color) {
-    if (done) return;
-    done = true;
 
-    status.textContent = message;
-    status.style.color = color;
+  document.getElementById(
+    "invoiceDate"
+  ).value =
+    `${year}-${month}-${day}`;
 
-    delete window[callbackName];
 
-    if (script.parentNode) {
-      script.parentNode.removeChild(script);
-    }
+  updateInvoiceDate();
+
+}
+
+
+setTodayDate();
+
+
+
+/* ==========================================
+   DATE FORMAT
+   Example: 01-Sep-2026
+========================================== */
+
+
+function formatInvoiceDate(dateValue) {
+
+  if (!dateValue) {
+    return "";
   }
 
-  window[callbackName] = function(data) {
-    if (!Array.isArray(data)) {
-      customers = [];
-      finish(
-        "Customer database unavailable — you can still type manually.",
-        "#b7791f"
+
+  const parts =
+    dateValue.split("-");
+
+
+  if (parts.length !== 3) {
+    return dateValue;
+  }
+
+
+  const year = parts[0];
+
+  const month = parts[1];
+
+  const day = parts[2];
+
+
+  const months = [
+
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+
+  ];
+
+
+  return `${day}-${months[Number(month) - 1]}-${year}`;
+
+}
+
+
+
+function updateInvoiceDate() {
+
+  const picker =
+    document.getElementById(
+      "invoiceDate"
+    );
+
+  const display =
+    document.getElementById(
+      "invoiceDateDisplay"
+    );
+
+
+  if (picker && display) {
+
+    display.value =
+      formatInvoiceDate(
+        picker.value
       );
-      return;
+
+  }
+
+}
+
+
+
+/* ==========================================
+   AUTO INVOICE NUMBER
+========================================== */
+
+
+function getStoredInvoiceNumber() {
+
+  const stored =
+    localStorage.getItem(
+      "bb_invoice_number"
+    );
+
+
+  if (
+    stored &&
+    /^INV-\d+$/.test(stored)
+  ) {
+
+    return stored;
+
+  }
+
+
+  localStorage.setItem(
+    "bb_invoice_number",
+    "INV-0001"
+  );
+
+
+  return "INV-0001";
+
+}
+
+
+
+function setInvoiceNumber(number) {
+
+  const value =
+    String(
+      number || "INV-0001"
+    );
+
+
+  document.getElementById(
+    "invoiceNumber"
+  ).value = value;
+
+
+  localStorage.setItem(
+    "bb_invoice_number",
+    value
+  );
+
+}
+
+
+
+function getNextInvoiceNumber() {
+
+  const current =
+    getStoredInvoiceNumber();
+
+
+  const match =
+    current.match(
+      /^INV-(\d+)$/
+    );
+
+
+  if (!match) {
+    return "INV-0001";
+  }
+
+
+  const next =
+    Number(match[1]) + 1;
+
+
+  return (
+    "INV-" +
+    String(next).padStart(4, "0")
+  );
+
+}
+
+
+
+function initializeInvoiceNumber() {
+
+  setInvoiceNumber(
+    getStoredInvoiceNumber()
+  );
+
+}
+
+
+initializeInvoiceNumber();
+
+
+
+document
+  .getElementById("invoiceNumber")
+  .addEventListener(
+    "change",
+    function() {
+
+      const value =
+        this.value.trim() ||
+        "INV-0001";
+
+
+      localStorage.setItem(
+        "bb_invoice_number",
+        value
+      );
+
     }
+  );
 
-    customers = data
-      .map(row => ({
-        no: String(row.no || ""),
-        name: String(row.name || "").trim(),
-        phone: String(row.phone || "").trim(),
-        address: String(row.address || "").trim()
-      }))
-      .filter(row => row.name);
 
-    list.innerHTML = "";
 
-    customers.forEach(customer => {
-      const option = document.createElement("option");
-      option.value = customer.name;
-      option.label =
-        [customer.phone, customer.address]
-          .filter(Boolean)
-          .join(" • ");
+/* ==========================================
+   CUSTOMER DATABASE
+   FIXED JSONP CALLBACK
+========================================== */
 
-      list.appendChild(option);
-    });
 
-    finish(
-      customers.length
-        ? `${customers.length} customers loaded from Google Sheets`
-        : "No customers found — you can still type manually.",
-      customers.length ? "#2f855a" : "#b7791f"
+function loadCustomers() {
+
+  const status =
+    document.getElementById(
+      "customerStatus"
     );
-  };
 
-  script.onerror = function() {
-    customers = [];
-    finish(
-      "Customer database unavailable — you can still type manually.",
-      "#b7791f"
+
+  const list =
+    document.getElementById(
+      "customerOptions"
     );
-  };
+
+
+  if (!status || !list) {
+    return;
+  }
+
+
+  status.textContent =
+    "Loading customers...";
+
+
+  status.style.color =
+    "#718096";
+
+
+  customers = [];
+
+
+  /*
+   * IMPORTANT:
+   * Use one fixed callback name.
+   */
+
+  window.bbCustomers =
+    function(data) {
+
+      console.log(
+        "BIG BROTHER customers received:",
+        data
+      );
+
+
+      if (!Array.isArray(data)) {
+
+        customers = [];
+
+
+        status.textContent =
+          "Customer database unavailable — you can still type manually.";
+
+
+        status.style.color =
+          "#b7791f";
+
+
+        return;
+
+      }
+
+
+      customers =
+        data
+          .map(function(row) {
+
+            return {
+
+              name:
+                String(
+                  row.name || ""
+                ).trim(),
+
+              phone:
+                String(
+                  row.phone || ""
+                ).trim(),
+
+              address:
+                String(
+                  row.address || ""
+                ).trim()
+
+            };
+
+          })
+          .filter(function(customer) {
+
+            return customer.name !== "";
+
+          });
+
+
+      list.innerHTML = "";
+
+
+      customers.forEach(
+        function(customer) {
+
+          const option =
+            document.createElement(
+              "option"
+            );
+
+
+          option.value =
+            customer.name;
+
+
+          option.label =
+            [
+              customer.phone,
+              customer.address
+            ]
+              .filter(Boolean)
+              .join(" • ");
+
+
+          list.appendChild(option);
+
+        }
+      );
+
+
+      if (customers.length > 0) {
+
+        status.textContent =
+          customers.length +
+          " customers loaded from Google Sheets";
+
+
+        status.style.color =
+          "#2f855a";
+
+      } else {
+
+        status.textContent =
+          "No customers found — you can still type manually.";
+
+
+        status.style.color =
+          "#b7791f";
+
+      }
+
+    };
+
+
+
+  /*
+   * Create JSONP request
+   */
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.type =
+    "text/javascript";
+
 
   script.src =
     CUSTOMER_API_URL +
-    "?callback=" +
-    encodeURIComponent(callbackName) +
+    "?action=customers" +
+    "&callback=bbCustomers" +
     "&t=" +
     Date.now();
 
-  document.body.appendChild(script);
 
-  setTimeout(() => {
-    if (!done) {
+
+  script.onerror =
+    function() {
+
       customers = [];
-      finish(
-        "Customer database unavailable — you can still type manually.",
-        "#b7791f"
-      );
-    }
-  }, 12000);
+
+
+      status.textContent =
+        "Customer database unavailable — you can still type manually.";
+
+
+      status.style.color =
+        "#b7791f";
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+
+
+  /*
+   * Safety timeout
+   */
+
+  setTimeout(
+    function() {
+
+      if (
+        customers.length === 0 &&
+        status.textContent ===
+          "Loading customers..."
+      ) {
+
+        status.textContent =
+          "Customer database unavailable — you can still type manually.";
+
+
+        status.style.color =
+          "#b7791f";
+
+      }
+
+    },
+    15000
+  );
+
 }
+
 
 
 /* ==========================================
-   CUSTOMER SELECTION / AUTO-FILL
+   CUSTOMER AUTO-FILL
 ========================================== */
 
+
 function fillCustomerInformation() {
+
   const input =
-    document.getElementById("customerName");
+    document.getElementById(
+      "customerName"
+    );
+
 
   const name =
-    input ? input.value.trim() : "";
+    input
+      ? input.value.trim()
+      : "";
+
 
   const customer =
     customers.find(
-      item =>
-        item.name.toLowerCase() === name.toLowerCase()
+      function(item) {
+
+        return (
+          item.name.toLowerCase() ===
+          name.toLowerCase()
+        );
+
+      }
     );
 
-  if (!customer) return;
 
-  document.getElementById("customerPhone").value =
+  if (!customer) {
+    return;
+  }
+
+
+  document.getElementById(
+    "customerPhone"
+  ).value =
     customer.phone || "";
 
-  document.getElementById("customerAddress").value =
+
+  document.getElementById(
+    "customerAddress"
+  ).value =
     customer.address || "";
+
 }
 
 
-document
-  .getElementById("customerName")
-  .addEventListener("input", fillCustomerInformation);
 
 document
   .getElementById("customerName")
-  .addEventListener("change", fillCustomerInformation);
+  .addEventListener(
+    "input",
+    fillCustomerInformation
+  );
+
+
+document
+  .getElementById("customerName")
+  .addEventListener(
+    "change",
+    fillCustomerInformation
+  );
+
 
 loadCustomers();
 
 
+
 /* ==========================================
    PRODUCT LIST
-   Default prices are USD.
 ========================================== */
 
+
 const products = [
-  { name: "Kirisu Milk 2L", usdPrice: 4.50 },
-  { name: "Kirisu Milk 830ml", usdPrice: 2.20 },
-  { name: "Kirisu Yogurt 135g", usdPrice: 0.66 },
-  { name: "Farm Fresh 2L", usdPrice: 4.10 },
-  { name: "Ausfresh 2L", usdPrice: 4.30 },
-  { name: "Greenfield 1.90L", usdPrice: 3.80 },
-  { name: "Greenfield 1L", usdPrice: 2.00 },
-  { name: "VP Milk 2L", usdPrice: 3.80 },
-  { name: "O'More 2L", usdPrice: 4.20 },
-  { name: "Champei Milk 220ml", usdPrice: 0.50 }
+
+  {
+    name: "Kirisu Milk 2L",
+    usdPrice: 4.50
+  },
+
+  {
+    name: "Kirisu Milk 830ml",
+    usdPrice: 2.20
+  },
+
+  {
+    name: "Kirisu Yogurt 135g",
+    usdPrice: 0.66
+  },
+
+  {
+    name: "Farm Fresh 2L",
+    usdPrice: 4.10
+  },
+
+  {
+    name: "Ausfresh 2L",
+    usdPrice: 4.30
+  },
+
+  {
+    name: "Greenfield 1.90L",
+    usdPrice: 3.80
+  },
+
+  {
+    name: "Greenfield 1L",
+    usdPrice: 2.00
+  },
+
+  {
+    name: "VP Milk 2L",
+    usdPrice: 3.80
+  },
+
+  {
+    name: "O'More 2L",
+    usdPrice: 4.20
+  },
+
+  {
+    name: "Champei Milk 220ml",
+    usdPrice: 0.50
+  }
+
 ];
 
+
 let selectedProducts = [];
+
 
 
 /* ==========================================
    HELPERS
 ========================================== */
 
+
 function getCurrency() {
-  return document.getElementById("currency").value;
+
+  return document.getElementById(
+    "currency"
+  ).value;
+
 }
+
+
 
 function getExchangeRate() {
-  return Number(document.getElementById("exchangeRate").value) || 0;
+
+  return Number(
+    document.getElementById(
+      "exchangeRate"
+    ).value
+  ) || 0;
+
 }
 
-function usdToSelected(usdValue, currency) {
+
+
+function usdToSelected(
+  usdValue,
+  currency
+) {
+
   if (currency === "KHR") {
-    return usdValue * getExchangeRate();
+
+    return (
+      usdValue *
+      getExchangeRate()
+    );
+
   }
+
 
   return usdValue;
+
 }
 
-function selectedToUsd(value, currency) {
+
+
+function selectedToUsd(
+  value,
+  currency
+) {
+
   if (currency === "KHR") {
-    const rate = getExchangeRate();
-    return rate > 0 ? value / rate : 0;
+
+    const rate =
+      getExchangeRate();
+
+
+    return rate > 0
+      ? value / rate
+      : 0;
+
   }
+
 
   return value;
+
 }
 
-function formatMoney(value, currency) {
+
+
+function formatMoney(
+  value,
+  currency
+) {
+
   if (currency === "USD") {
-    return "$" + Number(value).toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+
+    return (
+      "$" +
+      Number(value).toLocaleString(
+        "en-US",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      )
+    );
+
   }
 
-  return "៛" + Math.round(Number(value)).toLocaleString("en-US");
+
+  return (
+    "៛" +
+    Math.round(
+      Number(value)
+    ).toLocaleString("en-US")
+  );
+
 }
+
 
 
 /* ==========================================
    SHOW PRODUCT SELECTOR
 ========================================== */
 
+
 function showProductSelector(event) {
-  if (event) { event.preventDefault(); event.stopPropagation(); }
-  const selector = document.getElementById("productSelector");
-  const choice = document.getElementById("productChoice");
 
-  choice.innerHTML = `
-    <option value="">Select Product</option>
-  `;
+  if (event) {
 
-  const availableProducts = products.filter(product =>
-    !selectedProducts.some(item => item.id === product.name)
-  );
+    event.preventDefault();
 
-  if (availableProducts.length === 0) {
-    alert("All products have already been added.");
-    return;
+    event.stopPropagation();
+
   }
 
-  availableProducts.forEach(product => {
-    const option = document.createElement("option");
-    option.value = product.name;
-    option.textContent = product.name;
-    choice.appendChild(option);
-  });
 
-  selector.style.display = "block";
+  const selector =
+    document.getElementById(
+      "productSelector"
+    );
+
+
+  const choice =
+    document.getElementById(
+      "productChoice"
+    );
+
+
+  choice.innerHTML =
+    `
+      <option value="">
+        Select Product
+      </option>
+    `;
+
+
+  const availableProducts =
+    products.filter(
+      function(product) {
+
+        return !selectedProducts.some(
+          function(item) {
+
+            return (
+              item.id ===
+              product.name
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  if (
+    availableProducts.length === 0
+  ) {
+
+    alert(
+      "All products have already been added."
+    );
+
+    return;
+
+  }
+
+
+  availableProducts.forEach(
+    function(product) {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        product.name;
+
+
+      option.textContent =
+        product.name;
+
+
+      choice.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  selector.style.display =
+    "block";
+
 }
+
 
 
 /* ==========================================
    ADD SELECTED PRODUCT
 ========================================== */
 
+
 function addSelectedProduct() {
-  const choice = document.getElementById("productChoice");
-  const productName = choice.value;
 
-  if (!productName) return;
+  const choice =
+    document.getElementById(
+      "productChoice"
+    );
 
-  const product = products.find(p => p.name === productName);
 
-  if (!product) return;
+  const productName =
+    choice.value;
+
+
+  if (!productName) {
+    return;
+  }
+
+
+  const product =
+    products.find(
+      function(p) {
+
+        return (
+          p.name ===
+          productName
+        );
+
+      }
+    );
+
+
+  if (!product) {
+    return;
+  }
+
 
   selectedProducts.push({
-    id: product.name,
-    usdPrice: product.usdPrice
+
+    id:
+      product.name,
+
+    usdPrice:
+      product.usdPrice
+
   });
 
-  createProduct(product.name, product.usdPrice);
+
+  createProduct(
+    product.name,
+    product.usdPrice
+  );
+
 
   choice.value = "";
-  document.getElementById("productSelector").style.display = "none";
+
+
+  document.getElementById(
+    "productSelector"
+  ).style.display =
+    "none";
+
 
   calculate();
+
 }
+
 
 
 /* ==========================================
    CREATE PRODUCT
 ========================================== */
 
-function createProduct(name, defaultUsdPrice) {
-  const container = document.getElementById("productList");
-  const div = document.createElement("div");
 
-  div.className = "product";
-  div.dataset.product = name;
-  div.dataset.usdPrice = defaultUsdPrice;
+function createProduct(
+  name,
+  defaultUsdPrice
+) {
 
-  const currency = getCurrency();
-  const displayPrice = usdToSelected(defaultUsdPrice, currency);
+  const container =
+    document.getElementById(
+      "productList"
+    );
+
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.className =
+    "product";
+
+
+  div.dataset.product =
+    name;
+
+
+  div.dataset.usdPrice =
+    defaultUsdPrice;
+
+
+  const currency =
+    getCurrency();
+
+
+  const displayPrice =
+    usdToSelected(
+      defaultUsdPrice,
+      currency
+    );
+
 
   div.innerHTML = `
+
     <div class="product-header">
-      <div class="product-name">${escapeHtml(name)}</div>
+
+      <div class="product-name">
+        ${escapeHtml(name)}
+      </div>
+
 
       <button
         class="remove-btn no-print"
         onclick="removeProduct(this)"
-      >×</button>
+      >
+        ×
+      </button>
+
     </div>
+
 
     <div class="inputs">
 
+
       <div>
-        <span class="input-label">QTY</span>
+
+        <span class="input-label">
+          QTY
+        </span>
+
+
         <input
           type="number"
           min="0"
@@ -946,668 +1872,1435 @@ function createProduct(name, defaultUsdPrice) {
           inputmode="decimal"
           oninput="calculate()"
         >
+
       </div>
 
+
       <div>
-        <span class="input-label">PRICE</span>
+
+        <span class="input-label">
+          PRICE
+        </span>
+
+
         <input
           type="number"
           min="0"
           value="${displayPrice}"
-          step="${currency === "KHR" ? "1" : "0.01"}"
+          step="${
+            currency === "KHR"
+              ? "1"
+              : "0.01"
+          }"
           inputmode="decimal"
           oninput="priceChanged(this)"
         >
+
       </div>
 
+
     </div>
+
 
     <div class="product-total">
+
       Total:
-      <span class="line-total">${formatMoney(0, currency)}</span>
+
+      <span class="line-total">
+        ${formatMoney(0, currency)}
+      </span>
+
     </div>
+
   `;
 
+
   container.appendChild(div);
+
 }
+
 
 
 /* ==========================================
    PRICE CHANGE
-   User can freely adjust the price.
 ========================================== */
 
+
 function priceChanged(input) {
-  const product = input.closest(".product");
-  const currency = getCurrency();
-  const enteredPrice = Number(input.value) || 0;
+
+  const product =
+    input.closest(
+      ".product"
+    );
+
+
+  const currency =
+    getCurrency();
+
+
+  const enteredPrice =
+    Number(input.value) || 0;
+
 
   product.dataset.usdPrice =
-    selectedToUsd(enteredPrice, currency);
+    selectedToUsd(
+      enteredPrice,
+      currency
+    );
 
-  const item = selectedProducts.find(
-    p => p.id === product.dataset.product
-  );
+
+  const item =
+    selectedProducts.find(
+      function(p) {
+
+        return (
+          p.id ===
+          product.dataset.product
+        );
+
+      }
+    );
+
 
   if (item) {
-    item.usdPrice = Number(product.dataset.usdPrice);
+
+    item.usdPrice =
+      Number(
+        product.dataset.usdPrice
+      );
+
   }
 
+
   calculate();
+
 }
+
 
 
 /* ==========================================
    REMOVE PRODUCT
 ========================================== */
 
+
 function removeProduct(button) {
-  const product = button.closest(".product");
-  const name = product.dataset.product;
+
+  const product =
+    button.closest(
+      ".product"
+    );
+
+
+  const name =
+    product.dataset.product;
+
 
   selectedProducts =
-    selectedProducts.filter(item => item.id !== name);
+    selectedProducts.filter(
+      function(item) {
+
+        return (
+          item.id !== name
+        );
+
+      }
+    );
+
 
   product.remove();
 
+
   calculate();
+
 }
+
 
 
 /* ==========================================
    CALCULATE
 ========================================== */
 
+
 function calculate() {
+
   let total = 0;
-  const currency = getCurrency();
 
-  document.querySelectorAll(".product").forEach(product => {
 
-    const inputs = product.querySelectorAll("input");
+  const currency =
+    getCurrency();
 
-    const qty = Number(inputs[0].value) || 0;
-    const price = Number(inputs[1].value) || 0;
 
-    const lineTotal = qty * price;
-    total += lineTotal;
+  document
+    .querySelectorAll(
+      ".product"
+    )
+    .forEach(
+      function(product) {
 
-    product.querySelector(".line-total").textContent =
-      formatMoney(lineTotal, currency);
-  });
+        const inputs =
+          product.querySelectorAll(
+            "input"
+          );
+
+
+        const qty =
+          Number(
+            inputs[0].value
+          ) || 0;
+
+
+        const price =
+          Number(
+            inputs[1].value
+          ) || 0;
+
+
+        const lineTotal =
+          qty * price;
+
+
+        total += lineTotal;
+
+
+        product
+          .querySelector(
+            ".line-total"
+          )
+          .textContent =
+          formatMoney(
+            lineTotal,
+            currency
+          );
+
+      }
+    );
+
 
 
   /* SUBTOTAL */
 
-  document.getElementById("subtotal").textContent =
-    formatMoney(total, currency);
+  document.getElementById(
+    "subtotal"
+  ).textContent =
+    formatMoney(
+      total,
+      currency
+    );
+
 
 
   /* DISCOUNT */
 
   const discount =
-    Number(document.getElementById("discount").value) || 0;
+    Number(
+      document.getElementById(
+        "discount"
+      ).value
+    ) || 0;
+
 
   const finalTotal =
-    Math.max(0, total - discount);
+    Math.max(
+      0,
+      total - discount
+    );
+
 
 
   /* GRAND TOTAL */
 
-  document.getElementById("grandTotal").textContent =
-    formatMoney(finalTotal, currency);
+  document.getElementById(
+    "grandTotal"
+  ).textContent =
+    formatMoney(
+      finalTotal,
+      currency
+    );
 
 
-  /* AMOUNT PAID + CHANGE */
+
+  /* AMOUNT PAID */
 
   const amountPaid =
-    Number(document.getElementById("amountPaid").value) || 0;
+    Number(
+      document.getElementById(
+        "amountPaid"
+      ).value
+    ) || 0;
+
 
   const change =
-    Math.max(0, amountPaid - finalTotal);
+    Math.max(
+      0,
+      amountPaid - finalTotal
+    );
 
-  document.getElementById("changeAmount").textContent =
-    formatMoney(change, currency);
+
+  document.getElementById(
+    "changeAmount"
+  ).textContent =
+    formatMoney(
+      change,
+      currency
+    );
+
 
 
   /* EXCHANGE */
 
-  calculateExchange(finalTotal, currency);
+  calculateExchange(
+    finalTotal,
+    currency
+  );
+
 }
+
 
 
 /* ==========================================
    CURRENCY CHANGE
-   Convert existing product prices so that
-   the actual price remains the same.
 ========================================== */
 
-function changeCurrency() {
-  const currency = getCurrency();
-  const rate = getExchangeRate();
 
-  if (currency === "KHR" && rate <= 0) {
-    alert("Please enter a valid exchange rate.");
-    document.getElementById("currency").value = "USD";
+function changeCurrency() {
+
+  const currency =
+    getCurrency();
+
+
+  const rate =
+    getExchangeRate();
+
+
+  if (
+    currency === "KHR" &&
+    rate <= 0
+  ) {
+
+    alert(
+      "Please enter a valid exchange rate."
+    );
+
+
+    document.getElementById(
+      "currency"
+    ).value =
+      "USD";
+
+
     return;
+
   }
 
-  document.querySelectorAll(".product").forEach(product => {
-    const inputs = product.querySelectorAll("input");
 
-    const usdPrice = Number(product.dataset.usdPrice) || 0;
+  document
+    .querySelectorAll(
+      ".product"
+    )
+    .forEach(
+      function(product) {
 
-    inputs[1].value =
-      usdToSelected(usdPrice, currency);
+        const inputs =
+          product.querySelectorAll(
+            "input"
+          );
 
-    inputs[1].step =
-      currency === "KHR" ? "1" : "0.01";
-  });
+
+        const usdPrice =
+          Number(
+            product.dataset.usdPrice
+          ) || 0;
+
+
+        inputs[1].value =
+          usdToSelected(
+            usdPrice,
+            currency
+          );
+
+
+        inputs[1].step =
+          currency === "KHR"
+            ? "1"
+            : "0.01";
+
+      }
+    );
+
 
   calculate();
+
 }
+
 
 
 /* ==========================================
    EXCHANGE CALCULATION
-   Always shows BOTH currencies.
 ========================================== */
 
-function calculateExchange(finalTotal, currency) {
-  const rate = getExchangeRate();
-  const result = document.getElementById("convertResult");
+
+function calculateExchange(
+  finalTotal,
+  currency
+) {
+
+  const rate =
+    getExchangeRate();
+
+
+  const result =
+    document.getElementById(
+      "convertResult"
+    );
+
 
   if (rate <= 0) {
-    result.textContent = "Enter exchange rate";
+
+    result.textContent =
+      "Enter exchange rate";
+
     return;
+
   }
+
 
   let usd;
+
   let khr;
 
+
   if (currency === "USD") {
-    usd = finalTotal;
-    khr = finalTotal * rate;
+
+    usd =
+      finalTotal;
+
+    khr =
+      finalTotal * rate;
+
   } else {
-    khr = finalTotal;
-    usd = finalTotal / rate;
+
+    khr =
+      finalTotal;
+
+    usd =
+      finalTotal / rate;
+
   }
 
+
   result.innerHTML =
-    `<div>${formatMoney(usd, "USD")}</div>` +
+
+    `<div>
+      ${formatMoney(usd, "USD")}
+    </div>` +
+
     `<div>=</div>` +
-    `<div>${formatMoney(khr, "KHR")}</div>`;
+
+    `<div>
+      ${formatMoney(khr, "KHR")}
+    </div>`;
+
 }
+
+
+
+/* ==========================================
+   DATE PICKER
+========================================== */
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    const picker =
+      document.getElementById(
+        "invoiceDate"
+      );
+
+
+    if (
+      picker &&
+      !picker.value
+    ) {
+
+      setTodayDate();
+
+    }
+
+
+    updateInvoiceDate();
+
+  }
+);
+
 
 
 /* ==========================================
    PRINT
 ========================================== */
 
-function formatInvoiceDate(dateValue) {
-  if (!dateValue) return "";
-
-  const parts = dateValue.split("-");
-  if (parts.length !== 3) return dateValue;
-
-  const [year, month, day] = parts;
-  const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-
-  return `${day}-${months[Number(month) - 1]}-${year}`;
-}
-
-function openDatePicker() {
-  const picker = document.getElementById("invoiceDate");
-  if (!picker) return;
-
-  try {
-    if (typeof picker.showPicker === "function") {
-      picker.showPicker();
-    } else {
-      picker.focus();
-      picker.click();
-    }
-  } catch (e) {
-    picker.focus();
-    picker.click();
-  }
-}
-
-function updateInvoiceDate() {
-  const picker = document.getElementById("invoiceDate");
-  const display = document.getElementById("invoiceDateDisplay");
-
-  if (picker && display) {
-    display.value = formatInvoiceDate(picker.value);
-  }
-}
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const picker = document.getElementById("invoiceDate");
-  if (picker && !picker.value) {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
-    picker.value = `${yyyy}-${mm}-${dd}`;
-  }
-  updateInvoiceDate();
-});
 
 function printInvoice(event) {
+
   if (event) {
+
     event.preventDefault();
+
     event.stopPropagation();
+
   }
+
 
   calculate();
 
-  const dateInput = document.getElementById("invoiceDate");
-  if (dateInput) {
-    dateInput.setAttribute(
-      "data-print-date",
-      formatInvoiceDate(dateInput.value)
-    );
-  }
 
-  /*
-    IMPORTANT FOR MOBILE:
-    Call window.print() directly from the user's button tap.
-    Some mobile browsers/webviews ignore delayed print calls.
-  */
   try {
-    if (typeof window.print === "function") {
+
+    if (
+      typeof window.print ===
+      "function"
+    ) {
+
       window.print();
+
       return;
+
     }
+
   } catch (error) {
-    console.log("Direct print unavailable:", error);
+
+    console.log(
+      "Direct print unavailable:",
+      error
+    );
+
   }
 
-  /*
-    Fallback for browsers/webviews that don't expose window.print().
-    Because this runs directly from the user's tap, the new window is
-    much less likely to be blocked as a popup.
-  */
+
   try {
-    const printWindow = window.open("", "_blank");
+
+    const printWindow =
+      window.open(
+        "",
+        "_blank"
+      );
+
 
     if (!printWindow) {
-      alert("Please allow pop-ups for this invoice to print.");
+
+      alert(
+        "Please allow pop-ups for this invoice to print."
+      );
+
       return;
+
     }
 
-    const printableHtml = document.documentElement.outerHTML;
+
+    const printableHtml =
+      document.documentElement
+        .outerHTML;
+
 
     printWindow.document.open();
-    printWindow.document.write(printableHtml);
+
+
+    printWindow.document.write(
+      printableHtml
+    );
+
+
     printWindow.document.close();
 
-    printWindow.onload = () => {
-      setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-      }, 300);
-    };
+
+    printWindow.onload =
+      function() {
+
+        setTimeout(
+          function() {
+
+            printWindow.focus();
+
+            printWindow.print();
+
+          },
+          300
+        );
+
+      };
+
   } catch (error) {
-    alert("Printing is not supported by this browser. Please open the invoice in Chrome or Safari and try again.");
+
+    alert(
+      "Printing is not supported by this browser. Please open the invoice in Chrome or Safari and try again."
+    );
+
   }
+
 }
+
 
 
 /* ==========================================
    CREATE INVOICE IMAGE
 ========================================== */
 
+
 async function createInvoiceImage() {
-  if (typeof html2canvas !== "function") {
-    throw new Error("Image library is not loaded.");
+
+  if (
+    typeof html2canvas !==
+    "function"
+  ) {
+
+    throw new Error(
+      "Image library is not loaded."
+    );
+
   }
+
 
   calculate();
 
-  const invoice = document.querySelector(".calculator");
-  if (!invoice) throw new Error("Invoice not found.");
 
-  const clone = invoice.cloneNode(true);
+  const invoice =
+    document.querySelector(
+      ".calculator"
+    );
 
-  clone.querySelectorAll(
-    ".no-print, .actions, .clear-btn, .product-selector"
-  ).forEach(el => el.remove());
 
-  // Copy current field values into the clone.
+  if (!invoice) {
+
+    throw new Error(
+      "Invoice not found."
+    );
+
+  }
+
+
+  const clone =
+    invoice.cloneNode(
+      true
+    );
+
+
+  clone
+    .querySelectorAll(
+      ".no-print, .actions, .clear-btn, .product-selector"
+    )
+    .forEach(
+      function(el) {
+
+        el.remove();
+
+      }
+    );
+
+
+
+  /*
+   * Copy current field values.
+   */
+
   const originalFields =
-    invoice.querySelectorAll("input, select, textarea");
+    invoice.querySelectorAll(
+      "input, select, textarea"
+    );
+
+
   const clonedFields =
-    clone.querySelectorAll("input, select, textarea");
+    clone.querySelectorAll(
+      "input, select, textarea"
+    );
 
-  originalFields.forEach((field, i) => {
-    if (clonedFields[i]) {
-      clonedFields[i].value = field.value;
+
+  originalFields.forEach(
+    function(field, i) {
+
+      if (clonedFields[i]) {
+
+        clonedFields[i].value =
+          field.value;
+
+      }
+
     }
-  });
+  );
 
-  clone.style.position = "fixed";
-  clone.style.left = "-100000px";
-  clone.style.top = "0";
-  clone.style.width = invoice.offsetWidth + "px";
-  clone.style.maxWidth = "none";
-  clone.style.margin = "0";
-  clone.style.background = "#eef2f7";
-  clone.style.zIndex = "-1";
 
-  document.body.appendChild(clone);
+
+  /*
+   * Make invoice renderable
+   */
+
+  clone.style.position =
+    "fixed";
+
+
+  clone.style.left =
+    "-100000px";
+
+
+  clone.style.top =
+    "0";
+
+
+  clone.style.width =
+    invoice.offsetWidth +
+    "px";
+
+
+  clone.style.maxWidth =
+    "none";
+
+
+  clone.style.margin =
+    "0";
+
+
+  clone.style.background =
+    "#eef2f7";
+
+
+  clone.style.zIndex =
+    "-1";
+
+
+  document.body.appendChild(
+    clone
+  );
+
 
   try {
-    const canvas = await html2canvas(clone, {
-      backgroundColor: "#eef2f7",
-      scale: Math.min(3, Math.max(2, window.devicePixelRatio || 1)),
-      useCORS: true,
-      logging: false
-    });
 
-    return await new Promise((resolve, reject) => {
-      canvas.toBlob(blob => {
-        if (blob) resolve(blob);
-        else reject(new Error("Could not create image."));
-      }, "image/png");
-    });
+    const canvas =
+      await html2canvas(
+        clone,
+        {
+          backgroundColor:
+            "#eef2f7",
+
+          scale:
+            Math.min(
+              3,
+              Math.max(
+                2,
+                window.devicePixelRatio ||
+                1
+              )
+            ),
+
+          useCORS:
+            true,
+
+          logging:
+            false
+        }
+      );
+
+
+    return await new Promise(
+      function(resolve, reject) {
+
+        canvas.toBlob(
+          function(blob) {
+
+            if (blob) {
+
+              resolve(blob);
+
+            } else {
+
+              reject(
+                new Error(
+                  "Could not create image."
+                )
+              );
+
+            }
+
+          },
+          "image/png"
+        );
+
+      }
+    );
+
+
   } finally {
+
     clone.remove();
+
   }
+
 }
+
 
 
 /* ==========================================
-   SAVE INVOICE
+   SAVE TO PHONE
 ========================================== */
 
+
 async function saveToPhone(event) {
+
   if (event) {
+
     event.preventDefault();
+
     event.stopPropagation();
+
   }
+
 
   const button =
     event?.currentTarget ||
-    document.querySelector(".save-btn");
+    document.querySelector(
+      ".save-btn"
+    );
+
 
   const oldText =
-    button ? button.innerHTML : "";
+    button
+      ? button.innerHTML
+      : "";
+
 
   try {
+
     if (button) {
-      button.disabled = true;
-      button.innerHTML = "⏳ Preparing image...";
+
+      button.disabled =
+        true;
+
+
+      button.innerHTML =
+        "⏳ Preparing image...";
+
     }
 
-    const blob = await createInvoiceImage();
+
+    const blob =
+      await createInvoiceImage();
+
 
     const invoiceNo =
-      document.getElementById("invoiceNumber").value.trim() ||
+      document.getElementById(
+        "invoiceNumber"
+      ).value.trim() ||
       "Invoice";
 
-    const customer =
-      document.getElementById("customerName").value.trim() ||
-      "Customer";
 
     const date =
       formatInvoiceDate(
-        document.getElementById("invoiceDate").value
+        document.getElementById(
+          "invoiceDate"
+        ).value
       );
 
+
     const safeInvoice =
-      invoiceNo.replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "") ||
+      invoiceNo
+        .replace(
+          /[^a-z0-9_-]+/gi,
+          "-"
+        )
+        .replace(
+          /^-+|-+$/g,
+          ""
+        ) ||
       "Invoice";
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
 
-    link.href = url;
+    const url =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+
+    link.href =
+      url;
+
+
     link.download =
       `BIG-BROTHER-${safeInvoice}-${date}.png`;
 
-    document.body.appendChild(link);
+
+    document.body.appendChild(
+      link
+    );
+
+
     link.click();
+
+
     link.remove();
 
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
 
-    alert("Invoice image saved to your phone/device.");
+    setTimeout(
+      function() {
+
+        URL.revokeObjectURL(
+          url
+        );
+
+      },
+      5000
+    );
+
+
+    alert(
+      "Invoice image saved to your phone/device."
+    );
+
 
   } catch (error) {
-    console.error("Save to phone failed:", error);
-    alert("Could not save the invoice image. Please try again.");
+
+    console.error(
+      "Save to phone failed:",
+      error
+    );
+
+
+    alert(
+      "Could not save the invoice image. Please try again."
+    );
+
 
   } finally {
+
     if (button) {
-      button.disabled = false;
-      button.innerHTML = oldText;
+
+      button.disabled =
+        false;
+
+
+      button.innerHTML =
+        oldText;
+
     }
+
   }
+
 }
 
 
+
+/* ==========================================
+   SAVE TO GOOGLE DRIVE
+========================================== */
+
+
 async function saveToDrive(event) {
+
   if (event) {
+
     event.preventDefault();
+
     event.stopPropagation();
+
   }
+
 
   const button =
     event?.currentTarget ||
-    document.querySelector("button[onclick*='saveToDrive']");
+    document.querySelector(
+      "button[onclick*='saveToDrive']"
+    );
 
-  const oldText = button ? button.innerHTML : "";
+
+  const oldText =
+    button
+      ? button.innerHTML
+      : "";
+
 
   try {
+
     if (button) {
-      button.disabled = true;
-      button.innerHTML = "⏳ Saving to Drive...";
+
+      button.disabled =
+        true;
+
+
+      button.innerHTML =
+        "⏳ Saving to Drive...";
+
     }
 
-    const blob = await createInvoiceImage();
+
+    const blob =
+      await createInvoiceImage();
+
 
     const invoiceNo =
-      document.getElementById("invoiceNumber").value.trim() ||
+      document.getElementById(
+        "invoiceNumber"
+      ).value.trim() ||
       "Invoice";
 
+
     const customer =
-      document.getElementById("customerName").value.trim() ||
+      document.getElementById(
+        "customerName"
+      ).value.trim() ||
       "Customer";
+
 
     const date =
       formatInvoiceDate(
-        document.getElementById("invoiceDate").value
+        document.getElementById(
+          "invoiceDate"
+        ).value
       );
 
+
     const safeInvoice =
-      invoiceNo.replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "") ||
+      invoiceNo
+        .replace(
+          /[^a-z0-9_-]+/gi,
+          "-"
+        )
+        .replace(
+          /^-+|-+$/g,
+          ""
+        ) ||
       "Invoice";
 
+
     const safeCustomer =
-      customer.replace(/[^a-z0-9\u0080-\uFFFF_-]+/gi, "-").replace(/^-+|-+$/g, "") ||
+      customer
+        .replace(
+          /[^a-z0-9\u0080-\uFFFF_-]+/gi,
+          "-"
+        )
+        .replace(
+          /^-+|-+$/g,
+          ""
+        ) ||
       "Customer";
+
 
     const fileName =
       `BIG-BROTHER-${safeInvoice}-${safeCustomer}-${date}.png`;
 
-    const base64 = await blobToBase64(blob);
+
+    const base64 =
+      await blobToBase64(
+        blob
+      );
+
 
     /*
-     * Use a real HTML form POST instead of fetch().
-     * GitHub Pages -> Apps Script can be blocked by browser CORS
-     * when fetch() follows the Apps Script redirect. A form POST
-     * does not have that CORS problem and matches doPost(e).parameter
-     * in the Apps Script.
+     * Use form POST.
      */
-    let iframe = document.getElementById("driveSaveFrame");
+
+    let iframe =
+      document.getElementById(
+        "driveSaveFrame"
+      );
+
 
     if (!iframe) {
-      iframe = document.createElement("iframe");
-      iframe.id = "driveSaveFrame";
-      iframe.name = "driveSaveFrame";
-      iframe.style.display = "none";
-      document.body.appendChild(iframe);
+
+      iframe =
+        document.createElement(
+          "iframe"
+        );
+
+
+      iframe.id =
+        "driveSaveFrame";
+
+
+      iframe.name =
+        "driveSaveFrame";
+
+
+      iframe.style.display =
+        "none";
+
+
+      document.body.appendChild(
+        iframe
+      );
+
     }
 
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = DRIVE_SAVE_API;
-    form.target = "driveSaveFrame";
-    form.style.display = "none";
+
+    const form =
+      document.createElement(
+        "form"
+      );
+
+
+    form.method =
+      "POST";
+
+
+    form.action =
+      DRIVE_SAVE_API;
+
+
+    form.target =
+      "driveSaveFrame";
+
+
+    form.style.display =
+      "none";
+
 
     const fields = {
-      action: "saveInvoice",
-      image: "data:image/png;base64," + base64,
-      fileName: fileName
+
+      action:
+        "saveInvoice",
+
+      image:
+        "data:image/png;base64," +
+        base64,
+
+      fileName:
+        fileName
+
     };
 
-    Object.keys(fields).forEach(key => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = fields[key];
-      form.appendChild(input);
-    });
 
-    document.body.appendChild(form);
+    Object.keys(fields)
+      .forEach(
+        function(key) {
+
+          const input =
+            document.createElement(
+              "input"
+            );
+
+
+          input.type =
+            "hidden";
+
+
+          input.name =
+            key;
+
+
+          input.value =
+            fields[key];
+
+
+          form.appendChild(
+            input
+          );
+
+        }
+      );
+
+
+    document.body.appendChild(
+      form
+    );
+
+
     form.submit();
 
-    /* The cross-origin iframe cannot expose the Apps Script response,
-       but the POST request itself is sent successfully. */
-    setTimeout(() => {
-      form.remove();
-    }, 3000);
+
+    setTimeout(
+      function() {
+
+        form.remove();
+
+      },
+      3000
+    );
+
 
     if (button) {
-      button.innerHTML = "✅ Saved to Drive";
+
+      button.innerHTML =
+        "✅ Saved to Drive";
+
     }
 
-    alert("Invoice image sent to Google Drive. Check your BIG BROTHER invoice folder.");
 
-    setTimeout(() => {
-      if (button) button.innerHTML = oldText;
-    }, 1800);
+    alert(
+      "Invoice image sent to Google Drive. Check your BIG BROTHER invoice folder."
+    );
+
+
+    setTimeout(
+      function() {
+
+        if (button) {
+
+          button.innerHTML =
+            oldText;
+
+        }
+
+      },
+      1800
+    );
+
 
   } catch (error) {
-    console.error("Drive save failed:", error);
+
+    console.error(
+      "Drive save failed:",
+      error
+    );
+
 
     alert(
       "Could not save to Google Drive.\n\n" +
-      (error?.message || "Please try again.")
+      (
+        error?.message ||
+        "Please try again."
+      )
     );
 
+
   } finally {
+
     if (button) {
-      button.disabled = false;
-      if (button.innerHTML === "⏳ Saving to Drive...") {
-        button.innerHTML = oldText;
+
+      button.disabled =
+        false;
+
+
+      if (
+        button.innerHTML ===
+        "⏳ Saving to Drive..."
+      ) {
+
+        button.innerHTML =
+          oldText;
+
       }
+
     }
+
   }
+
 }
 
-/* Backward-compatible name used by older share code. */
-async function saveInvoiceImage(event) {
-  return saveToDrive(event);
-}
+
+
+/* ==========================================
+   BLOB TO BASE64
+========================================== */
 
 
 function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
 
-    reader.onloadend = () => {
-      const result = String(reader.result || "");
-      const comma = result.indexOf(",");
+  return new Promise(
+    function(resolve, reject) {
 
-      resolve(
-        comma >= 0
-          ? result.substring(comma + 1)
-          : result
+      const reader =
+        new FileReader();
+
+
+      reader.onloadend =
+        function() {
+
+          const result =
+            String(
+              reader.result || ""
+            );
+
+
+          const comma =
+            result.indexOf(
+              ","
+            );
+
+
+          resolve(
+
+            comma >= 0
+
+              ? result.substring(
+                  comma + 1
+                )
+
+              : result
+
+          );
+
+        };
+
+
+      reader.onerror =
+        reject;
+
+
+      reader.readAsDataURL(
+        blob
       );
-    };
 
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
+    }
+  );
+
 }
+
 
 
 /* ==========================================
    SHARE INVOICE
 ========================================== */
 
+
 async function shareInvoice(event) {
+
   if (event) {
+
     event.preventDefault();
+
     event.stopPropagation();
+
   }
+
 
   const button =
     event?.currentTarget ||
-    document.querySelector(".share-btn");
+    document.querySelector(
+      ".share-btn"
+    );
+
 
   const oldText =
-    button ? button.innerHTML : "";
+    button
+      ? button.innerHTML
+      : "";
+
 
   try {
+
     if (button) {
-      button.disabled = true;
-      button.innerHTML = "⏳ Preparing...";
+
+      button.disabled =
+        true;
+
+
+      button.innerHTML =
+        "⏳ Preparing...";
+
     }
 
-    const blob = await createInvoiceImage();
+
+    const blob =
+      await createInvoiceImage();
+
 
     const invoiceNo =
-      document.getElementById("invoiceNumber").value.trim() ||
+      document.getElementById(
+        "invoiceNumber"
+      ).value.trim() ||
       "Invoice";
 
+
     const customer =
-      document.getElementById("customerName").value.trim() ||
+      document.getElementById(
+        "customerName"
+      ).value.trim() ||
       "Customer";
+
 
     const file =
       new File(
+
         [blob],
-        `BIG-BROTHER-${invoiceNo.replace(/[^a-z0-9_-]+/gi, "-")}.png`,
-        { type: "image/png" }
+
+        `BIG-BROTHER-${invoiceNo
+          .replace(
+            /[^a-z0-9_-]+/gi,
+            "-"
+          )}.png`,
+
+        {
+          type:
+            "image/png"
+        }
+
       );
+
 
     const text =
       `BIG BROTHER Invoice ${invoiceNo}\nCustomer: ${customer}`;
 
-    // Mobile: native share sheet with the actual invoice picture.
+
+
+    /*
+     * MOBILE
+     *
+     * Native share sheet with
+     * actual invoice image.
+     */
+
     if (
+
       navigator.share &&
+
       navigator.canShare &&
-      navigator.canShare({ files: [file] })
-    ) {
-      await navigator.share({
-        title: "BIG BROTHER Invoice",
-        text: text,
+
+      navigator.canShare({
         files: [file]
+      })
+
+    ) {
+
+      await navigator.share({
+
+        title:
+          "BIG BROTHER Invoice",
+
+        text:
+          text,
+
+        files:
+          [file]
+
       });
+
+
       return;
+
     }
 
-    // PC: copy actual PNG to clipboard, then open Telegram Web.
+
+
+    /*
+     * PC
+     *
+     * Copy actual invoice image.
+     */
+
     if (
+
       navigator.clipboard &&
+
       window.ClipboardItem
+
     ) {
+
       try {
+
         await navigator.clipboard.write([
+
           new ClipboardItem({
-            "image/png": blob
+
+            "image/png":
+              blob
+
           })
+
         ]);
+
 
         window.open(
           "https://web.telegram.org/",
@@ -1615,94 +3308,234 @@ async function shareInvoice(event) {
           "noopener"
         );
 
+
         alert(
           "Invoice picture copied. In Telegram, open the chat and press Ctrl+V to paste it."
         );
+
+
         return;
+
+
       } catch (copyError) {
-        console.warn(copyError);
+
+        console.warn(
+          copyError
+        );
+
       }
+
     }
 
-    // Final fallback: save the PNG and open Telegram.
-    await saveInvoiceImage();
+
+
+    /*
+     * Final fallback.
+     */
+
+    await saveToPhone();
+
+
     window.open(
       "https://web.telegram.org/",
       "_blank",
       "noopener"
     );
 
-  } catch (error) {
-    if (error?.name === "AbortError") return;
 
-    console.error(error);
-    alert(
-      "Could not share the invoice picture. Try Save Invoice first."
-    );
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.innerHTML = oldText;
+  } catch (error) {
+
+    if (
+      error?.name ===
+      "AbortError"
+    ) {
+
+      return;
+
     }
+
+
+    console.error(
+      error
+    );
+
+
+    alert(
+      "Could not share the invoice picture. Try Save to Phone first."
+    );
+
+
+  } finally {
+
+    if (button) {
+
+      button.disabled =
+        false;
+
+
+      button.innerHTML =
+        oldText;
+
+    }
+
   }
+
 }
+
 
 
 /* ==========================================
    CLEAR EVERYTHING
 ========================================== */
 
+
 function clearAll() {
-  if (!confirm("Clear this invoice?")) return;
+
+  if (
+    !confirm(
+      "Clear this invoice?"
+    )
+  ) {
+
+    return;
+
+  }
+
 
   selectedProducts = [];
 
-  document.getElementById("productList").innerHTML = "";
-  document.getElementById("productSelector").style.display = "none";
 
-  document.getElementById("discount").value = 0;
-  document.getElementById("amountPaid").value = 0;
+  document.getElementById(
+    "productList"
+  ).innerHTML =
+    "";
 
-  document.getElementById("invoiceNumber").value = "INV-0001";
-  document.getElementById("customerName").value = "";
-  document.getElementById("customerPhone").value = "";
-  document.getElementById("customerAddress").value = "";
-  document.getElementById("salesName").value = "";
-  document.getElementById("paymentMethod").value = "Cash";
+
+  document.getElementById(
+    "productSelector"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "discount"
+  ).value =
+    0;
+
+
+  document.getElementById(
+    "amountPaid"
+  ).value =
+    0;
+
+
+  /*
+   * Automatically advance
+   * invoice number.
+   */
+
+  setInvoiceNumber(
+    getNextInvoiceNumber()
+  );
+
+
+  document.getElementById(
+    "customerName"
+  ).value =
+    "";
+
+
+  document.getElementById(
+    "customerPhone"
+  ).value =
+    "";
+
+
+  document.getElementById(
+    "customerAddress"
+  ).value =
+    "";
+
+
+  document.getElementById(
+    "salesName"
+  ).value =
+    "";
+
+
+  document.getElementById(
+    "paymentMethod"
+  ).value =
+    "Cash";
+
 
   setTodayDate();
+
+
   calculate();
+
 }
+
 
 
 /* ==========================================
    SAFE TEXT
 ========================================== */
 
+
 function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    text;
+
+
   return div.innerHTML;
+
 }
+
 
 
 /* ==========================================
    EVENTS
 ========================================== */
 
-document.getElementById("currency")
-  .addEventListener("change", changeCurrency);
 
-document.getElementById("exchangeRate")
-  .addEventListener("input", function() {
-    changeCurrency();
-  });
+document
+  .getElementById("currency")
+  .addEventListener(
+    "change",
+    changeCurrency
+  );
 
 
-/* INITIAL CALCULATION */
+document
+  .getElementById("exchangeRate")
+  .addEventListener(
+    "input",
+    function() {
+
+      changeCurrency();
+
+    }
+  );
+
+
+
+/* ==========================================
+   INITIAL CALCULATION
+========================================== */
+
 
 calculate();
+
 </script>
+
 
 </body>
 </html>
