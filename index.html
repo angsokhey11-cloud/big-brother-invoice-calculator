@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIG BROTHER Invoice</title>
+<title>BIG BROTHER</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -12,8 +12,8 @@ body {
   margin: 0;
   padding: 15px;
   font-family: Arial, sans-serif;
-  background: #f3f5f9;
-  color: #111;
+  background: #eef2f7;
+  color: #172033;
 }
 
 .calculator {
@@ -26,6 +26,8 @@ h1 {
   text-align: center;
   font-size: 26px;
   margin: 8px 0 18px;
+  color: #173b70;
+  letter-spacing: 1px;
 }
 
 .card {
@@ -58,10 +60,11 @@ select,
 input {
   width: 100%;
   padding: 11px;
-  border: 1px solid #ccc;
+  border: 1px solid #c9d2df;
   border-radius: 8px;
   font-size: 16px;
   background: white;
+  color: #172033;
 }
 
 select {
@@ -263,15 +266,22 @@ label {
 }
 
 @media (max-width: 450px) {
-  body { padding: 10px; }
+  body { padding: 8px; }
 
   h1 {
     font-size: 23px;
     margin-bottom: 14px;
   }
 
-  .grid-2 {
-    grid-template-columns: 1fr;
+  /* Keep invoice number + date together on mobile */
+  .invoice-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .invoice-grid input {
+    font-size: 14px;
+    padding: 9px;
   }
 
   .inputs {
@@ -281,12 +291,44 @@ label {
   .actions {
     grid-template-columns: 1fr;
   }
+
+  .top-bar {
+    gap: 8px;
+  }
+
+  .invoice-title {
+    font-size: 16px;
+  }
+
+  .card,
+  .product,
+  .totals-box,
+  .convert-box {
+    padding: 12px;
+  }
+}
+
+
+@media print {
+  #invoiceDate {
+    color: transparent;
+    position: relative;
+  }
+
+  #invoiceDate::after {
+    content: attr(data-print-date);
+    color: #111;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
 }
 
 @media print {
   body {
     background: white;
     padding: 0;
+    color: #111;
   }
 
   .calculator {
@@ -317,6 +359,36 @@ label {
     appearance: none;
   }
 }
+
+.date-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+#invoiceDateDisplay {
+  width: 100%;
+  cursor: pointer;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+#invoiceDate {
+  z-index: 2;
+}
+
+#invoiceDate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+}
+
 </style>
 </head>
 
@@ -337,15 +409,30 @@ label {
   <div class="card">
     <div class="section-title">Invoice Information</div>
 
-    <div class="grid-2">
+    <div class="grid-2 invoice-grid">
       <div>
         <label for="invoiceNumber">Invoice No.</label>
         <input type="text" id="invoiceNumber" value="INV-0001">
       </div>
 
       <div>
-        <label for="invoiceDate">Date</label>
-        <input type="date" id="invoiceDate">
+        <label for="invoiceDateDisplay">Date</label>
+        <div class="date-input-wrap">
+          <input
+            type="text"
+            id="invoiceDateDisplay"
+            value=""
+            placeholder="01-Sep-2026"
+            readonly
+          >
+          <input
+            type="date"
+            id="invoiceDate"
+            onchange="updateInvoiceDate()"
+            aria-hidden="true"
+            tabindex="-1"
+          >
+        </div>
       </div>
     </div>
 
@@ -363,6 +450,22 @@ label {
       <div>
         <label for="customerAddress">Address</label>
         <input type="text" id="customerAddress" placeholder="Enter address">
+      </div>
+    </div>
+
+    <div class="grid-2 customer-field">
+      <div>
+        <label for="salesName">Sale Name</label>
+        <input type="text" id="salesName" placeholder="Enter salesperson">
+      </div>
+
+      <div>
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod">
+          <option value="Cash">Cash</option>
+          <option value="Bank">Bank</option>
+          <option value="Credit">Credit</option>
+        </select>
       </div>
     </div>
   </div>
@@ -461,7 +564,7 @@ label {
     </button>
 
     <button class="action-btn share-btn" onclick="shareInvoice()">
-      📲 Share Invoice
+      ✈️ Share to Telegram
     </button>
   </div>
 
@@ -846,9 +949,77 @@ function calculateExchange(finalTotal, currency) {
    PRINT
 ========================================== */
 
+function formatInvoiceDate(dateValue) {
+  if (!dateValue) return "";
+
+  const parts = dateValue.split("-");
+  if (parts.length !== 3) return dateValue;
+
+  const [year, month, day] = parts;
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  return `${day}-${months[Number(month) - 1]}-${year}`;
+}
+
+function openDatePicker() {
+  const picker = document.getElementById("invoiceDate");
+  if (!picker) return;
+
+  try {
+    if (typeof picker.showPicker === "function") {
+      picker.showPicker();
+    } else {
+      picker.focus();
+      picker.click();
+    }
+  } catch (e) {
+    picker.focus();
+    picker.click();
+  }
+}
+
+function updateInvoiceDate() {
+  const picker = document.getElementById("invoiceDate");
+  const display = document.getElementById("invoiceDateDisplay");
+
+  if (picker && display) {
+    display.value = formatInvoiceDate(picker.value);
+  }
+}
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const picker = document.getElementById("invoiceDate");
+  if (picker && !picker.value) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    picker.value = `${yyyy}-${mm}-${dd}`;
+  }
+  updateInvoiceDate();
+});
+
 function printInvoice() {
   calculate();
-  window.print();
+
+  const dateInput = document.getElementById("invoiceDate");
+  if (dateInput) {
+    dateInput.setAttribute(
+      "data-print-date",
+      formatInvoiceDate(dateInput.value)
+    );
+  }
+
+  // window.print() is supported by modern mobile browsers.
+  // A short timeout lets the invoice finish recalculating first.
+  setTimeout(() => {
+    window.print();
+  }, 100);
 }
 
 
@@ -866,7 +1037,13 @@ function shareInvoice() {
     document.getElementById("customerName").value || "Customer";
 
   const date =
-    document.getElementById("invoiceDate").value || "";
+    formatInvoiceDate(document.getElementById("invoiceDate").value);
+
+  const saleName =
+    document.getElementById("salesName").value || "";
+
+  const paymentMethod =
+    document.getElementById("paymentMethod").value || "Cash";
 
   const total =
     document.getElementById("grandTotal").textContent;
@@ -876,23 +1053,22 @@ function shareInvoice() {
 Invoice No.: ${invoiceNo}
 Date: ${date}
 Customer: ${customer}
+Sales: ${saleName}
+Payment: ${paymentMethod}
 
 Grand Total: ${total}
 
 Thank you for your business!`;
 
-  if (navigator.share) {
-    navigator.share({
-      title: "BIG BROTHER Invoice",
-      text: message
-    }).catch(() => {});
-  } else {
-    const whatsappUrl =
-      "https://wa.me/?text=" +
-      encodeURIComponent(message);
+  /*
+    Telegram's official share URL opens Telegram's share screen
+    on supported mobile devices. It also works as a web fallback.
+  */
+  const telegramUrl =
+    "https://t.me/share/url?url=&text=" +
+    encodeURIComponent(message);
 
-    window.open(whatsappUrl, "_blank");
-  }
+  window.location.href = telegramUrl;
 }
 
 
@@ -915,6 +1091,8 @@ function clearAll() {
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
+  document.getElementById("salesName").value = "";
+  document.getElementById("paymentMethod").value = "Cash";
 
   setTodayDate();
   calculate();
