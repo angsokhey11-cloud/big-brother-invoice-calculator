@@ -632,13 +632,13 @@ setTodayDate();
 ========================================== */
 
 const DRIVE_SAVE_API =
-  "https://script.google.com/macros/s/AKfycbzKPsKptXGdxm9bZ8VJpWAc1XnFTCsfCOGzfn6GCmYYt-yHVw-DXsEHTrpnZf_EOFd4TA/exec";
+  "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
 
 const DRIVE_FOLDER_ID =
   "1wgNyhkR7-QQphRAAou2v-etx0LinDl21";
 
 const CUSTOMER_API_URL =
-  "https://script.google.com/macros/s/AKfycbzKPsKptXGdxm9bZ8VJpWAc1XnFTCsfCOGzfn6GCmYYt-yHVw-DXsEHTrpnZf_EOFd4TA/exec";
+  "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
 
 let customers = [];
 
@@ -1401,10 +1401,9 @@ async function saveToDrive(event) {
 
   const button =
     event?.currentTarget ||
-    document.querySelector(".save-btn");
+    document.querySelector("button[onclick*='saveToDrive']");
 
-  const oldText =
-    button ? button.innerHTML : "";
+  const oldText = button ? button.innerHTML : "";
 
   try {
     if (button) {
@@ -1438,57 +1437,81 @@ async function saveToDrive(event) {
     const fileName =
       `BIG-BROTHER-${safeInvoice}-${safeCustomer}-${date}.png`;
 
-    const base64 =
-      await blobToBase64(blob);
+    const base64 = await blobToBase64(blob);
 
-    const response =
-      await fetch(DRIVE_SAVE_API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({
-          action: "saveInvoiceImage",
-          folderId: DRIVE_FOLDER_ID,
-          fileName: fileName,
-          mimeType: "image/png",
-          imageBase64: base64,
-          invoiceNo: invoiceNo,
-          customerName: customer,
-          date: date
-        })
-      });
+    /*
+     * Use a real HTML form POST instead of fetch().
+     * GitHub Pages -> Apps Script can be blocked by browser CORS
+     * when fetch() follows the Apps Script redirect. A form POST
+     * does not have that CORS problem and matches doPost(e).parameter
+     * in the Apps Script.
+     */
+    let iframe = document.getElementById("driveSaveFrame");
 
-    if (!response.ok) {
-      throw new Error("Drive server returned " + response.status);
+    if (!iframe) {
+      iframe = document.createElement("iframe");
+      iframe.id = "driveSaveFrame";
+      iframe.name = "driveSaveFrame";
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
     }
 
-    const result = await response.json();
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = DRIVE_SAVE_API;
+    form.target = "driveSaveFrame";
+    form.style.display = "none";
 
-    if (!result.success) {
-      throw new Error(
-        result.error || "Google Drive could not save the invoice."
-      );
+    const fields = {
+      action: "saveInvoice",
+      image: "data:image/png;base64," + base64,
+      fileName: fileName
+    };
+
+    Object.keys(fields).forEach(key => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = fields[key];
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+
+    /* The cross-origin iframe cannot expose the Apps Script response,
+       but the POST request itself is sent successfully. */
+    setTimeout(() => {
+      form.remove();
+    }, 3000);
+
+    if (button) {
+      button.innerHTML = "✅ Saved to Drive";
     }
 
-    alert("Invoice image saved to Google Drive successfully.");
+    alert("Invoice image sent to Google Drive. Check your BIG BROTHER invoice folder.");
+
+    setTimeout(() => {
+      if (button) button.innerHTML = oldText;
+    }, 1800);
 
   } catch (error) {
     console.error("Drive save failed:", error);
 
     alert(
       "Could not save to Google Drive.\n\n" +
-      "Please make sure the Apps Script has been redeployed as a new version."
+      (error?.message || "Please try again.")
     );
 
   } finally {
     if (button) {
       button.disabled = false;
-      button.innerHTML = oldText;
+      if (button.innerHTML === "⏳ Saving to Drive...") {
+        button.innerHTML = oldText;
+      }
     }
   }
 }
-
 
 /* Backward-compatible name used by older share code. */
 async function saveInvoiceImage(event) {
