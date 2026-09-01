@@ -1,5 +1,41 @@
 <!DOCTYPE html>
 <html>
+<h2>BIG BROTHER</h2>
+<div class="invoice-info">
+
+  <div class="invoice-title">
+    INVOICE
+  </div>
+
+  <div class="invoice-row">
+    <div>
+      <label>Invoice No.</label>
+      <input
+        type="text"
+        id="invoiceNumber"
+        value="INV-0001"
+      >
+    </div>
+
+    <div>
+      <label>Date</label>
+      <input
+        type="date"
+        id="invoiceDate"
+      >
+    </div>
+  </div>
+
+  <div class="customer-field">
+    <label>Customer Name</label>
+    <input
+      type="text"
+      id="customerName"
+      placeholder="Enter customer name"
+    >
+  </div>
+
+</div>
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +43,50 @@
 <title>BIG BROTHER Invoice Calculator</title>
 
 <style>
+.invoice-info {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
 
+.invoice-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.invoice-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.invoice-info label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.invoice-info input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.customer-field {
+  margin-top: 5px;
+}
+
+@media (max-width: 450px) {
+  .invoice-row {
+    grid-template-columns: 1fr;
+  }
+}
 * {
   box-sizing: border-box;
 }
@@ -387,6 +466,19 @@ input {
 
 
 <script>
+function setTodayDate() {
+
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  document.getElementById("invoiceDate").value =
+    `${year}-${month}-${day}`;
+}
+
+setTodayDate();
 
 /* ==========================================
    PRODUCT LIST
