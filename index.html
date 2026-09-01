@@ -402,6 +402,76 @@ label {
 }
 
 
+
+/* ==========================================
+   CUSTOMER AUTOCOMPLETE - COMPACT MOBILE
+   ========================================== */
+
+.customer-autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.customer-options {
+  display: none;
+  position: absolute;
+  z-index: 1000;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 210px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #9bb7dc;
+  border-radius: 9px;
+  box-shadow: 0 6px 18px rgba(23, 59, 112, 0.16);
+}
+
+.customer-option {
+  padding: 9px 11px;
+  border-bottom: 1px solid #e7edf5;
+  cursor: pointer;
+  line-height: 1.25;
+  background: #fff;
+}
+
+.customer-option:last-child {
+  border-bottom: none;
+}
+
+.customer-option:active,
+.customer-option:hover {
+  background: #eef5ff;
+}
+
+.customer-option-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #172033;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.customer-option-details {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #66758a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+  .customer-options {
+    max-height: 180px;
+  }
+
+  .customer-option {
+    padding: 8px 10px;
+  }
+}
+
 /* ==========================================
    BIG BROTHER PROFESSIONAL INVOICE DESIGN
    ========================================== */
@@ -606,14 +676,15 @@ input:focus {
 
     <div class="customer-field">
       <label for="customerName">Customer Name</label>
-      <input
-        type="text"
-        id="customerName"
-        list="customerOptions"
-        placeholder="Type or select customer"
-        autocomplete="off"
-      >
-      <datalist id="customerOptions"></datalist>
+      <div class="customer-autocomplete">
+        <input
+          type="text"
+          id="customerName"
+          placeholder="Type or select customer"
+          autocomplete="off"
+        >
+        <div id="customerOptions" class="customer-options"></div>
+      </div>
       <div id="customerStatus" class="customer-status">
         Loading customers...
       </div>
@@ -904,12 +975,28 @@ function loadCustomers() {
     list.innerHTML = "";
 
     customers.forEach(customer => {
-      const option = document.createElement("option");
-      option.value = customer.name;
-      option.label =
+      const option = document.createElement("div");
+      option.className = "customer-option";
+      option.dataset.name = customer.name;
+
+      const name = document.createElement("div");
+      name.className = "customer-option-name";
+      name.textContent = customer.name;
+
+      const details = document.createElement("div");
+      details.className = "customer-option-details";
+      details.textContent =
         [customer.phone, customer.address]
           .filter(Boolean)
-          .join(" • ");
+          .join(" • ") || "No phone or address";
+
+      option.appendChild(name);
+      option.appendChild(details);
+
+      option.addEventListener("mousedown", function(event) {
+        event.preventDefault();
+        selectCustomer(customer);
+      });
 
       list.appendChild(option);
     });
@@ -978,13 +1065,112 @@ function fillCustomerInformation() {
 }
 
 
-document
-  .getElementById("customerName")
-  .addEventListener("input", fillCustomerInformation);
+/* ==========================================
+   COMPACT CUSTOMER SEARCH DROPDOWN
+========================================== */
 
-document
-  .getElementById("customerName")
-  .addEventListener("change", fillCustomerInformation);
+function showCustomerOptions() {
+  const input = document.getElementById("customerName");
+  const list = document.getElementById("customerOptions");
+
+  if (!input || !list || !customers.length) return;
+
+  const query = input.value.trim().toLowerCase();
+
+  const matches = customers.filter(customer =>
+    customer.name.toLowerCase().includes(query) ||
+    customer.phone.toLowerCase().includes(query) ||
+    customer.address.toLowerCase().includes(query)
+  ).slice(0, 8);
+
+  list.innerHTML = "";
+
+  matches.forEach(customer => {
+    const option = document.createElement("div");
+    option.className = "customer-option";
+
+    const name = document.createElement("div");
+    name.className = "customer-option-name";
+    name.textContent = customer.name;
+
+    const details = document.createElement("div");
+    details.className = "customer-option-details";
+    details.textContent =
+      [customer.phone, customer.address]
+        .filter(Boolean)
+        .join(" • ") || "No phone or address";
+
+    option.appendChild(name);
+    option.appendChild(details);
+
+    option.addEventListener("mousedown", function(event) {
+      event.preventDefault();
+      selectCustomer(customer);
+    });
+
+    list.appendChild(option);
+  });
+
+  list.style.display = matches.length ? "block" : "none";
+}
+
+
+function selectCustomer(customer) {
+  document.getElementById("customerName").value =
+    customer.name;
+
+  document.getElementById("customerPhone").value =
+    customer.phone || "";
+
+  document.getElementById("customerAddress").value =
+    customer.address || "";
+
+  document.getElementById("customerOptions").style.display =
+    "none";
+}
+
+
+const customerNameInput =
+  document.getElementById("customerName");
+
+if (customerNameInput) {
+
+  customerNameInput.addEventListener(
+    "input",
+    function() {
+      fillCustomerInformation();
+      showCustomerOptions();
+    }
+  );
+
+  customerNameInput.addEventListener(
+    "focus",
+    function() {
+      showCustomerOptions();
+    }
+  );
+
+  customerNameInput.addEventListener(
+    "change",
+    fillCustomerInformation
+  );
+}
+
+document.addEventListener("click", function(event) {
+  const box =
+    document.querySelector(".customer-autocomplete");
+
+  const list =
+    document.getElementById("customerOptions");
+
+  if (
+    box &&
+    list &&
+    !box.contains(event.target)
+  ) {
+    list.style.display = "none";
+  }
+});
 
 loadCustomers();
 
@@ -1775,31 +1961,107 @@ async function shareInvoice(event) {
       document.getElementById("customerName").value.trim() ||
       "Customer";
 
-    const file =
-      new File(
-        [blob],
-        `BIG-BROTHER-${invoiceNo.replace(/[^a-z0-9_-]+/gi, "-")}.png`,
-        { type: "image/png" }
-      );
+    const file = new File(
+      [blob],
+      `BIG-BROTHER-${invoiceNo.replace(/[^a-z0-9_-]+/gi, "-")}.png`,
+      { type: "image/png" }
+    );
 
     const text =
       `BIG BROTHER Invoice ${invoiceNo}\nCustomer: ${customer}`;
 
-    // Mobile: native share sheet with the actual invoice picture.
-    if (
-      navigator.share &&
-      navigator.canShare &&
-      navigator.canShare({ files: [file] })
-    ) {
-      await navigator.share({
-        title: "BIG BROTHER Invoice",
-        text: text,
-        files: [file]
-      });
-      return;
+    /*
+     * MOBILE:
+     * Use the phone's native share sheet first.
+     * Telegram will appear as an app when Telegram is installed.
+     *
+     * We intentionally do NOT send mobile users to Telegram Web.
+     */
+    const isMobile =
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+    if (isMobile && navigator.share) {
+      try {
+        /*
+         * Some mobile browsers incorrectly report canShare().
+         * Try navigator.share() directly so Telegram can receive
+         * the actual invoice image through the phone's share system.
+         */
+        await navigator.share({
+          title: "BIG BROTHER Invoice",
+          text: text,
+          files: [file]
+        });
+
+        return;
+      } catch (shareError) {
+        /*
+         * User cancelled the share sheet.
+         */
+        if (shareError?.name === "AbortError") {
+          return;
+        }
+
+        console.warn(
+          "Native mobile share failed:",
+          shareError
+        );
+      }
+
+      /*
+       * If the browser cannot share the image directly,
+       * save the invoice first and then try to launch
+       * the Telegram APP using its tg:// deep link.
+       */
+      try {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download =
+          `BIG-BROTHER-${invoiceNo.replace(/[^a-z0-9_-]+/gi, "-")}.png`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+        const telegramText =
+          encodeURIComponent(
+            `BIG BROTHER Invoice ${invoiceNo}\nCustomer: ${customer}`
+          );
+
+        /*
+         * This opens the Telegram APP when it is installed.
+         * The saved invoice image can then be attached from
+         * the phone's Photos/Files.
+         */
+        window.location.href =
+          `tg://msg?text=${telegramText}`;
+
+        setTimeout(() => {
+          alert(
+            "The invoice was saved to your phone. " +
+            "If Telegram did not open, please install Telegram " +
+            "or open it manually and attach the saved invoice image."
+          );
+        }, 1200);
+
+        return;
+      } catch (fallbackError) {
+        console.warn(
+          "Telegram app launch failed:",
+          fallbackError
+        );
+      }
     }
 
-    // PC: copy actual PNG to clipboard, then open Telegram Web.
+    /*
+     * DESKTOP:
+     * Copy the actual invoice image to the clipboard,
+     * then open Telegram Web.
+     */
     if (
       navigator.clipboard &&
       window.ClipboardItem
@@ -1820,14 +2082,18 @@ async function shareInvoice(event) {
         alert(
           "Invoice picture copied. In Telegram, open the chat and press Ctrl+V to paste it."
         );
+
         return;
       } catch (copyError) {
         console.warn(copyError);
       }
     }
 
-    // Final fallback: save the PNG and open Telegram.
+    /*
+     * Final desktop fallback.
+     */
     await saveInvoiceImage();
+
     window.open(
       "https://web.telegram.org/",
       "_blank",
@@ -1838,9 +2104,12 @@ async function shareInvoice(event) {
     if (error?.name === "AbortError") return;
 
     console.error(error);
+
     alert(
-      "Could not share the invoice picture. Try Save Invoice first."
+      "Could not share the invoice picture. " +
+      "Try Save to Phone first."
     );
+
   } finally {
     if (button) {
       button.disabled = false;
