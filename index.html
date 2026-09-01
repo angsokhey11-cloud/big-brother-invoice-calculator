@@ -74,7 +74,39 @@
   padding: 15px;
   margin-bottom: 15px;
 }
+.totals-box {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 15px;
+}
 
+.subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 16px;
+}
+
+.discount-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 16px;
+}
+
+.discount-row input {
+  width: 120px;
+  padding: 8px;
+  text-align: right;
+}
+
+.totals-box .grand-total {
+  margin-top: 10px;
+  padding: 15px 0 0;
+  border-top: 1px solid #ddd;
+}
 .invoice-title {
   font-size: 18px;
   font-weight: bold;
@@ -444,17 +476,34 @@ input {
 
   <!-- GRAND TOTAL -->
 
-  <div class="grand-total">
+ <div class="totals-box">
 
-    <span>
-      Grand Total
-    </span>
-
-    <span id="grandTotal">
-      ៛0
-    </span>
-
+  <div class="subtotal-row">
+    <span>Subtotal</span>
+    <span id="subtotal">$0.00</span>
   </div>
+
+  <div class="discount-row">
+    <div>
+      <span>Discount</span>
+    </div>
+
+    <input
+      type="number"
+      id="discount"
+      min="0"
+      value="0"
+      step="0.01"
+      oninput="calculate()"
+    >
+  </div>
+
+  <div class="grand-total">
+    <span>Grand Total</span>
+    <span id="grandTotal">$0.00</span>
+  </div>
+
+</div>
 
 
   <!-- EXCHANGE CALCULATION -->
@@ -768,20 +817,23 @@ function calculate() {
     });
 
 
-  /* GRAND TOTAL */
+/* SUBTOTAL + DISCOUNT + GRAND TOTAL */
 
-  document
-    .getElementById("grandTotal")
-    .textContent =
-      formatMoney(
-        total,
-        currency
-      );
+const discount =
+  Number(document.getElementById("discount").value) || 0;
 
+const finalTotal =
+  Math.max(0, total - discount);
+
+document.getElementById("subtotal").textContent =
+  formatMoney(total, currency);
+
+document.getElementById("grandTotal").textContent =
+  formatMoney(finalTotal, currency);
 
   /* EXCHANGE */
 
-  calculateExchange(total, currency);
+  calculateExchange(finalTotal, currency);
 
 }
 
