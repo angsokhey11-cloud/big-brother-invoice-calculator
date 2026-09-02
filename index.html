@@ -1394,6 +1394,325 @@ input:focus {
   }
 }
 
+
+/* ==========================================
+   COMPACT INVOICE LAYOUT
+   ========================================== */
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+.header-main h1 {
+  margin: 0;
+  text-align: left;
+  flex: 1;
+}
+.header-currency {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.header-currency select {
+  width: 74px;
+  min-width: 74px;
+  padding: 8px 7px;
+  font-size: 14px;
+}
+.header-rate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #4a5b73;
+}
+.header-rate input {
+  width: 70px;
+  padding: 8px 6px;
+  font-size: 13px;
+  text-align: center;
+}
+.invoice-card {
+  padding: 12px;
+}
+.invoice-card .section-title {
+  margin-bottom: 9px;
+}
+.invoice-card .customer-field {
+  margin-top: 8px;
+}
+.transaction-details {
+  margin-top: 12px;
+  padding: 12px;
+  border-color: #9bb7dc;
+}
+@media (max-width: 600px) {
+  .header-main {
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .header-main h1 {
+    font-size: 22px;
+    line-height: 1.2;
+  }
+  .header-currency {
+    gap: 4px;
+  }
+  .header-currency select {
+    width: 62px;
+    min-width: 62px;
+    padding: 7px 4px;
+    font-size: 13px;
+  }
+  .header-rate {
+    font-size: 10px;
+    gap: 2px;
+  }
+  .header-rate input {
+    width: 58px;
+    padding: 7px 3px;
+    font-size: 12px;
+  }
+  .invoice-card {
+    padding: 10px;
+  }
+}
+
+/* NOTE + BANKING INPUT */
+.note-card select {
+  width: 100%;
+  margin-top: 5px;
+}
+.note-card textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  margin-top: 8px;
+  padding: 10px 11px;
+  border: 1px solid #c9d2df;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 15px;
+  color: #172033;
+}
+.note-card label,
+.banking-input-card label {
+  font-weight: 700;
+}
+.banking-input-card select {
+  width: 100%;
+  margin-top: 5px;
+}
+.banking-preview {
+  margin-top: 8px;
+  padding: 10px 11px;
+  border: 1px solid #d7dee8;
+  border-radius: 8px;
+  background: #fafbfc;
+  min-height: 48px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+  color: #374151;
+}
+
+/* ==========================================
+   FINAL / COMPLETED INVOICE VIEW
+   Clean A4-style layout based on sample invoice.
+========================================== */
+.final-invoice {
+  width: 794px;
+  max-width: 100%;
+  margin: 0 auto;
+  background: #fff;
+  color: #222;
+  border: 1px solid #8f8f8f;
+  padding: 28px 30px 26px;
+  font-family: Arial, sans-serif;
+  box-shadow: none;
+}
+.final-invoice * { box-sizing: border-box; }
+.final-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 25px;
+  min-height: 78px;
+}
+.final-company {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #222;
+}
+.final-company-name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #174a91;
+  margin-bottom: 5px;
+}
+.final-company-name span { color: #222; }
+.final-title-line {
+  border-top: 2px solid #222;
+  margin: 10px 0 16px;
+}
+.final-invoice-title {
+  text-align: center;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  color: #2867b2;
+  margin: 0 0 18px;
+}
+.final-bill-row {
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  gap: 20px;
+  margin-bottom: 18px;
+  min-height: 72px;
+}
+.final-bill {
+  font-size: 14px;
+  line-height: 1.45;
+}
+.final-bill-label {
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+.final-bill-value { white-space: pre-line; }
+.final-meta {
+  text-align: right;
+  color: #2867b2;
+}
+.final-meta-no {
+  font-size: 23px;
+  font-weight: 800;
+}
+.final-meta-date {
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.final-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+}
+.final-table th {
+  background: #4472b9;
+  color: #fff;
+  border: 1px solid #6f88aa;
+  padding: 7px 8px;
+  text-align: center;
+  font-weight: 800;
+}
+.final-table th:nth-child(1) { width: 48px; text-align: center; }
+.final-table th:nth-child(3) { width: 82px; text-align: center; }
+.final-table th:nth-child(4) { width: 105px; text-align: center; }
+.final-table th:nth-child(5) { width: 110px; text-align: center; }
+.final-table td {
+  border: 1px solid #999;
+  padding: 8px;
+  vertical-align: top;
+  height: 42px;
+}
+.final-table td:first-child { text-align: center; }
+.final-table td:nth-child(3),
+.final-table td:nth-child(4),
+.final-table td:nth-child(5) { text-align: center; }
+.final-desc { font-weight: 700; }
+.final-unit {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #555;
+  font-weight: 400;
+}
+.final-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 28px;
+  margin-top: 14px;
+  align-items: start;
+}
+.final-notes {
+  min-height: 78px;
+  border-top: 1px solid #9aa8b8;
+  padding-top: 6px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.final-notes-title { font-weight: 800; margin-bottom: 4px; }
+.final-note-line { min-height: 18px; }
+.final-summary {
+  width: 100%;
+  font-size: 13px;
+}
+.final-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 5px 8px;
+  border-bottom: 1px solid #bfc7d1;
+}
+.final-summary-row.grand {
+  background: #4472b9;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  border-bottom: 0;
+}
+.final-summary-row.change { color: #16733d; font-weight: 700; }
+.final-summary-label { font-weight: 700; }
+.final-summary-value { text-align: right; white-space: nowrap; }
+.final-transaction {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-top: 14px;
+  font-size: 12px;
+}
+.final-transaction-box {
+  border: 1px solid #999;
+  padding: 8px 10px;
+  min-height: 50px;
+}
+.final-transaction-label { font-weight: 800; margin-bottom: 4px; }
+.final-banking {
+  border: 1px solid #999;
+  margin-top: 12px;
+  padding: 9px 12px;
+  min-height: 64px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.final-banking-title { font-weight: 800; margin-bottom: 3px; }
+.final-footer-space { height: 8px; }
+
+@media (max-width: 600px) {
+  .final-invoice { padding: 18px 14px; }
+  .final-header { gap: 10px; }
+  .final-company-name { font-size: 18px; }
+  .final-company { font-size: 11px; }
+  .final-invoice-title { font-size: 24px; margin-bottom: 16px; }
+  .final-bill-row { grid-template-columns: 1fr 125px; gap: 10px; margin-bottom: 18px; }
+  .final-meta-no { font-size: 17px; }
+  .final-meta-date { font-size: 11px; }
+  .final-table { font-size: 10px; }
+  .final-table th, .final-table td { padding: 5px 4px; }
+  .final-table th:nth-child(1) { width: 28px; }
+  .final-table th:nth-child(3) { width: 55px; }
+  .final-table th:nth-child(4) { width: 68px; }
+  .final-table th:nth-child(5) { width: 72px; }
+  .final-bottom-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .final-transaction { gap: 10px; }
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
 /* Keep optional financial sections hidden when invoice opens. */
@@ -1407,18 +1726,23 @@ document.addEventListener("DOMContentLoaded", function () {
 <body>
 <div class="calculator">
 
-  <h1>BIG BROTHER</h1>
-
-  <div class="top-bar">
-    <div class="invoice-title">Invoice</div>
-    <select id="currency" aria-label="Currency">
-      <option value="USD">USD</option>
-      <option value="KHR">KHR</option>
-    </select>
+  <div class="header-main">
+    <h1>BIG BROTHER</h1>
+    <div class="header-currency">
+      <select id="currency" aria-label="Currency">
+        <option value="USD">USD</option>
+        <option value="KHR">KHR</option>
+      </select>
+      <div class="header-rate">
+        <span>1 USD =</span>
+        <input id="exchangeRate" type="number" min="1" value="4060" inputmode="decimal" aria-label="Exchange rate">
+        <span>KHR</span>
+      </div>
+    </div>
   </div>
 
   <!-- INVOICE INFORMATION -->
-  <div class="card">
+  <div class="card invoice-card">
     <div class="section-title">Invoice Information</div>
 
     <div class="grid-2 invoice-grid">
@@ -1430,85 +1754,33 @@ document.addEventListener("DOMContentLoaded", function () {
       <div>
         <label for="invoiceDateDisplay">Date</label>
         <div class="date-input-wrap">
-          <input
-            type="text"
-            id="invoiceDateDisplay"
-            value=""
-            placeholder="01-Sep-2026"
-            readonly
-          >
-          <input
-            type="date"
-            id="invoiceDate"
-            onchange="updateInvoiceDate()"
-            aria-hidden="true"
-            tabindex="-1"
-          >
+          <input type="text" id="invoiceDateDisplay" value="" placeholder="01-Sep-2026" readonly>
+          <input type="date" id="invoiceDate" onchange="updateInvoiceDate()" aria-hidden="true" tabindex="-1">
         </div>
       </div>
     </div>
 
-    <div class="customer-field">
-      <label for="customerName">Customer Name</label>
-      <div class="customer-autocomplete">
-        <input
-          type="text"
-          id="customerName"
-          placeholder="Type or select customer"
-          autocomplete="off"
-        >
-        <div id="customerOptions" class="customer-options"></div>
-      </div>
-      <div id="customerStatus" class="customer-status">
-        Loading customers...
-      </div>
-    </div>
-
     <div class="grid-2 customer-field">
+      <div>
+        <label for="customerName">Customer Name</label>
+        <div class="customer-autocomplete">
+          <input type="text" id="customerName" placeholder="Type or select customer" autocomplete="off">
+          <div id="customerOptions" class="customer-options"></div>
+        </div>
+      </div>
+
       <div>
         <label for="customerPhone">Phone</label>
         <input type="tel" id="customerPhone" placeholder="Enter phone number">
       </div>
-
-      <div>
-        <label for="customerAddress">Address</label>
-        <input type="text" id="customerAddress" placeholder="Enter address">
-      </div>
     </div>
 
-    <div class="grid-2 customer-field">
-      <div>
-        <label for="salesName">Sale Name</label>
-        <input type="text" id="salesName" placeholder="Enter salesperson">
-      </div>
-
-      <div>
-        <label for="paymentMethod">Payment Method</label>
-        <select id="paymentMethod">
-          <option value="Cash">Cash</option>
-          <option value="Bank">Bank</option>
-          <option value="Credit">Credit</option>
-        </select>
-      </div>
+    <div class="customer-field">
+      <label for="customerAddress">Address</label>
+      <input type="text" id="customerAddress" placeholder="Enter address">
     </div>
-  </div>
 
-  <!-- EXCHANGE RATE -->
-  <div class="card">
-    <div class="section-title">Exchange Rate</div>
-
-    <div class="exchange-row">
-      <span>1 USD =</span>
-      <input
-        id="exchangeRate"
-        class="exchange-input"
-        type="number"
-        min="1"
-        value="4060"
-        inputmode="decimal"
-      >
-      <span>KHR</span>
-    </div>
+    <div id="customerStatus" class="customer-status">Loading customers...</div>
   </div>
 
   <!-- ADD PRODUCT -->
@@ -1635,6 +1907,45 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
   </div>
 
+  <!-- SALE PERSON & PAYMENT METHOD -->
+  <div class="card transaction-details">
+    <div class="grid-2">
+      <div>
+        <label for="salesName">Sale Person</label>
+        <select id="salesName" disabled>
+          <option value="">Loading salespersons...</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod">
+          <option value="Cash">Cash</option>
+          <option value="Bank">Bank</option>
+          <option value="Credit">Credit</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="card note-card no-print">
+    <label for="noteTemplate">Note:</label>
+    <select id="noteTemplate" disabled>
+      <option value="">Loading notes...</option>
+    </select>
+    <textarea id="invoiceNote" placeholder="Select a saved note or type your own note..."></textarea>
+  </div>
+
+  <!-- BANKING DETAILS -->
+  <div class="card banking-input-card no-print">
+    <label for="bankingDetails">Banking Details</label>
+    <select id="bankingDetails" disabled>
+      <option value="">Loading banking details...</option>
+    </select>
+    <div id="bankingPreview" class="banking-preview">Select a banking detail</div>
+  </div>
+
   <!-- ACTIONS -->
   <div class="actions no-print">
     <button type="button" class="action-btn print-btn" onclick="printInvoice(event)">
@@ -1736,6 +2047,309 @@ const CUSTOMER_API_URL =
   "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
 
 let customers = [];
+
+/* ==========================================
+   SALESPERSON DATABASE
+   Google Sheets -> Apps Script Web App
+   Sheet name: salepersons
+   A = Salesperson Name
+   B = Active
+========================================== */
+
+let salespersons = [];
+let salespersonDatabaseLoaded = false;
+
+/* ==========================================
+   NOTE DATABASE
+   Google Sheets -> Apps Script Web App
+   Sheet name: notes
+   A = Display Name
+   B = Note Text
+   C = Active
+========================================== */
+let noteTemplates = [];
+let noteDatabaseLoaded = false;
+
+function loadNoteTemplates() {
+  const select = document.getElementById("noteTemplate");
+  const textarea = document.getElementById("invoiceNote");
+  if (!select) return;
+
+  noteDatabaseLoaded = false;
+  select.disabled = true;
+  select.innerHTML = `<option value="">Loading notes...</option>`;
+
+  const callbackName = "bbNotes_" + Date.now();
+  const script = document.createElement("script");
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  window[callbackName] = function(data) {
+    if (!Array.isArray(data)) {
+      noteTemplates = [];
+      select.innerHTML = `<option value="">Note database unavailable</option>`;
+      select.disabled = true;
+      finish();
+      return;
+    }
+
+    noteTemplates = data.map(row => ({
+      name: String(row.name || "").trim(),
+      note: String(row.note || row.text || "").trim(),
+      active: row.active === true || String(row.active).toLowerCase() === "true"
+    })).filter(item => item.name && item.note && item.active);
+
+    noteDatabaseLoaded = true;
+    select.innerHTML = `<option value="">Select saved note</option>`;
+
+    noteTemplates.forEach((item, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = item.name;
+      select.appendChild(option);
+    });
+
+    select.disabled = false;
+    finish();
+  };
+
+  script.onerror = function() {
+    noteTemplates = [];
+    noteDatabaseLoaded = false;
+    select.innerHTML = `<option value="">Note database unavailable</option>`;
+    select.disabled = true;
+    finish();
+  };
+
+  script.src = CUSTOMER_API_URL +
+    "?action=notes&callback=" + encodeURIComponent(callbackName) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
+
+  setTimeout(() => {
+    if (!done) {
+      noteTemplates = [];
+      noteDatabaseLoaded = false;
+      select.innerHTML = `<option value="">Note database unavailable</option>`;
+      select.disabled = true;
+      finish();
+    }
+  }, 12000);
+}
+
+function applySelectedNote() {
+  const select = document.getElementById("noteTemplate");
+  const textarea = document.getElementById("invoiceNote");
+  if (!select || !textarea) return;
+
+  const item = noteTemplates[Number(select.value)];
+  if (item) {
+    textarea.value = item.note;
+  } else if (select.value === "") {
+    textarea.value = "";
+  }
+}
+
+/* ==========================================
+   BANKING DETAILS DATABASE
+   Google Sheets -> Apps Script Web App
+   Sheet name: banking
+   A = Bank Name
+   B = ABA / Account No.
+   C = Account Name
+   D = Active
+========================================== */
+
+let bankingDetails = [];
+let bankingDatabaseLoaded = false;
+
+function loadBankingDetails() {
+  const select = document.getElementById("bankingDetails");
+  const preview = document.getElementById("bankingPreview");
+  if (!select) return;
+
+  bankingDatabaseLoaded = false;
+  select.disabled = true;
+  select.innerHTML = `<option value="">Loading banking details...</option>`;
+  if (preview) preview.textContent = "Loading banking details...";
+
+  const callbackName = "bbBanking_" + Date.now();
+  const script = document.createElement("script");
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  window[callbackName] = function(data) {
+    if (!Array.isArray(data)) {
+      bankingDetails = [];
+      select.innerHTML = `<option value="">Banking database unavailable</option>`;
+      select.disabled = true;
+      if (preview) preview.textContent = "Banking database unavailable";
+      finish();
+      return;
+    }
+
+    bankingDetails = data.map(row => ({
+      name: String(row.name || "").trim(),
+      bank: String(row.bank || "").trim(),
+      account: String(row.account || "").trim(),
+      active: row.active === true || String(row.active).toLowerCase() === "true"
+    })).filter(item => (item.name || item.bank || item.account) && item.active);
+
+    bankingDatabaseLoaded = true;
+    select.innerHTML = `<option value="">Select banking detail</option>`;
+
+    bankingDetails.forEach((item, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = item.name || item.bank || item.account;
+      select.appendChild(option);
+    });
+
+    select.disabled = false;
+    updateBankingPreview();
+    finish();
+  };
+
+  script.onerror = function() {
+    bankingDetails = [];
+    bankingDatabaseLoaded = false;
+    select.innerHTML = `<option value="">Banking database unavailable</option>`;
+    select.disabled = true;
+    if (preview) preview.textContent = "Banking database unavailable";
+    finish();
+  };
+
+  script.src = CUSTOMER_API_URL +
+    "?action=banking&callback=" + encodeURIComponent(callbackName) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
+
+  setTimeout(() => {
+    if (!done) {
+      bankingDetails = [];
+      select.innerHTML = `<option value="">Banking database unavailable</option>`;
+      select.disabled = true;
+      if (preview) preview.textContent = "Banking database unavailable";
+      finish();
+    }
+  }, 12000);
+}
+
+function updateBankingPreview() {
+  const select = document.getElementById("bankingDetails");
+  const preview = document.getElementById("bankingPreview");
+  if (!select || !preview) return;
+
+  const selectedValue = String(select.value || "").trim();
+  if (selectedValue === "") {
+    preview.textContent = "Select a banking detail";
+    return;
+  }
+
+  const item = bankingDetails[Number(selectedValue)];
+  if (!item) {
+    preview.textContent = "Select a banking detail";
+    return;
+  }
+
+  const lines = [];
+  if (item.bank) lines.push(item.bank);
+  if (item.account) lines.push(item.account);
+  preview.textContent = lines.join("\n");
+}
+
+function loadSalespersons() {
+  const select = document.getElementById("salesName");
+  if (!select) return;
+
+  salespersonDatabaseLoaded = false;
+  select.disabled = true;
+  select.innerHTML = `<option value="">Loading salespersons...</option>`;
+
+  const callbackName = "bbSalespersons_" + Date.now();
+  const script = document.createElement("script");
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+  }
+
+  window[callbackName] = function(data) {
+    if (!Array.isArray(data)) {
+      salespersons = [];
+      salespersonDatabaseLoaded = false;
+      select.innerHTML = `<option value="">Salesperson database unavailable</option>`;
+      select.disabled = true;
+      finish();
+      return;
+    }
+
+    salespersons = data
+      .map(row => ({
+        name: String(row.name || "").trim(),
+        active: row.active === true || String(row.active).toLowerCase() === "true"
+      }))
+      .filter(person => person.name && person.active);
+
+    salespersonDatabaseLoaded = true;
+    select.innerHTML = `<option value="">Select salesperson</option>`;
+
+    salespersons.forEach(person => {
+      const option = document.createElement("option");
+      option.value = person.name;
+      option.textContent = person.name;
+      select.appendChild(option);
+    });
+
+    select.disabled = false;
+    finish();
+  };
+
+  script.onerror = function() {
+    salespersons = [];
+    salespersonDatabaseLoaded = false;
+    select.innerHTML = `<option value="">Salesperson database unavailable</option>`;
+    select.disabled = true;
+    finish();
+  };
+
+  script.src =
+    CUSTOMER_API_URL +
+    "?action=salespersons&callback=" +
+    encodeURIComponent(callbackName) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
+
+  setTimeout(() => {
+    if (!done) {
+      salespersons = [];
+      salespersonDatabaseLoaded = false;
+      select.innerHTML = `<option value="">Salesperson database unavailable</option>`;
+      select.disabled = true;
+      finish();
+    }
+  }, 12000);
+}
 
 const invoiceNumberInput = document.getElementById("invoiceNumber");
 if (invoiceNumberInput) {
@@ -2002,6 +2616,14 @@ document.addEventListener("click", function(event) {
 });
 
 loadCustomers();
+loadSalespersons();
+loadNoteTemplates();
+loadBankingDetails();
+
+const noteTemplateSelect = document.getElementById("noteTemplate");
+if (noteTemplateSelect) {
+  noteTemplateSelect.addEventListener("change", applySelectedNote);
+}
 
 
 /* ==========================================
@@ -2009,20 +2631,12 @@ loadCustomers();
    Default prices are USD.
 ========================================== */
 
-const products = [
-  { name: "Kirisu Milk 2L", usdPrice: 4.50 },
-  { name: "Kirisu Milk 830ml", usdPrice: 2.20 },
-  { name: "Kirisu Yogurt 135g", usdPrice: 0.66 },
-  { name: "Farm Fresh 2L", usdPrice: 4.10 },
-  { name: "Ausfresh 2L", usdPrice: 4.30 },
-  { name: "Greenfield 1.90L", usdPrice: 3.80 },
-  { name: "Greenfield 1L", usdPrice: 2.00 },
-  { name: "VP Milk 2L", usdPrice: 3.80 },
-  { name: "O'More 2L", usdPrice: 4.20 },
-  { name: "Champei Milk 220ml", usdPrice: 0.50 }
-];
-
+let products = [];
+let productDatabaseLoaded = false;
 let selectedProducts = [];
+
+// Load products only after the product state variables exist.
+loadProducts();
 
 
 /* ==========================================
@@ -2067,6 +2681,97 @@ function formatMoney(value, currency) {
 
 
 /* ==========================================
+   LOAD PRODUCTS
+   Google Sheets -> Apps Script Web App
+   Products sheet:
+   A Product Code
+   B Product Name
+   C Category
+   D Unit
+   E Price USD
+   F Active
+========================================== */
+
+function loadProducts() {
+  const selector = document.getElementById("productSelector");
+  const choice = document.getElementById("productChoice");
+
+  if (!selector || !choice) return;
+
+  productDatabaseLoaded = false;
+  choice.innerHTML = `<option value="">Loading products...</option>`;
+  choice.disabled = true;
+
+  const callbackName =
+    "bbProducts_" + Date.now();
+
+  const script = document.createElement("script");
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+  }
+
+  window[callbackName] = function(data) {
+    if (!Array.isArray(data)) {
+      products = [];
+      choice.innerHTML = `<option value="">Product database unavailable</option>`;
+      choice.disabled = true;
+      finish();
+      return;
+    }
+
+    products = data
+      .map(row => ({
+        code: String(row.code || "").trim(),
+        name: String(row.name || "").trim(),
+        category: String(row.category || "").trim(),
+        unit: String(row.unit || "").trim(),
+        usdPrice: Number(row.priceUSD) || 0,
+        active: row.active === true || String(row.active).toLowerCase() === "true"
+      }))
+      .filter(product => product.name && product.active);
+
+    productDatabaseLoaded = true;
+    choice.innerHTML = `<option value="">Select Product</option>`;
+    choice.disabled = false;
+    finish();
+  };
+
+  script.onerror = function() {
+    products = [];
+    productDatabaseLoaded = false;
+    choice.innerHTML = `<option value="">Product database unavailable</option>`;
+    choice.disabled = true;
+    finish();
+  };
+
+  script.src =
+    CUSTOMER_API_URL +
+    "?action=products&callback=" +
+    encodeURIComponent(callbackName) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
+
+  setTimeout(() => {
+    if (!done) {
+      products = [];
+      productDatabaseLoaded = false;
+      choice.innerHTML = `<option value="">Product database unavailable</option>`;
+      choice.disabled = true;
+      finish();
+    }
+  }, 12000);
+}
+
+
+/* ==========================================
    SHOW PRODUCT SELECTOR
 ========================================== */
 
@@ -2074,6 +2779,12 @@ function showProductSelector(event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
+  }
+
+  if (!productDatabaseLoaded) {
+    alert("Product database is still loading. Please wait a moment and try again.");
+    loadProducts();
+    return;
   }
 
   const selector =
@@ -2216,9 +2927,11 @@ function addSelectedProduct() {
 function createProduct(name, defaultUsdPrice) {
   const container = document.getElementById("productList");
   const div = document.createElement("div");
+  const productRecord = products.find(p => p.name === name);
 
   div.className = "product";
   div.dataset.product = name;
+  div.dataset.productCode = productRecord ? productRecord.code : "";
   div.dataset.usdPrice = defaultUsdPrice;
 
   const currency = getCurrency();
@@ -2577,57 +3290,60 @@ function printInvoice(event) {
   }
 
   calculate();
+  const state = getFinalInvoiceState();
+  const invoiceHtml = buildFinalInvoiceHtml(state);
 
-  const dateInput = document.getElementById("invoiceDate");
-  if (dateInput) {
-    dateInput.setAttribute(
-      "data-print-date",
-      formatInvoiceDate(dateInput.value)
-    );
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    alert("Please allow pop-ups for this invoice to print.");
+    return;
   }
 
-  /*
-    IMPORTANT FOR MOBILE:
-    Call window.print() directly from the user's button tap.
-    Some mobile browsers/webviews ignore delayed print calls.
-  */
-  try {
-    if (typeof window.print === "function") {
-      window.print();
-      return;
-    }
-  } catch (error) {
-    console.log("Direct print unavailable:", error);
-  }
-
-  /*
-    Fallback for browsers/webviews that don't expose window.print().
-    Because this runs directly from the user's tap, the new window is
-    much less likely to be blocked as a popup.
-  */
-  try {
-    const printWindow = window.open("", "_blank");
-
-    if (!printWindow) {
-      alert("Please allow pop-ups for this invoice to print.");
-      return;
-    }
-
-    const printableHtml = document.documentElement.outerHTML;
-
-    printWindow.document.open();
-    printWindow.document.write(printableHtml);
-    printWindow.document.close();
-
-    printWindow.onload = () => {
-      setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-      }, 300);
-    };
-  } catch (error) {
-    alert("Printing is not supported by this browser. Please open the invoice in Chrome or Safari and try again.");
-  }
+  printWindow.document.open();
+  printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${escapeHtml(state.invoiceNo || "Invoice")}</title>
+<style>
+  @page { size: A4; margin: 10mm; }
+  html, body { margin:0; padding:0; background:#fff; }
+  body { font-family: Arial, sans-serif; color:#222; }
+  .final-invoice { width:100%; max-width:794px; margin:0 auto; background:#fff; color:#222; border:1px solid #8f8f8f; padding:28px 30px 26px; }
+  .final-invoice * { box-sizing:border-box; }
+  .final-header { display:flex; justify-content:space-between; align-items:flex-start; gap:25px; min-height:78px; }
+  .final-company { font-size:14px; line-height:1.55; }
+  .final-company-name { font-size:22px; font-weight:800; letter-spacing:1.2px; color:#174a91; margin-bottom:5px; }
+  .final-title-line { border-top:2px solid #222; margin:10px 0 16px; }
+  .final-invoice-title { text-align:center; font-size:31px; font-weight:800; color:#2867b2; margin:0 0 18px; }
+  .final-bill-row { display:grid; grid-template-columns:1fr 180px; gap:20px; margin-bottom:18px; min-height:72px; }
+  .final-bill { font-size:14px; line-height:1.45; }
+  .final-bill-label { font-weight:800; margin-bottom:5px; }
+  .final-meta { text-align:right; color:#2867b2; }
+  .final-meta-no { font-size:23px; font-weight:800; }
+  .final-meta-date { margin-top:5px; font-size:14px; font-weight:700; }
+  .final-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:13px; }
+  .final-table th { background:#4472b9; color:#fff; border:1px solid #6f88aa; padding:7px 8px; text-align:left; font-weight:800; }
+  .final-table th:nth-child(1){width:48px;text-align:center}.final-table th:nth-child(3){width:82px;text-align:center}.final-table th:nth-child(4){width:105px;text-align:center}.final-table th:nth-child(5){width:110px;text-align:center}
+  .final-table td { border:1px solid #999; padding:8px; vertical-align:top; height:42px; }
+  .final-table td:first-child{text-align:center}.final-table td:nth-child(3),.final-table td:nth-child(4),.final-table td:nth-child(5){text-align:center}
+  .final-desc{font-weight:700}.final-unit{display:block;margin-top:4px;font-size:11px;color:#555;font-weight:400}
+  .final-bottom-grid{display:grid;grid-template-columns:1fr 330px;gap:28px;margin-top:14px;align-items:start}
+  .final-notes{min-height:78px;border-top:1px solid #9aa8b8;padding-top:6px;font-size:12px;line-height:1.65}.final-notes-title{font-weight:800;margin-bottom:4px}.final-note-line{min-height:18px}
+  .final-summary{width:100%;font-size:13px}.final-summary-row{display:flex;justify-content:space-between;gap:15px;padding:5px 8px;border-bottom:1px solid #bfc7d1}.final-summary-row.grand{background:#4472b9;color:#fff;font-size:15px;font-weight:800;border-bottom:0}.final-summary-row.change{color:#16733d;font-weight:700}.final-summary-label{font-weight:700}.final-summary-value{text-align:right;white-space:nowrap}
+  .final-transaction{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-top:14px;font-size:12px}.final-transaction-box{border:1px solid #999;padding:8px 10px;min-height:50px}.final-transaction-label{font-weight:800;margin-bottom:4px}
+  .final-banking{border:1px solid #999;margin-top:12px;padding:9px 12px;min-height:64px;font-size:12px;line-height:1.5}.final-banking-title{font-weight:800;margin-bottom:3px}.final-footer-space{height:8px}
+</style>
+</head>
+<body>${invoiceHtml}</body>
+</html>`);
+  printWindow.document.close();
+  printWindow.onload = () => {
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 250);
+  };
 }
 
 
@@ -2635,48 +3351,202 @@ function printInvoice(event) {
    CREATE INVOICE IMAGE
 ========================================== */
 
+function getFinalInvoiceState() {
+  const currency = getCurrency();
+  const rate = getExchangeRate();
+  let subtotal = 0;
+  const items = [];
+
+  document.querySelectorAll(".product").forEach((product, index) => {
+    const inputs = product.querySelectorAll("input");
+    const qty = Number(inputs[0]?.value) || 0;
+    const price = Number(inputs[1]?.value) || 0;
+    const lineTotal = qty * price;
+    subtotal += lineTotal;
+
+    items.push({
+      no: index + 1,
+      name: product.dataset.product || product.querySelector(".product-name")?.textContent?.trim() || "Product",
+      qty,
+      price,
+      total: lineTotal,
+      unit: products.find(p => p.name === product.dataset.product)?.unit || ""
+    });
+  });
+
+  const discount = Number(document.getElementById("discount")?.value) || 0;
+  const grandTotal = Math.max(0, subtotal - discount);
+  const amountPaid = Number(document.getElementById("amountPaid")?.value) || 0;
+  const change = Math.max(0, amountPaid - grandTotal);
+
+  const showDiscount = document.getElementById("showDiscount")?.checked === true;
+  const showPayment = document.getElementById("showPayment")?.checked === true;
+  const showExchange = document.getElementById("showExchange")?.checked === true;
+
+  let exchangeUsd = grandTotal;
+  let exchangeKhr = grandTotal * rate;
+  if (currency === "KHR") {
+    exchangeKhr = grandTotal;
+    exchangeUsd = rate > 0 ? grandTotal / rate : 0;
+  }
+
+  return {
+    currency, rate, items, subtotal, discount, grandTotal,
+    amountPaid, change, showDiscount, showPayment, showExchange,
+    exchangeUsd, exchangeKhr,
+    invoiceNo: document.getElementById("invoiceNumber")?.value.trim() || "",
+    date: formatInvoiceDate(document.getElementById("invoiceDate")?.value || ""),
+    customer: document.getElementById("customerName")?.value.trim() || "",
+    phone: document.getElementById("customerPhone")?.value.trim() || "",
+    address: document.getElementById("customerAddress")?.value.trim() || "",
+    salesperson: document.getElementById("salesName")?.value.trim() || "",
+    paymentMethod: document.getElementById("paymentMethod")?.value || "",
+    note: document.getElementById("invoiceNote")?.value.trim() || "",
+    banking: (() => {
+      const select = document.getElementById("bankingDetails");
+      const selectedValue = String(select?.value ?? "").trim();
+      if (selectedValue === "") return null;
+      const item = bankingDetails[Number(selectedValue)];
+      return item ? {name: item.name, bank: item.bank, account: item.account, selected: true} : null;
+    })()
+  };
+}
+
+function buildFinalInvoiceHtml(state) {
+  const esc = escapeHtml;
+  const money = v => formatMoney(v, state.currency);
+
+  const rows = state.items.length
+    ? state.items.map(item => `
+      <tr>
+        <td>${item.no}</td>
+        <td>
+          <div class="final-desc">${esc(item.name)}</div>
+          ${item.unit ? `<span class="final-unit">${esc(item.unit)}</span>` : ""}
+        </td>
+        <td>${Number(item.qty).toLocaleString("en-US", {maximumFractionDigits: 2})}</td>
+        <td>${money(item.price)}</td>
+        <td>${money(item.total)}</td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="5" style="text-align:center; padding:18px;">No products added</td></tr>`;
+
+  // No optional financial sections = the only ending total is Grand Total.
+  const summaryRows = [];
+  if (state.showDiscount) {
+    summaryRows.push(`<div class="final-summary-row"><span class="final-summary-label">Subtotal</span><span class="final-summary-value">${money(state.subtotal)}</span></div>`);
+    summaryRows.push(`<div class="final-summary-row"><span class="final-summary-label">Discount</span><span class="final-summary-value">-${money(state.discount)}</span></div>`);
+  }
+  summaryRows.push(`<div class="final-summary-row grand"><span>Grand Total</span><span class="final-summary-value">${money(state.grandTotal)}</span></div>`);
+
+  if (state.showPayment) {
+    summaryRows.push(`<div class="final-summary-row"><span class="final-summary-label">Amount Paid</span><span class="final-summary-value">${money(state.amountPaid)}</span></div>`);
+    summaryRows.push(`<div class="final-summary-row change"><span class="final-summary-label">Change</span><span class="final-summary-value">${money(state.change)}</span></div>`);
+  }
+
+  if (state.showExchange) {
+    summaryRows.push(`<div class="final-summary-row"><span class="final-summary-label">Exchange</span><span class="final-summary-value">${formatMoney(state.exchangeUsd, "USD")} = ${formatMoney(state.exchangeKhr, "KHR")}</span></div>`);
+  }
+
+  return `
+    <div class="final-invoice">
+      <div class="final-header">
+        <div class="final-company">
+          <div class="final-company-name">BIG BROTHER</div>
+          <div>Phnom Penh, Cambodia</div>
+          <div>010 650 327, 070 998 988</div>
+          <div>angsokkhey11@gmail.com</div>
+        </div>
+        <div style="text-align:right; font-size:12px; color:#555; padding-top:4px;">
+          <div>Currency: <strong>${esc(state.currency)}</strong></div>
+          <div>1 USD = ${Number(state.rate || 0).toLocaleString("en-US")} KHR</div>
+        </div>
+      </div>
+
+      <div class="final-title-line"></div>
+      <div class="final-invoice-title">INVOICE</div>
+
+      <div class="final-bill-row">
+        <div class="final-bill">
+          <div class="final-bill-label">Bill To</div>
+          <div class="final-bill-value">
+            ${esc(state.customer || "")}
+            ${state.address ? `<br>${esc(state.address)}` : ""}
+            ${state.phone ? `<br>${esc(state.phone)}` : ""}
+          </div>
+        </div>
+        <div class="final-meta">
+          <div class="final-meta-no">${esc(state.invoiceNo)}</div>
+          <div class="final-meta-date">${esc(state.date)}</div>
+        </div>
+      </div>
+
+      <table class="final-table">
+        <thead>
+          <tr>
+            <th>N.o.</th>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+
+      <div class="final-bottom-grid">
+        <div class="final-notes">
+          <div class="final-notes-title">Note:</div>
+          ${state.note ? state.note.split(/\r?\n/).map(line => `<div class="final-note-line">${esc(line)}</div>`).join("") : `<div class="final-note-line">&nbsp;</div>`}
+        </div>
+        <div class="final-summary">${summaryRows.join("")}</div>
+      </div>
+
+      <div class="final-transaction">
+        <div class="final-transaction-box">
+          <div class="final-transaction-label">Sale Person</div>
+          <div>${esc(state.salesperson || "")}</div>
+        </div>
+        <div class="final-transaction-box">
+          <div class="final-transaction-label">Payment Method</div>
+          <div>${esc(state.paymentMethod || "")}</div>
+        </div>
+      </div>
+
+      ${state.banking && state.banking.selected ? `
+      <div class="final-banking">
+        <div class="final-banking-title">Banking Details</div>
+        ${state.banking.bank ? `<div>${esc(state.banking.bank)}</div>` : ""}
+        ${state.banking.account ? `<div>${esc(state.banking.account)}</div>` : ""}
+      </div>` : ""}
+      <div class="final-footer-space"></div>
+    </div>
+  `;
+}
+
 async function createInvoiceImage() {
   if (typeof html2canvas !== "function") {
     throw new Error("Image library is not loaded.");
   }
 
   calculate();
+  const state = getFinalInvoiceState();
 
-  const invoice = document.querySelector(".calculator");
-  if (!invoice) throw new Error("Invoice not found.");
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = buildFinalInvoiceHtml(state);
+  const invoice = wrapper.firstElementChild;
 
-  const clone = invoice.cloneNode(true);
-
-  clone.querySelectorAll(
-    ".no-print, .actions, .clear-btn, .product-selector"
-  ).forEach(el => el.remove());
-
-  // Copy current field values into the clone.
-  const originalFields =
-    invoice.querySelectorAll("input, select, textarea");
-  const clonedFields =
-    clone.querySelectorAll("input, select, textarea");
-
-  originalFields.forEach((field, i) => {
-    if (clonedFields[i]) {
-      clonedFields[i].value = field.value;
-    }
-  });
-
-  clone.style.position = "fixed";
-  clone.style.left = "-100000px";
-  clone.style.top = "0";
-  clone.style.width = invoice.offsetWidth + "px";
-  clone.style.maxWidth = "none";
-  clone.style.margin = "0";
-  clone.style.background = "#eef2f7";
-  clone.style.zIndex = "-1";
-
-  document.body.appendChild(clone);
+  wrapper.style.position = "fixed";
+  wrapper.style.left = "-100000px";
+  wrapper.style.top = "0";
+  wrapper.style.width = "794px";
+  wrapper.style.background = "#fff";
+  wrapper.style.zIndex = "-1";
+  document.body.appendChild(wrapper);
 
   try {
-    const canvas = await html2canvas(clone, {
-      backgroundColor: "#eef2f7",
+    const canvas = await html2canvas(invoice, {
+      backgroundColor: "#ffffff",
       scale: Math.min(3, Math.max(2, window.devicePixelRatio || 1)),
       useCORS: true,
       logging: false
@@ -2689,10 +3559,9 @@ async function createInvoiceImage() {
       }, "image/png");
     });
   } finally {
-    clone.remove();
+    wrapper.remove();
   }
 }
-
 
 /* ==========================================
    SAVE INVOICE
@@ -3368,6 +4237,11 @@ function clearAll() {
   document.getElementById("customerAddress").value = "";
   document.getElementById("salesName").value = "";
   document.getElementById("paymentMethod").value = "Cash";
+  const noteInput = document.getElementById("invoiceNote");
+  if (noteInput) noteInput.value = "";
+  const bankSelect = document.getElementById("bankingDetails");
+  if (bankSelect) bankSelect.value = "";
+  updateBankingPreview();
 
   setTodayDate();
   calculate();
@@ -3396,6 +4270,11 @@ document.getElementById("exchangeRate")
   .addEventListener("input", function() {
     changeCurrency();
   });
+
+const bankingSelect = document.getElementById("bankingDetails");
+if (bankingSelect) {
+  bankingSelect.addEventListener("change", updateBankingPreview);
+}
 
 
 /* INITIAL CALCULATION */
