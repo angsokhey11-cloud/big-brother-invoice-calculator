@@ -403,6 +403,26 @@ label {
   padding: 0;
 }
 
+#dueDateDisplay {
+  width: 100%;
+  cursor: pointer;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+#dueDate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+}
+
 
 
 /* ==========================================
@@ -464,7 +484,45 @@ label {
   text-overflow: ellipsis;
 }
 
+.bottom-action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.bottom-action-row .clear-btn { margin-top: 0; }
+.preview-btn { background: #eef3fb; color: #2867b2; border: 1px solid #9db6d8; }
+.invoice-preview-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 99999;
+  padding: 20px;
+  overflow: auto;
+}
+.invoice-preview-modal.open { display: flex; align-items: flex-start; justify-content: center; }
+.invoice-preview-dialog {
+  width: min(900px, 100%);
+  max-height: calc(100vh - 40px);
+  background: #fff;
+  border-radius: 14px;
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.invoice-preview-header {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; background: #fff; border-bottom: 1px solid #ddd;
+}
+.invoice-preview-close {
+  width: 36px; height: 36px; border: 0; border-radius: 50%;
+  background: #eee; font-size: 24px; cursor: pointer;
+}
+.invoice-preview-content { padding: 16px; }
 @media (max-width: 600px) {
+  .bottom-action-row { grid-template-columns: 1fr 1fr; }
+
   .customer-options {
     max-height: 180px;
   }
@@ -1594,6 +1652,7 @@ input:focus {
   font-size: 23px;
   font-weight: 800;
 }
+/* Due date added to final invoice */
 .final-meta-date {
   margin-top: 5px;
   font-size: 14px;
@@ -1754,11 +1813,24 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
 
       <div>
-        <label for="invoiceDateDisplay">Date</label>
+        <label for="invoiceDateDisplay">Invoice Date</label>
         <div class="date-input-wrap">
           <input type="text" id="invoiceDateDisplay" value="" placeholder="01-Sep-2026" readonly>
           <input type="date" id="invoiceDate" onchange="updateInvoiceDate()" aria-hidden="true" tabindex="-1">
         </div>
+      </div>
+
+      <div>
+        <label for="dueDateDisplay">Due Date</label>
+        <div class="date-input-wrap">
+          <input type="text" id="dueDateDisplay" value="" placeholder="01-Oct-2026" readonly>
+          <input type="date" id="dueDate" onchange="updateDueDate()" aria-hidden="true" tabindex="-1">
+        </div>
+      </div>
+
+      <div>
+        <label for="batchNumber">Batch Number</label>
+        <input type="text" id="batchNumber" placeholder="Enter Batch Number">
       </div>
     </div>
 
@@ -1829,7 +1901,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <input type="checkbox"
              id="showPayment"
              onchange="toggleOptionalSection('payment')">
-      <span>Amount Paid & Change</span>
+      <span>Amount Paid & Credit Amount</span>
     </label>
 
     <label class="optional-check">
@@ -1886,7 +1958,7 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
 
       <div class="total-row change-row">
-        <span>Change</span>
+        <span id="changeLabel">Credit Amount</span>
         <span id="changeAmount">$0.00</span>
       </div>
 
@@ -1921,11 +1993,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
       <div>
         <label for="paymentMethod">Payment Method</label>
-        <select id="paymentMethod">
+        <select id="paymentMethod" onchange="handlePaymentMethodChange()">
           <option value="Cash">Cash</option>
           <option value="Bank">Bank</option>
           <option value="Credit">Credit</option>
+          <option value="Partially Paid in Cash">Partially Paid in Cash</option>
+          <option value="Partially Paid in Bank">Partially Paid in Bank</option>
         </select>
+      </div>
+
+      <div id="paymentBankRow" style="display:none;">
+        <label for="paymentBank">Payment Bank</label>
+        <select id="paymentBank">
+          <option value="">Select Bank</option>
+          <option value="ABA">ABA</option>
+          <option value="ACLEDA">ACLEDA</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div id="bankReferenceRow" style="display:none;">
+        <label for="bankReference">Bank Reference</label>
+        <input type="text" id="bankReference" placeholder="Enter Bank Reference">
       </div>
     </div>
   </div>
@@ -1967,9 +2056,24 @@ document.addEventListener("DOMContentLoaded", function () {
     </button>
   </div>
 
-  <button type="button" class="clear-btn complete-btn no-print" onclick="completeInvoice(event)">
-    ✓ Complete
-  </button>
+  <div class="bottom-action-row no-print">
+    <button type="button" class="clear-btn preview-btn" onclick="previewInvoice(event)">
+      👁 Invoice Preview
+    </button>
+    <button type="button" class="clear-btn complete-btn" onclick="completeInvoice(event)">
+      ✓ Complete
+    </button>
+  </div>
+
+  <div id="invoicePreviewModal" class="invoice-preview-modal no-print" aria-hidden="true">
+    <div class="invoice-preview-dialog">
+      <div class="invoice-preview-header">
+        <strong>Invoice Preview</strong>
+        <button type="button" class="invoice-preview-close" onclick="closeInvoicePreview()">×</button>
+      </div>
+      <div id="invoicePreviewContent" class="invoice-preview-content"></div>
+    </div>
+  </div>
 
 </div>
 
@@ -2132,11 +2236,10 @@ function loadNoteTemplates() {
   };
 
   script.onerror = function() {
-    noteTemplates = [];
-    noteDatabaseLoaded = false;
-    select.innerHTML = `<option value="">Note database unavailable</option>`;
-    select.disabled = true;
     finish();
+    select.innerHTML = `<option value="">Still loading notes... retrying</option>`;
+    select.disabled = true;
+    retryDatabaseLoad(loadNoteTemplates, () => noteDatabaseLoaded);
   };
 
   script.src = CUSTOMER_API_URL +
@@ -2147,13 +2250,12 @@ function loadNoteTemplates() {
 
   setTimeout(() => {
     if (!done) {
-      noteTemplates = [];
-      noteDatabaseLoaded = false;
-      select.innerHTML = `<option value="">Note database unavailable</option>`;
-      select.disabled = true;
       finish();
+      select.innerHTML = `<option value="">Still loading notes... retrying</option>`;
+      select.disabled = true;
+      retryDatabaseLoad(loadNoteTemplates, () => noteDatabaseLoaded);
     }
-  }, 12000);
+  }, DB_REQUEST_TIMEOUT_MS);
 }
 
 function applySelectedNote() {
@@ -2181,6 +2283,15 @@ function applySelectedNote() {
 
 let bankingDetails = [];
 let bankingDatabaseLoaded = false;
+
+const DB_RETRY_DELAY_MS = 3000;
+const DB_REQUEST_TIMEOUT_MS = 12000;
+
+function retryDatabaseLoad(loadFunction, isLoadedFunction) {
+  setTimeout(() => {
+    if (!isLoadedFunction()) loadFunction();
+  }, DB_RETRY_DELAY_MS);
+}
 
 function loadBankingDetails() {
   const select = document.getElementById("bankingDetails");
@@ -2236,12 +2347,11 @@ function loadBankingDetails() {
   };
 
   script.onerror = function() {
-    bankingDetails = [];
-    bankingDatabaseLoaded = false;
-    select.innerHTML = `<option value="">Banking database unavailable</option>`;
-    select.disabled = true;
-    if (preview) preview.textContent = "Banking database unavailable";
     finish();
+    select.innerHTML = `<option value="">Still loading banking details... retrying</option>`;
+    select.disabled = true;
+    if (preview) preview.textContent = "Still loading banking details... retrying";
+    retryDatabaseLoad(loadBankingDetails, () => bankingDatabaseLoaded);
   };
 
   script.src = CUSTOMER_API_URL +
@@ -2252,13 +2362,11 @@ function loadBankingDetails() {
 
   setTimeout(() => {
     if (!done) {
-      bankingDetails = [];
-      select.innerHTML = `<option value="">Banking database unavailable</option>`;
-      select.disabled = true;
-      if (preview) preview.textContent = "Banking database unavailable";
       finish();
+      if (preview) preview.textContent = "Still loading banking details... retrying";
+      retryDatabaseLoad(loadBankingDetails, () => bankingDatabaseLoaded);
     }
-  }, 12000);
+  }, DB_REQUEST_TIMEOUT_MS);
 }
 
 function updateBankingPreview() {
@@ -2337,11 +2445,10 @@ function loadSalespersons() {
   };
 
   script.onerror = function() {
-    salespersons = [];
-    salespersonDatabaseLoaded = false;
-    select.innerHTML = `<option value="">Salesperson database unavailable</option>`;
-    select.disabled = true;
     finish();
+    select.innerHTML = `<option value="">Still loading salespersons... retrying</option>`;
+    select.disabled = true;
+    retryDatabaseLoad(loadSalespersons, () => salespersonDatabaseLoaded);
   };
 
   script.src =
@@ -2354,13 +2461,11 @@ function loadSalespersons() {
 
   setTimeout(() => {
     if (!done) {
-      salespersons = [];
-      salespersonDatabaseLoaded = false;
-      select.innerHTML = `<option value="">Salesperson database unavailable</option>`;
-      select.disabled = true;
       finish();
+      select.innerHTML = `<option value="">Still loading salespersons... retrying</option>`;
+      retryDatabaseLoad(loadSalespersons, () => salespersonDatabaseLoaded);
     }
-  }, 12000);
+  }, DB_REQUEST_TIMEOUT_MS);
 }
 
 const invoiceNumberInput = document.getElementById("invoiceNumber");
@@ -2465,11 +2570,10 @@ function loadCustomers() {
   };
 
   script.onerror = function() {
-    customers = [];
-    finish(
-      "Customer database unavailable — you can still type manually.",
-      "#b7791f"
-    );
+    finish();
+    status.textContent = "Still loading customers... retrying";
+    status.style.color = "#718096";
+    retryDatabaseLoad(loadCustomers, () => customers.length > 0);
   };
 
   script.src =
@@ -2483,13 +2587,12 @@ function loadCustomers() {
 
   setTimeout(() => {
     if (!done) {
-      customers = [];
-      finish(
-        "Customer database unavailable — you can still type manually.",
-        "#b7791f"
-      );
+      finish();
+      status.textContent = "Still loading customers... retrying";
+      status.style.color = "#718096";
+      retryDatabaseLoad(loadCustomers, () => customers.length > 0);
     }
-  }, 12000);
+  }, DB_REQUEST_TIMEOUT_MS);
 }
 
 
@@ -2614,14 +2717,12 @@ function loadCustomerPrices(customerName) {
       finish();
       return;
     }
-    customerPrices = {};
-    customerPriceLoaded = true;
-    if (status) {
-      status.textContent = "Customer price database unavailable • using standard product prices";
-      status.style.color = "#b7791f";
-    }
-    applyCustomerPricesToProducts();
     finish();
+    if (status) {
+      status.textContent = "Still loading customer prices... retrying";
+      status.style.color = "#718096";
+    }
+    retryDatabaseLoad(() => loadCustomerPrices(name), () => customerPriceLoaded);
   };
 
   script.src =
@@ -2636,16 +2737,14 @@ function loadCustomerPrices(customerName) {
 
   setTimeout(() => {
     if (!done && token === customerPriceRequestToken) {
-      customerPrices = {};
-      customerPriceLoaded = true;
-      if (status) {
-        status.textContent = "Customer price database unavailable • using standard product prices";
-        status.style.color = "#b7791f";
-      }
-      applyCustomerPricesToProducts();
       finish();
+      if (status) {
+        status.textContent = "Still loading customer prices... retrying";
+        status.style.color = "#718096";
+      }
+      retryDatabaseLoad(() => loadCustomerPrices(name), () => customerPriceLoaded);
     }
-  }, 12000);
+  }, DB_REQUEST_TIMEOUT_MS);
 }
 
 function getPriceForProduct(product) {
@@ -2934,11 +3033,10 @@ function loadProducts() {
   };
 
   script.onerror = function() {
-    products = [];
-    productDatabaseLoaded = false;
-    choice.innerHTML = `<option value="">Product database unavailable</option>`;
-    choice.disabled = true;
     finish();
+    choice.innerHTML = `<option value="">Still loading products... retrying</option>`;
+    choice.disabled = true;
+    retryDatabaseLoad(loadProducts, () => productDatabaseLoaded);
   };
 
   script.src =
@@ -2951,13 +3049,12 @@ function loadProducts() {
 
   setTimeout(() => {
     if (!done) {
-      products = [];
-      productDatabaseLoaded = false;
-      choice.innerHTML = `<option value="">Product database unavailable</option>`;
-      choice.disabled = true;
       finish();
+      choice.innerHTML = `<option value="">Still loading products... retrying</option>`;
+      choice.disabled = true;
+      retryDatabaseLoad(loadProducts, () => productDatabaseLoaded);
     }
-  }, 12000);
+  }, DB_REQUEST_TIMEOUT_MS);
 }
 
 
@@ -3336,21 +3433,80 @@ function calculate() {
     formatMoney(finalTotal, currency);
 
 
-  /* AMOUNT PAID + CHANGE */
+  /* PAYMENT / CREDIT AMOUNT */
 
+  const paymentMethod =
+    document.getElementById("paymentMethod")?.value || "Cash";
+
+  const enteredAmountPaid =
+    Number(document.getElementById("amountPaid")?.value) || 0;
+
+  // Amount Paid is the REAL amount received for every payment method.
+  // Never force Cash or Bank to equal the Grand Total.
   const amountPaid =
-    Number(document.getElementById("amountPaid").value) || 0;
+    Math.min(Math.max(0, enteredAmountPaid), finalTotal);
 
-  const change =
-    Math.max(0, amountPaid - finalTotal);
+  // Credit Amount is always Grand Total - Amount Paid.
+  const creditAmountValue =
+    Math.max(0, finalTotal - amountPaid);
 
-  document.getElementById("changeAmount").textContent =
-    formatMoney(change, currency);
+  const change = 0;
+  const outstanding = creditAmountValue;
+
+  const changeLabel = document.getElementById("changeLabel");
+  const changeAmount = document.getElementById("changeAmount");
+  const creditRow = document.querySelector(".credit-row");
+  const creditAmount = document.getElementById("creditAmount");
+
+  if (changeAmount) {
+    changeAmount.textContent = formatMoney(change, currency);
+  }
+
+  // Show Credit Amount whenever any balance remains.
+  if (creditRow) {
+    creditRow.style.display = outstanding > 0 ? "" : "none";
+  }
+  if (creditAmount) {
+    creditAmount.textContent = formatMoney(creditAmountValue, currency);
+  }
+
+  if (changeLabel) {
+    changeLabel.textContent = "Credit Amount";
+  }
 
 
   /* EXCHANGE */
 
   calculateExchange(finalTotal, currency);
+}
+
+
+/* ==========================================
+   PAYMENT METHOD
+   Cash / Bank = fully paid
+   Credit = Amount Paid + remaining Credit
+========================================== */
+
+function handlePaymentMethodChange() {
+  const paymentMethod = document.getElementById("paymentMethod")?.value || "Cash";
+  const needsBank =
+    paymentMethod === "Bank" ||
+    paymentMethod === "Partially Paid in Bank";
+
+  const bankRow = document.getElementById("paymentBankRow");
+  const referenceRow = document.getElementById("bankReferenceRow");
+  const bankSelect = document.getElementById("paymentBank");
+  const referenceInput = document.getElementById("bankReference");
+
+  if (bankRow) bankRow.style.display = needsBank ? "" : "none";
+  if (referenceRow) referenceRow.style.display = needsBank ? "" : "none";
+
+  if (!needsBank) {
+    if (bankSelect) bankSelect.value = "";
+    if (referenceInput) referenceInput.value = "";
+  }
+
+  calculate();
 }
 
 
@@ -3460,6 +3616,57 @@ function updateInvoiceDate() {
 
   if (picker && display) {
     display.value = formatInvoiceDate(picker.value);
+  }
+}
+
+function openDueDatePicker() {
+  const picker = document.getElementById("dueDate");
+  if (!picker) return;
+
+  try {
+    if (typeof picker.showPicker === "function") {
+      picker.showPicker();
+    } else {
+      picker.focus();
+      picker.click();
+    }
+  } catch (e) {
+    picker.focus();
+    picker.click();
+  }
+}
+
+function updateDueDate() {
+  const picker = document.getElementById("dueDate");
+  const display = document.getElementById("dueDateDisplay");
+
+  if (picker && display) {
+    display.value = formatInvoiceDate(picker.value);
+  }
+}
+
+function setDueDateFromInvoiceDate() {
+  const invoicePicker = document.getElementById("invoiceDate");
+  const duePicker = document.getElementById("dueDate");
+  if (!invoicePicker || !duePicker) return;
+
+  if (!invoicePicker.value) return;
+
+  // Default: due date = invoice date.
+  // User can change it manually for Credit invoices.
+  duePicker.value = invoicePicker.value;
+  updateDueDate();
+}
+
+function syncDueDateWithInvoiceDate() {
+  const invoicePicker = document.getElementById("invoiceDate");
+  const duePicker = document.getElementById("dueDate");
+  if (!invoicePicker || !duePicker) return;
+
+  // If no due date exists yet, use the invoice date.
+  if (!duePicker.value) {
+    duePicker.value = invoicePicker.value;
+    updateDueDate();
   }
 }
 
@@ -3574,8 +3781,17 @@ function getFinalInvoiceState() {
 
   const discount = Number(document.getElementById("discount")?.value) || 0;
   const grandTotal = Math.max(0, subtotal - discount);
-  const amountPaid = Number(document.getElementById("amountPaid")?.value) || 0;
-  const change = Math.max(0, amountPaid - grandTotal);
+
+  const paymentMethod = document.getElementById("paymentMethod")?.value || "Cash";
+  const enteredAmountPaid = Number(document.getElementById("amountPaid")?.value) || 0;
+
+  const amountPaid = Math.min(Math.max(0, enteredAmountPaid), grandTotal);
+  const creditAmount = Math.max(0, grandTotal - amountPaid);
+  const change = 0;
+  const outstanding = creditAmount;
+
+  // Due Date is shown whenever there is an unpaid balance.
+  const invoiceHasCredit = outstanding > 0;
 
   const showDiscount = document.getElementById("showDiscount")?.checked === true;
   const showPayment = document.getElementById("showPayment")?.checked === true;
@@ -3590,15 +3806,19 @@ function getFinalInvoiceState() {
 
   return {
     currency, rate, items, subtotal, discount, grandTotal,
-    amountPaid, change, showDiscount, showPayment, showExchange,
+    amountPaid, change, creditAmount, outstanding, invoiceHasCredit, showDiscount, showPayment, showExchange,
     exchangeUsd, exchangeKhr,
     invoiceNo: document.getElementById("invoiceNumber")?.value.trim() || "",
     date: formatInvoiceDate(document.getElementById("invoiceDate")?.value || ""),
+    dueDate: formatInvoiceDate(document.getElementById("dueDate")?.value || ""),
+    batchNumber: document.getElementById("batchNumber")?.value.trim() || "",
     customer: document.getElementById("customerName")?.value.trim() || "",
     phone: document.getElementById("customerPhone")?.value.trim() || "",
     address: document.getElementById("customerAddress")?.value.trim() || "",
     salesperson: document.getElementById("salesName")?.value.trim() || "",
     paymentMethod: document.getElementById("paymentMethod")?.value || "",
+    paymentBank: document.getElementById("paymentBank")?.value || "",
+    bankReference: document.getElementById("bankReference")?.value.trim() || "",
     note: document.getElementById("invoiceNote")?.value.trim() || "",
     banking: (() => {
       const select = document.getElementById("bankingDetails");
@@ -3639,7 +3859,10 @@ function buildFinalInvoiceHtml(state) {
 
   if (state.showPayment) {
     summaryRows.push(`<div class="final-summary-row"><span class="final-summary-label">Amount Paid</span><span class="final-summary-value">${money(state.amountPaid)}</span></div>`);
-    summaryRows.push(`<div class="final-summary-row change"><span class="final-summary-label">Change</span><span class="final-summary-value">${money(state.change)}</span></div>`);
+
+    if (state.creditAmount > 0) {
+      summaryRows.push(`<div class="final-summary-row change"><span class="final-summary-label">Credit Amount</span><span class="final-summary-value">${money(state.creditAmount)}</span></div>`);
+    }
   }
 
   if (state.showExchange) {
@@ -3675,7 +3898,8 @@ function buildFinalInvoiceHtml(state) {
         </div>
         <div class="final-meta">
           <div class="final-meta-no">${esc(state.invoiceNo)}</div>
-          <div class="final-meta-date">${esc(state.date)}</div>
+          <div class="final-meta-date">Invoice Date: ${esc(state.date)}</div>
+          ${state.invoiceHasCredit ? `<div class="final-meta-date">Due Date: ${esc(state.dueDate || state.date)}</div>` : ""}
         </div>
       </div>
 
@@ -4428,16 +4652,23 @@ function buildSalesInvoicePayload() {
   return {
     invoiceNo,
     invoiceDate: document.getElementById("invoiceDate")?.value || "",
+    dueDate: document.getElementById("dueDate")?.value || "",
+    batchNumber: document.getElementById("batchNumber")?.value.trim() || "",
     customer: state.customer,
     salesperson: state.salesperson,
     paymentMethod: state.paymentMethod,
+    paymentBank: state.paymentBank,
+    bankReference: state.bankReference,
     currency: state.currency,
     exchangeRate: state.rate,
     subtotal: state.subtotal,
     discount: state.discount,
     grandTotal: state.grandTotal,
     amountPaid: state.amountPaid,
-    change: state.change,
+    creditAmount: state.creditAmount,
+    change: 0,
+    outstanding: state.creditAmount,
+    status: state.creditAmount > 0 ? (state.amountPaid > 0 ? "Processing" : "Unpaid") : "Paid",
     note: state.note,
     items: state.items.map(item => ({
       productCode: item.productCode,
@@ -4447,6 +4678,39 @@ function buildSalesInvoicePayload() {
     }))
   };
 }
+
+function previewInvoice(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  try {
+    calculate();
+    const state = getFinalInvoiceState();
+    const modal = document.getElementById("invoicePreviewModal");
+    const content = document.getElementById("invoicePreviewContent");
+    if (!modal || !content) return;
+
+    content.innerHTML = buildFinalInvoiceHtml(state);
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+  } catch (error) {
+    console.error("Invoice preview failed:", error);
+    alert("Could not create invoice preview. Please try again.");
+  }
+}
+
+function closeInvoicePreview() {
+  const modal = document.getElementById("invoicePreviewModal");
+  if (!modal) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+}
+
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") closeInvoicePreview();
+});
 
 async function completeInvoice(event) {
   if (event) {
@@ -4592,6 +4856,11 @@ function clearAllAfterSuccessfulSave() {
   document.getElementById("customerAddress").value = "";
   document.getElementById("salesName").value = "";
   document.getElementById("paymentMethod").value = "Cash";
+  const paymentBank = document.getElementById("paymentBank");
+  const bankReference = document.getElementById("bankReference");
+  if (paymentBank) paymentBank.value = "";
+  if (bankReference) bankReference.value = "";
+  handlePaymentMethodChange();
 
   const noteInput = document.getElementById("invoiceNote");
   if (noteInput) noteInput.value = "";
@@ -4605,6 +4874,7 @@ function clearAllAfterSuccessfulSave() {
   customerPriceLoaded = false;
 
   setTodayDate();
+  setDueDateFromInvoiceDate();
   calculate();
 }
 
@@ -4631,6 +4901,11 @@ function clearAll() {
   document.getElementById("customerAddress").value = "";
   document.getElementById("salesName").value = "";
   document.getElementById("paymentMethod").value = "Cash";
+  const paymentBank = document.getElementById("paymentBank");
+  const bankReference = document.getElementById("bankReference");
+  if (paymentBank) paymentBank.value = "";
+  if (bankReference) bankReference.value = "";
+  handlePaymentMethodChange();
   const noteInput = document.getElementById("invoiceNote");
   if (noteInput) noteInput.value = "";
   const bankSelect = document.getElementById("bankingDetails");
@@ -4638,6 +4913,7 @@ function clearAll() {
   updateBankingPreview();
 
   setTodayDate();
+  setDueDateFromInvoiceDate();
   calculate();
 }
 
@@ -4694,3 +4970,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
+<script>
+/* ==========================================
+   DUE DATE INITIALIZATION
+   Default due date = invoice date.
+   User may change it manually, especially for Credit.
+========================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const invoicePicker = document.getElementById("invoiceDate");
+  const duePicker = document.getElementById("dueDate");
+
+  if (invoicePicker && duePicker) {
+    if (!invoicePicker.value) {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      invoicePicker.value = `${yyyy}-${mm}-${dd}`;
+      updateInvoiceDate();
+    }
+
+    if (!duePicker.value) {
+      duePicker.value = invoicePicker.value;
+      updateDueDate();
+    }
+  }
+
+  const dueDisplay = document.getElementById("dueDateDisplay");
+  if (dueDisplay) {
+    dueDisplay.addEventListener("click", openDueDatePicker);
+  }
+});
+</script>
+
+
+<script>
+// Ensure payment method rules are active when the page loads.
+document.addEventListener("DOMContentLoaded", function () {
+  const paymentMethod = document.getElementById("paymentMethod");
+  if (paymentMethod) {
+    paymentMethod.addEventListener("change", handlePaymentMethodChange);
+  }
+  handlePaymentMethodChange();
+  if (typeof calculate === "function") calculate();
+});
+</script>
