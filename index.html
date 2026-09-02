@@ -1809,7 +1809,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="grid-2 invoice-grid">
       <div>
         <label for="invoiceNumber">Invoice No.</label>
-        <input type="text" id="invoiceNumber" value="INV-0001">
+        <input type="text" id="invoiceNumber" value="Loading..." readonly>
       </div>
 
       <div>
@@ -2099,44 +2099,64 @@ setTodayDate();
 
 
 /* ==========================================
-   AUTO INVOICE NUMBER
-   Keeps the current invoice number after refresh
-   and automatically advances when Clear is used.
+   SERVER INVOICE NUMBER
+   Sales Database is the single source of truth.
+   This number is loaded from the Sales Database,
+   not stored in the device.
 ========================================== */
-
-function getStoredInvoiceNumber() {
-  const stored = localStorage.getItem("bb_invoice_number");
-
-  if (stored && /^INV-\d+$/.test(stored)) {
-    return stored;
-  }
-
-  localStorage.setItem("bb_invoice_number", "INV-0001");
-  return "INV-0001";
-}
 
 function setInvoiceNumber(number) {
   const value = String(number || "INV-0001");
-  document.getElementById("invoiceNumber").value = value;
-  localStorage.setItem("bb_invoice_number", value);
+  const input = document.getElementById("invoiceNumber");
+  if (input) input.value = value;
 }
 
-function getNextInvoiceNumber() {
-  const current = getStoredInvoiceNumber();
-  const match = current.match(/^INV-(\d+)$/);
+function loadNextInvoiceNumber() {
+  const input = document.getElementById("invoiceNumber");
+  if (input) input.value = "Loading...";
 
-  if (!match) return "INV-0001";
+  const callbackName = "bbNextInvoiceNo_" + Date.now();
+  const script = document.createElement("script");
+  let done = false;
 
-  const next = Number(match[1]) + 1;
-  return "INV-" + String(next).padStart(4, "0");
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  window[callbackName] = function(data) {
+    if (data && data.success && data.invoiceNo) {
+      setInvoiceNumber(data.invoiceNo);
+    } else {
+      setInvoiceNumber("INV-0001");
+    }
+    finish();
+  };
+
+  script.onerror = function() {
+    finish();
+    if (input) input.value = "INV-0001";
+    setTimeout(loadNextInvoiceNumber, DB_RETRY_DELAY_MS);
+  };
+
+  script.src =
+    CUSTOMER_API_URL +
+    "?action=getNextInvoiceNumber&callback=" +
+    encodeURIComponent(callbackName) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
+
+  setTimeout(function() {
+    if (!done) {
+      finish();
+      if (input) input.value = "INV-0001";
+      setTimeout(loadNextInvoiceNumber, DB_RETRY_DELAY_MS);
+    }
+  }, DB_REQUEST_TIMEOUT_MS);
 }
-
-function initializeInvoiceNumber() {
-  setInvoiceNumber(getStoredInvoiceNumber());
-}
-
-initializeInvoiceNumber();
-
 
 /* ==========================================
    CUSTOMER DATABASE
@@ -2292,6 +2312,9 @@ function retryDatabaseLoad(loadFunction, isLoadedFunction) {
     if (!isLoadedFunction()) loadFunction();
   }, DB_RETRY_DELAY_MS);
 }
+
+// Load the next Invoice No. after all database timing constants exist.
+loadNextInvoiceNumber();
 
 function loadBankingDetails() {
   const select = document.getElementById("bankingDetails");
@@ -2467,15 +2490,6 @@ function loadSalespersons() {
     }
   }, DB_REQUEST_TIMEOUT_MS);
 }
-
-const invoiceNumberInput = document.getElementById("invoiceNumber");
-if (invoiceNumberInput) {
-  invoiceNumberInput.addEventListener("change", function() {
-    const value = this.value.trim() || "INV-0001";
-    localStorage.setItem("bb_invoice_number", value);
-  });
-}
-
 
 /* ==========================================
    LOAD CUSTOMERS
@@ -3438,13 +3452,24 @@ function calculate() {
   const paymentMethod =
     document.getElementById("paymentMethod")?.value || "Cash";
 
+  const amountPaidInput = document.getElementById("amountPaid");
   const enteredAmountPaid =
-    Number(document.getElementById("amountPaid")?.value) || 0;
+    Number(amountPaidInput?.value) || 0;
 
-  // Amount Paid is the REAL amount received for every payment method.
-  // Never force Cash or Bank to equal the Grand Total.
-  const amountPaid =
-    Math.min(Math.max(0, enteredAmountPaid), finalTotal);
+  // Cash and Bank are fully paid methods.
+  // Credit has no payment received.
+  // Partial methods use the amount entered by the accountant.
+  let amountPaid = enteredAmountPaid;
+
+  if (paymentMethod === "Cash" || paymentMethod === "Bank") {
+    amountPaid = finalTotal;
+    if (amountPaidInput) amountPaidInput.value = finalTotal;
+  } else if (paymentMethod === "Credit") {
+    amountPaid = 0;
+    if (amountPaidInput) amountPaidInput.value = 0;
+  } else {
+    amountPaid = Math.min(Math.max(0, enteredAmountPaid), finalTotal);
+  }
 
   // Credit Amount is always Grand Total - Amount Paid.
   const creditAmountValue =
@@ -3504,6 +3529,16 @@ function handlePaymentMethodChange() {
   if (!needsBank) {
     if (bankSelect) bankSelect.value = "";
     if (referenceInput) referenceInput.value = "";
+  }
+
+  const amountPaidInput = document.getElementById("amountPaid");
+  if (amountPaidInput) {
+    if (paymentMethod === "Cash" || paymentMethod === "Bank") {
+      const currentGrandTotal = document.getElementById("grandTotal")?.textContent || "";
+      amountPaidInput.value = Number(currentGrandTotal.replace(/[^0-9.-]/g, "")) || 0;
+    } else if (paymentMethod === "Credit") {
+      amountPaidInput.value = 0;
+    }
   }
 
   calculate();
@@ -3785,7 +3820,15 @@ function getFinalInvoiceState() {
   const paymentMethod = document.getElementById("paymentMethod")?.value || "Cash";
   const enteredAmountPaid = Number(document.getElementById("amountPaid")?.value) || 0;
 
-  const amountPaid = Math.min(Math.max(0, enteredAmountPaid), grandTotal);
+  let amountPaid = enteredAmountPaid;
+  if (paymentMethod === "Cash" || paymentMethod === "Bank") {
+    amountPaid = grandTotal;
+  } else if (paymentMethod === "Credit") {
+    amountPaid = 0;
+  } else {
+    amountPaid = Math.min(Math.max(0, enteredAmountPaid), grandTotal);
+  }
+
   const creditAmount = Math.max(0, grandTotal - amountPaid);
   const change = 0;
   const outstanding = creditAmount;
@@ -4647,7 +4690,7 @@ function buildSalesInvoicePayload() {
   calculate();
 
   const state = getFinalInvoiceState();
-  const invoiceNo = state.invoiceNo || getStoredInvoiceNumber();
+  const invoiceNo = state.invoiceNo || "";
 
   return {
     invoiceNo,
@@ -4712,6 +4755,57 @@ document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") closeInvoicePreview();
 });
 
+function checkInvoiceNumberAvailable(invoiceNo) {
+  return new Promise((resolve, reject) => {
+    const requested = String(invoiceNo || "").trim();
+    if (!requested || requested === "Loading...") {
+      reject(new Error("Invoice number is not ready yet."));
+      return;
+    }
+
+    const callbackName = "bbCheckInvoiceNo_" + Date.now();
+    const script = document.createElement("script");
+    let done = false;
+
+    function finish() {
+      if (done) return;
+      done = true;
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[callbackName] = function(data) {
+      finish();
+      if (data && data.success) {
+        resolve(data);
+      } else {
+        reject(new Error(data?.error || "Could not check the Invoice No."));
+      }
+    };
+
+    script.onerror = function() {
+      finish();
+      reject(new Error("Could not check the Invoice No. from Sales Data."));
+    };
+
+    script.src =
+      CUSTOMER_API_URL +
+      "?action=checkInvoiceNumber&invoiceNo=" +
+      encodeURIComponent(requested) +
+      "&callback=" + encodeURIComponent(callbackName) +
+      "&t=" + Date.now();
+
+    document.body.appendChild(script);
+
+    setTimeout(function() {
+      if (!done) {
+        finish();
+        reject(new Error("Invoice No. check timed out."));
+      }
+    }, DB_REQUEST_TIMEOUT_MS);
+  });
+}
+
 async function completeInvoice(event) {
   if (event) {
     event.preventDefault();
@@ -4738,7 +4832,8 @@ async function completeInvoice(event) {
   }
 
   const confirmed = confirm(
-    `Complete invoice ${payload.invoiceNo}?\n\n` +
+    "Complete this invoice?\n\n" +
+    "The Sales Database will assign the next unique Invoice No.\n" +
     "This will save the invoice to the Sales Data Google Sheet."
   );
 
@@ -4754,14 +4849,42 @@ async function completeInvoice(event) {
   }
 
   try {
+    // Check the displayed Invoice No. immediately before saving.
+    // If another invoice already uses it, replace it with the next
+    // available number and KEEP ALL entered invoice information.
+    const numberCheck = await checkInvoiceNumberAvailable(payload.invoiceNo);
+
+    if (numberCheck.exists) {
+      const available = numberCheck.availableInvoiceNo || numberCheck.invoiceNo || "";
+      if (available) {
+        setInvoiceNumber(available);
+      }
+
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = oldText;
+      }
+
+      window.bbInvoiceSaving = false;
+
+      alert(
+        "Invoice No. " + payload.invoiceNo + " is already used.\n\n" +
+        "The next available Invoice No. has been loaded: " + available +
+        "\n\nYour invoice information is still here.\nPlease click Complete again to save it."
+      );
+      return;
+    }
+
+    // Keep the exact available Invoice No. that was checked.
+    payload.invoiceNo = numberCheck.invoiceNo || payload.invoiceNo;
+
     await postSalesInvoice(payload);
 
-    // Only clear after the POST has been sent.
     alert(
-      `Invoice ${payload.invoiceNo} was sent to the Sales Data database.`
+      "Invoice saved successfully to the Sales Data database.\n\n" +
+      "Invoice No.: " + payload.invoiceNo
     );
 
-    // Keep the existing invoice-number workflow.
     clearAllAfterSuccessfulSave();
 
   } catch (error) {
@@ -4850,7 +4973,7 @@ function clearAllAfterSuccessfulSave() {
   document.getElementById("discount").value = 0;
   document.getElementById("amountPaid").value = 0;
 
-  setInvoiceNumber(getNextInvoiceNumber());
+  loadNextInvoiceNumber();
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
@@ -4895,7 +5018,7 @@ function clearAll() {
   document.getElementById("amountPaid").value = 0;
 
   // Automatically move to the next invoice number for the new invoice.
-  setInvoiceNumber(getNextInvoiceNumber());
+  loadNextInvoiceNumber();
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
