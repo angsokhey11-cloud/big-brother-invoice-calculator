@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+<!-- BIG BROTHER MASTER ACCOUNTANT FINAL: Master DB for reference data; Sales DB for executed transactions. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIG BROTHER</title>
+<meta name="bb-template" content="Invoice Item: Invoice ID + Invoice No + Product Code groups (QTY | Price | Total)">
+<title>BIG BROTHER — MASTER ACCOUNTANT</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -1965,7 +1967,7 @@ document.addEventListener("DOMContentLoaded", function () {
     </button>
   </div>
 
-  <button class="clear-btn complete-btn no-print" onclick="clearAll()">
+  <button type="button" class="clear-btn complete-btn no-print" onclick="completeInvoice(event)">
     ✓ Complete
   </button>
 
@@ -2038,15 +2040,25 @@ initializeInvoiceNumber();
 ========================================== */
 
 const DRIVE_SAVE_API =
-  "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
+  "https://script.google.com/macros/s/AKfycbyM5mUlz5SeMZ_oPJCo2FgLkPEcodAQ7wPl5wxAdrvfqLvsZLaHxiOtS02L1Q3ZRA3D/exec";
 
 const DRIVE_FOLDER_ID =
   "1wgNyhkR7-QQphRAAou2v-etx0LinDl21";
 
 const CUSTOMER_API_URL =
-  "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
+  "https://script.google.com/macros/s/AKfycbyM5mUlz5SeMZ_oPJCo2FgLkPEcodAQ7wPl5wxAdrvfqLvsZLaHxiOtS02L1Q3ZRA3D/exec";
 
 let customers = [];
+
+/* ==========================================
+   CUSTOMER-SPECIFIC PRICING
+   Customer Prices sheet -> Apps Script Web App
+   Customer + Product Code -> default customer price
+========================================== */
+let customerPrices = {};
+let customerPriceCustomer = "";
+let customerPriceLoaded = false;
+let customerPriceRequestToken = 0;
 
 /* ==========================================
    SALESPERSON DATABASE
@@ -2505,6 +2517,169 @@ function fillCustomerInformation() {
 
   document.getElementById("customerAddress").value =
     customer.address || "";
+
+  loadCustomerPrices(customer.name);
+}
+
+
+/* ==========================================
+   LOAD CUSTOMER-SPECIFIC PRICES
+   Sheet: Customer Prices (matrix format)
+   Row 1: Product Codes (B1 onward)
+   Row 2: Product Names (B2 onward)
+   Row 3+: Customer rows (A = Customer Name)
+   Blank price = use standard Products price
+========================================== */
+function loadCustomerPrices(customerName) {
+  const name = String(customerName || "").trim();
+  const status = document.getElementById("customerStatus");
+  const token = ++customerPriceRequestToken;
+
+  customerPrices = {};
+  customerPriceCustomer = name;
+  customerPriceLoaded = false;
+
+  if (!name) {
+    if (status) {
+      status.textContent = customers.length
+        ? `${customers.length} customers loaded from Google Sheets`
+        : "No customers found — you can still type manually.";
+      status.style.color = customers.length ? "#2f855a" : "#b7791f";
+    }
+    applyCustomerPricesToProducts();
+    return;
+  }
+
+  if (status) {
+    status.textContent = "Loading customer prices...";
+    status.style.color = "#718096";
+  }
+
+  const callbackName = "bbCustomerPrices_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+  const script = document.createElement("script");
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  window[callbackName] = function(data) {
+    if (token !== customerPriceRequestToken) {
+      finish();
+      return;
+    }
+
+    // Apps Script returns the matrix format:
+    // { customer, found, prices: { PRODUCT_CODE: { productCode, productName, priceUSD } } }
+    // Keep backward compatibility with the older array format too.
+    if (data && typeof data === "object" && !Array.isArray(data) && data.prices) {
+      const prices = data.prices || {};
+      Object.keys(prices).forEach(codeKey => {
+        const row = prices[codeKey] || {};
+        const code = String(row.productCode || codeKey || "").trim();
+        const price = Number(row.priceUSD);
+        if (code && Number.isFinite(price)) {
+          customerPrices[code] = price;
+        }
+      });
+    } else if (Array.isArray(data)) {
+      data.forEach(row => {
+        const code = String(row.productCode || row.code || "").trim();
+        const price = Number(row.priceUSD);
+        if (code && Number.isFinite(price)) {
+          customerPrices[code] = price;
+        }
+      });
+    }
+
+    customerPriceLoaded = true;
+
+    if (status) {
+      const count = Object.keys(customerPrices).length;
+      status.textContent = count
+        ? `Customer selected • ${count} special price${count === 1 ? "" : "s"} loaded`
+        : "Customer selected • using standard product prices";
+      status.style.color = "#2f855a";
+    }
+
+    applyCustomerPricesToProducts();
+    finish();
+  };
+
+  script.onerror = function() {
+    if (token !== customerPriceRequestToken) {
+      finish();
+      return;
+    }
+    customerPrices = {};
+    customerPriceLoaded = true;
+    if (status) {
+      status.textContent = "Customer price database unavailable • using standard product prices";
+      status.style.color = "#b7791f";
+    }
+    applyCustomerPricesToProducts();
+    finish();
+  };
+
+  script.src =
+    CUSTOMER_API_URL +
+    "?action=customerPrices&customer=" +
+    encodeURIComponent(name) +
+    "&callback=" +
+    encodeURIComponent(callbackName) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
+
+  setTimeout(() => {
+    if (!done && token === customerPriceRequestToken) {
+      customerPrices = {};
+      customerPriceLoaded = true;
+      if (status) {
+        status.textContent = "Customer price database unavailable • using standard product prices";
+        status.style.color = "#b7791f";
+      }
+      applyCustomerPricesToProducts();
+      finish();
+    }
+  }, 12000);
+}
+
+function getPriceForProduct(product) {
+  if (!product) return 0;
+  if (Object.prototype.hasOwnProperty.call(customerPrices, product.code)) {
+    return customerPrices[product.code];
+  }
+  return product.usdPrice;
+}
+
+function applyCustomerPricesToProducts() {
+  const rows = document.querySelectorAll("#productList .product");
+  const currency = getCurrency();
+
+  rows.forEach(row => {
+    const code = row.dataset.productCode || "";
+    const name = row.dataset.product || "";
+    const item = selectedProducts.find(p => p.id === name);
+    const product = products.find(p => p.code === code || p.name === name);
+
+    if (!item || !product || item.manualPrice) return;
+
+    const effectiveUsdPrice = getPriceForProduct(product);
+    item.usdPrice = effectiveUsdPrice;
+    row.dataset.usdPrice = effectiveUsdPrice;
+
+    const priceInput = row.querySelectorAll("input")[1];
+    if (priceInput) {
+      priceInput.value = usdToSelected(effectiveUsdPrice, currency);
+      priceInput.step = currency === "KHR" ? "1" : "0.01";
+    }
+  });
+
+  calculate();
 }
 
 
@@ -2570,6 +2745,8 @@ function selectCustomer(customer) {
 
   document.getElementById("customerOptions").style.display =
     "none";
+
+  loadCustomerPrices(customer.name);
 }
 
 
@@ -2581,6 +2758,19 @@ if (customerNameInput) {
   customerNameInput.addEventListener(
     "input",
     function() {
+      const typedName = this.value.trim();
+      const exactCustomer = customers.find(
+        item => item.name.toLowerCase() === typedName.toLowerCase()
+      );
+
+      if (!exactCustomer) {
+        customerPriceRequestToken++;
+        customerPrices = {};
+        customerPriceCustomer = "";
+        customerPriceLoaded = false;
+        applyCustomerPricesToProducts();
+      }
+
       fillCustomerInformation();
       showCustomerOptions();
     }
@@ -2867,14 +3057,17 @@ function addSelectedProduct() {
   /*
    * Add immediately when the user selects it.
    */
+  const effectiveUsdPrice = getPriceForProduct(product);
+
   selectedProducts.push({
     id: product.name,
-    usdPrice: product.usdPrice
+    usdPrice: effectiveUsdPrice,
+    manualPrice: false
   });
 
   createProduct(
     product.name,
-    product.usdPrice
+    effectiveUsdPrice
   );
 
   calculate();
@@ -3009,6 +3202,7 @@ function priceChanged(input) {
 
   if (item) {
     item.usdPrice = Number(product.dataset.usdPrice);
+    item.manualPrice = true;
   }
 
   calculate();
@@ -3364,13 +3558,17 @@ function getFinalInvoiceState() {
     const lineTotal = qty * price;
     subtotal += lineTotal;
 
+    const productCode = product.dataset.productCode ||
+      products.find(p => p.name === product.dataset.product)?.code || "";
+
     items.push({
       no: index + 1,
+      productCode,
       name: product.dataset.product || product.querySelector(".product-name")?.textContent?.trim() || "Product",
       qty,
       price,
       total: lineTotal,
-      unit: products.find(p => p.name === product.dataset.product)?.unit || ""
+      unit: products.find(p => p.code === productCode || p.name === product.dataset.product)?.unit || ""
     });
   });
 
@@ -3703,7 +3901,7 @@ async function saveToDrive(event) {
     form.style.display = "none";
 
     const fields = {
-      action: "saveInvoice",
+      action: "saveInvoiceImage",
       image: "data:image/png;base64," + base64,
       fileName: fileName
     };
@@ -4214,6 +4412,202 @@ if (document.readyState === "loading") {
 } else {
   initializeMoreOptions();
 }
+
+/* ==========================================
+   SAVE SALES INVOICE
+   Google Sheets -> separate Sales Data file
+   Invoice Item uses Product Code as the stable key
+========================================== */
+
+function buildSalesInvoicePayload() {
+  calculate();
+
+  const state = getFinalInvoiceState();
+  const invoiceNo = state.invoiceNo || getStoredInvoiceNumber();
+
+  return {
+    invoiceNo,
+    invoiceDate: document.getElementById("invoiceDate")?.value || "",
+    customer: state.customer,
+    salesperson: state.salesperson,
+    paymentMethod: state.paymentMethod,
+    currency: state.currency,
+    exchangeRate: state.rate,
+    subtotal: state.subtotal,
+    discount: state.discount,
+    grandTotal: state.grandTotal,
+    amountPaid: state.amountPaid,
+    change: state.change,
+    note: state.note,
+    items: state.items.map(item => ({
+      productCode: item.productCode,
+      qty: item.qty,
+      unitPrice: item.price,
+      amount: item.total
+    }))
+  };
+}
+
+async function completeInvoice(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  const button =
+    event?.currentTarget ||
+    document.querySelector(".complete-btn");
+
+  if (window.bbInvoiceSaving) return;
+
+  const payload = buildSalesInvoicePayload();
+
+  if (!payload.items.length) {
+    alert("Please add at least one product before completing the invoice.");
+    return;
+  }
+
+  const hasValidQty = payload.items.some(item => Number(item.qty) > 0);
+  if (!hasValidQty) {
+    alert("Please enter quantity for at least one product.");
+    return;
+  }
+
+  const confirmed = confirm(
+    `Complete invoice ${payload.invoiceNo}?\n\n` +
+    "This will save the invoice to the Sales Data Google Sheet."
+  );
+
+  if (!confirmed) return;
+
+  window.bbInvoiceSaving = true;
+
+  const oldText = button ? button.innerHTML : "";
+
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = "⏳ Saving...";
+  }
+
+  try {
+    await postSalesInvoice(payload);
+
+    // Only clear after the POST has been sent.
+    alert(
+      `Invoice ${payload.invoiceNo} was sent to the Sales Data database.`
+    );
+
+    // Keep the existing invoice-number workflow.
+    clearAllAfterSuccessfulSave();
+
+  } catch (error) {
+    console.error("Sales invoice save failed:", error);
+    alert(
+      "Could not save the invoice to Sales Data.\n\n" +
+      (error?.message || "Please try again.") +
+      "\n\nThe invoice was NOT cleared."
+    );
+
+  } finally {
+    window.bbInvoiceSaving = false;
+
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = oldText;
+    }
+  }
+}
+
+function postSalesInvoice(payload) {
+  return new Promise((resolve, reject) => {
+    const iframeName = "bbSalesSaveFrame_" + Date.now();
+    const iframe = document.createElement("iframe");
+    iframe.name = iframeName;
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = CUSTOMER_API_URL;
+    form.target = iframeName;
+    form.style.display = "none";
+
+    const actionInput = document.createElement("input");
+    actionInput.type = "hidden";
+    actionInput.name = "action";
+    actionInput.value = "saveInvoice";
+    form.appendChild(actionInput);
+
+    const dataInput = document.createElement("input");
+    dataInput.type = "hidden";
+    dataInput.name = "invoiceData";
+    dataInput.value = JSON.stringify(payload);
+    form.appendChild(dataInput);
+
+    document.body.appendChild(form);
+
+    let settled = false;
+
+    const finish = (success, error) => {
+      if (settled) return;
+      settled = true;
+
+      setTimeout(() => {
+        form.remove();
+        iframe.remove();
+      }, 1000);
+
+      if (success) resolve();
+      else reject(error || new Error("Sales Data save timed out."));
+    };
+
+    try {
+      form.submit();
+    } catch (error) {
+      finish(false, error);
+      return;
+    }
+
+    // The Apps Script response is cross-origin, so the browser cannot
+    // reliably expose its result to this page. Wait briefly for the
+    // POST to reach Apps Script and then continue.
+    setTimeout(() => {
+      finish(true, null);
+    }, 2500);
+  });
+}
+
+function clearAllAfterSuccessfulSave() {
+  selectedProducts = [];
+
+  document.getElementById("productList").innerHTML = "";
+  document.getElementById("productSelector").style.display = "none";
+
+  document.getElementById("discount").value = 0;
+  document.getElementById("amountPaid").value = 0;
+
+  setInvoiceNumber(getNextInvoiceNumber());
+  document.getElementById("customerName").value = "";
+  document.getElementById("customerPhone").value = "";
+  document.getElementById("customerAddress").value = "";
+  document.getElementById("salesName").value = "";
+  document.getElementById("paymentMethod").value = "Cash";
+
+  const noteInput = document.getElementById("invoiceNote");
+  if (noteInput) noteInput.value = "";
+
+  const bankSelect = document.getElementById("bankingDetails");
+  if (bankSelect) bankSelect.value = "";
+  updateBankingPreview();
+
+  customerPrices = {};
+  customerPriceCustomer = "";
+  customerPriceLoaded = false;
+
+  setTodayDate();
+  calculate();
+}
+
 
 /* ==========================================
    CLEAR EVERYTHING
