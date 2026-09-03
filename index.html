@@ -1978,7 +1978,18 @@ body.bb-sale-return-mode .calculator > *:not(.header-main):not(.bb-module-nav):n
   .bb-sr-return-input { height:29px; min-height:29px; font-size:11px; }
 }
 @media (max-width:700px) {
-  .bb-module-nav { flex-direction:column; }
+  /* Keep the main module buttons side-by-side on mobile. */
+  .bb-module-nav {
+    flex-direction:row;
+    gap:4px;
+  }
+  .bb-module-btn {
+    flex:1 1 0;
+    min-width:0;
+    padding:10px 6px;
+    font-size:12px;
+    white-space:nowrap;
+  }
   .bb-sr-search-grid { grid-template-columns:1fr; }
   .bb-sr-info-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .bb-sr-title-row { align-items:flex-start; }
