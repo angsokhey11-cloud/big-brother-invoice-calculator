@@ -2199,6 +2199,9 @@ const DRIVE_FOLDER_ID =
 const CUSTOMER_API_URL =
   "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
 
+const SALES_DATABASE_API_URL =
+  "https://script.google.com/macros/s/AKfycbyM5mUlz5SeMZ_oPJCo2FgLkPEcodAQ7wPl5wxAdrvfqLvsZLaHxiOtS02L1Q3ZRA3D/exec";
+
 let customers = [];
 let locations = [];
 let currentLocationCode = "";
@@ -4805,6 +4808,20 @@ if (document.readyState === "loading") {
    Invoice Item uses Product Code as the stable key
 ========================================== */
 
+function generateClientInvoiceId() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, "0");
+  const stamp =
+    now.getFullYear() +
+    pad(now.getMonth() + 1) +
+    pad(now.getDate()) + "-" +
+    pad(now.getHours()) +
+    pad(now.getMinutes()) +
+    pad(now.getSeconds());
+  const random = Math.floor(100 + Math.random() * 900);
+  return "BB-" + stamp + "-" + random;
+}
+
 function buildSalesInvoicePayload() {
   calculate();
 
@@ -4812,6 +4829,7 @@ function buildSalesInvoicePayload() {
   const invoiceNo = state.invoiceNo || "";
 
   return {
+    invoiceId: generateClientInvoiceId(),
     invoiceNo,
     invoiceDate: document.getElementById("invoiceDate")?.value || "",
     dueDate: document.getElementById("dueDate")?.value || "",
@@ -4909,7 +4927,7 @@ function checkInvoiceNumberAvailable(invoiceNo) {
     };
 
     script.src =
-      CUSTOMER_API_URL +
+      SALES_DATABASE_API_URL +
       "?action=checkInvoiceNumber&invoiceNo=" +
       encodeURIComponent(requested) +
       "&callback=" + encodeURIComponent(callbackName) +
@@ -5009,9 +5027,18 @@ async function completeInvoice(event) {
 
     await postSalesInvoice(payload);
 
+    // Save the actual payment event separately.
+    // Credit invoices do not create a payment transaction.
+    if (shouldCreatePaymentRecord(payload)) {
+      await postSalesPayment(buildPaymentPayload(payload));
+    }
+
     alert(
       "Invoice saved successfully to the Sales Data database.\n\n" +
-      "Invoice No.: " + payload.invoiceNo
+      "Invoice No.: " + payload.invoiceNo +
+      (shouldCreatePaymentRecord(payload)
+        ? "\nPayment record saved successfully."
+        : "\nNo payment record created (Credit invoice).")
     );
 
     clearAllAfterSuccessfulSave();
@@ -5034,6 +5061,83 @@ async function completeInvoice(event) {
   }
 }
 
+function shouldCreatePaymentRecord(payload) {
+  const method = String(payload?.paymentMethod || "").trim();
+  return method === "Cash" ||
+         method === "Bank" ||
+         method === "Partially Paid in Cash" ||
+         method === "Partially Paid in Bank";
+}
+
+function buildPaymentPayload(payload) {
+  const method = String(payload.paymentMethod || "").trim();
+  const isBank = method === "Bank" || method === "Partially Paid in Bank";
+
+  return {
+    invoiceId: payload.invoiceId,
+    invoiceNo: payload.invoiceNo,
+    paymentDate: payload.invoiceDate,
+    customer: payload.customer,
+    locationCode: payload.locationCode,
+    salesperson: payload.salesperson,
+    paymentMethod: isBank ? "Bank" : "Cash",
+    bankPayment: isBank ? payload.paymentBank : "",
+    bankReference: isBank ? payload.bankReference : "",
+    currency: payload.currency,
+    exchangeRate: payload.exchangeRate,
+    amount: Number(payload.amountPaid) || 0,
+    note: "Initial invoice payment"
+  };
+}
+
+function postSalesPayment(payload) {
+  return new Promise((resolve, reject) => {
+    const iframeName = "bbPaymentSaveFrame_" + Date.now();
+    const iframe = document.createElement("iframe");
+    iframe.name = iframeName;
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = SALES_DATABASE_API_URL;
+    form.target = iframeName;
+    form.style.display = "none";
+
+    const actionInput = document.createElement("input");
+    actionInput.type = "hidden";
+    actionInput.name = "action";
+    actionInput.value = "savePayment";
+    form.appendChild(actionInput);
+
+    const dataInput = document.createElement("input");
+    dataInput.type = "hidden";
+    dataInput.name = "paymentData";
+    dataInput.value = JSON.stringify(payload);
+    form.appendChild(dataInput);
+
+    document.body.appendChild(form);
+
+    let settled = false;
+    const finish = (success, error) => {
+      if (settled) return;
+      settled = true;
+      setTimeout(() => { form.remove(); iframe.remove(); }, 1000);
+      if (success) resolve();
+      else reject(error || new Error("Payment save timed out."));
+    };
+
+    try {
+      form.submit();
+    } catch (error) {
+      finish(false, error);
+      return;
+    }
+
+    setTimeout(() => finish(true, null), 2500);
+  });
+}
+
 function postSalesInvoice(payload) {
   return new Promise((resolve, reject) => {
     const iframeName = "bbSalesSaveFrame_" + Date.now();
@@ -5044,7 +5148,7 @@ function postSalesInvoice(payload) {
 
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = CUSTOMER_API_URL;
+    form.action = SALES_DATABASE_API_URL;
     form.target = iframeName;
     form.style.display = "none";
 
