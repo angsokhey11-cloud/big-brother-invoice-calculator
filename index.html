@@ -1785,6 +1785,91 @@ input:focus {
   .final-transaction { gap: 10px; }
 }
 
+
+
+/* ==========================================
+   BIG BROTHER MODULE NAV + SALE RETURN
+========================================== */
+.bb-module-nav {
+  display:flex;
+  gap:8px;
+  margin:10px 0 12px;
+  padding:6px;
+  background:#eef3f8;
+  border:1px solid #d7e0ea;
+  border-radius:12px;
+}
+.bb-module-btn {
+  flex:1;
+  border:0;
+  border-radius:9px;
+  padding:11px 12px;
+  background:transparent;
+  color:#23415f;
+  font-weight:800;
+  cursor:pointer;
+}
+.bb-module-btn.active {
+  background:#173f73;
+  color:#fff;
+}
+body.bb-sale-return-mode .header-currency { display:none; }
+body.bb-sale-return-mode .calculator > *:not(.header-main):not(.bb-module-nav):not(#saleReturnPanel) { display:none !important; }
+.bb-sale-return-panel { margin-top:4px; }
+.bb-sr-title-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+.bb-sr-subtitle { font-size:12px; color:#66788b; margin-top:-5px; }
+.bb-sr-badge {
+  padding:6px 9px; border-radius:999px; background:#e7f0fb; color:#173f73;
+  font-size:10px; font-weight:900; letter-spacing:.5px; white-space:nowrap;
+}
+.bb-sr-search-grid { display:grid; grid-template-columns:minmax(0,1fr) 170px; gap:10px; align-items:end; }
+.bb-sr-invoice-picker-wrap { position:relative; min-width:0; }
+.bb-sr-invoice-picker { position:relative; display:flex; width:100%; }
+.bb-sr-invoice-picker input { width:100%; padding-right:42px; }
+.bb-sr-dropdown-btn { position:absolute; right:0; top:0; width:40px; height:100%; border:0; border-left:1px solid #d9e1ea; border-radius:0 8px 8px 0; background:#f6f8fb; color:#173f73; font-size:18px; font-weight:900; cursor:pointer; z-index:2; }
+.bb-sr-dropdown-btn:hover { background:#eaf0f7; }
+.bb-sr-invoice-dropdown { display:none; position:absolute; z-index:50; left:0; right:0; top:calc(100% + 4px); background:#fff; border:1px solid #cfd9e4; border-radius:9px; box-shadow:0 8px 22px rgba(24,52,82,.14); max-height:190px; overflow-y:auto; }
+.bb-sr-invoice-dropdown.open { display:block; }
+.bb-sr-invoice-option { min-height:38px; display:flex; align-items:center; padding:8px 12px; border-bottom:1px solid #edf1f5; color:#1d2e42; font-size:13px; font-weight:700; cursor:pointer; }
+.bb-sr-invoice-option:last-child { border-bottom:0; }
+.bb-sr-invoice-option:hover, .bb-sr-invoice-option.active { background:#edf3fa; color:#173f73; }
+.bb-sr-invoice-empty { padding:10px 12px; color:#718096; font-size:12px; }
+.bb-sr-search-action { display:flex; }
+.bb-sr-search-btn { width:100%; min-height:42px; border:0; border-radius:9px; background:#173f73; color:#fff; font-weight:800; cursor:pointer; }
+.bb-sr-status { margin-top:9px; padding:8px 10px; border-radius:8px; background:#f6f8fb; color:#657587; font-size:12px; }
+.bb-sr-info-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.bb-sr-info-grid > div { padding:8px 10px; border:1px solid #e0e6ed; border-radius:8px; background:#fafbfd; }
+.bb-sr-info-grid span { display:block; font-size:10px; color:#718096; margin-bottom:3px; }
+.bb-sr-info-grid strong { display:block; font-size:13px; color:#1d2e42; word-break:break-word; }
+.bb-sr-table-wrap { overflow-x:auto; }
+.bb-sr-table { width:100%; border-collapse:collapse; min-width:760px; font-size:12px; }
+.bb-sr-table th, .bb-sr-table td { border:1px solid #dce4ec; padding:7px 6px; text-align:center; }
+.bb-sr-table th { background:#edf3fa; color:#173f73; font-weight:800; }
+.bb-sr-table td:first-child { text-align:left; font-weight:700; }
+.bb-sr-table input { width:78px; min-height:32px; padding:4px 6px; text-align:center; }
+.bb-sr-available { font-weight:800; }
+.bb-sr-return-amount { font-weight:800; }
+.bb-sr-total-row { display:flex; justify-content:flex-end; gap:18px; align-items:center; margin-top:10px; font-size:14px; }
+.bb-sr-total-row strong { font-size:18px; color:#173f73; }
+.bb-sr-details-card > div + div { margin-top:10px; }
+.bb-sr-details-card textarea { min-height:72px; resize:vertical; }
+.bb-sr-actions { display:flex; justify-content:flex-end; gap:8px; margin:12px 0 20px; }
+.bb-sr-actions button { min-width:130px; }
+@media (max-width:700px) {
+  .bb-module-nav { flex-direction:column; }
+  .bb-sr-search-grid { grid-template-columns:1fr; }
+  .bb-sr-info-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .bb-sr-title-row { align-items:flex-start; }
+}
+@media (max-width:450px) {
+  .bb-sr-info-grid { grid-template-columns:1fr; }
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
 /* Keep optional financial sections hidden when invoice opens. */
@@ -1812,6 +1897,107 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     </div>
   </div>
+
+  <!-- BIG BROTHER MODULE NAVIGATION -->
+  <div class="bb-module-nav no-print">
+    <button type="button" class="bb-module-btn active" id="bbInvoiceModuleBtn" onclick="showBBModule('invoice')">🧾 Invoice Generator</button>
+    <button type="button" class="bb-module-btn" id="bbSaleReturnModuleBtn" onclick="showBBModule('saleReturn')">🔄 Sale Return</button>
+  </div>
+
+  <!-- SALE RETURN MODULE -->
+  <section id="saleReturnPanel" class="bb-sale-return-panel no-print" style="display:none;">
+    <div class="bb-sr-title-row">
+      <div>
+        <div class="section-title">Sale Return</div>
+        <div class="bb-sr-subtitle">Return products from an existing Sales Database invoice.</div>
+      </div>
+      <div class="bb-sr-badge">SALES DATABASE</div>
+    </div>
+
+    <div class="card bb-sr-search-card">
+      <div class="bb-sr-search-grid">
+        <div class="bb-sr-invoice-picker-wrap">
+          <label for="srInvoiceNo">Invoice No.</label>
+          <div class="bb-sr-invoice-picker" id="srInvoicePicker">
+            <input type="text" id="srInvoiceNo" placeholder="Select or type invoice number" autocomplete="off" spellcheck="false">
+            <button type="button" class="bb-sr-dropdown-btn" id="srInvoiceDropdownBtn" aria-label="Show recent invoices" title="Show recent invoices" onclick="toggleSaleReturnInvoiceDropdown(event)">▾</button>
+            <div class="bb-sr-invoice-dropdown" id="srInvoiceDropdown" role="listbox" aria-label="Recent invoices"></div>
+          </div>
+        </div>
+        <div class="bb-sr-search-action">
+          <button type="button" class="bb-sr-search-btn" onclick="loadSaleReturnInvoice()">🔎 Load Invoice</button>
+        </div>
+      </div>
+      <div id="srStatus" class="bb-sr-status">Enter an Invoice No. and load the original sale.</div>
+    </div>
+
+    <div id="srInvoiceInfo" class="card bb-sr-info-card" style="display:none;">
+      <div class="section-title">Original Invoice</div>
+      <div class="bb-sr-info-grid">
+        <div><span>Invoice No.</span><strong id="srInfoInvoiceNo">-</strong></div>
+        <div><span>Invoice Date</span><strong id="srInfoDate">-</strong></div>
+        <div><span>Customer</span><strong id="srInfoCustomer">-</strong></div>
+        <div><span>Location</span><strong id="srInfoLocation">-</strong></div>
+        <div><span>Sale Person</span><strong id="srInfoSalesperson">-</strong></div>
+        <div><span>Currency</span><strong id="srInfoCurrency">-</strong></div>
+      </div>
+    </div>
+
+    <div id="srProductsCard" class="card bb-sr-products-card" style="display:none;">
+      <div class="section-title">Products Sold</div>
+      <div class="bb-sr-table-wrap">
+        <table class="bb-sr-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Sold Qty</th>
+              <th>Returned</th>
+              <th>Available</th>
+              <th>Unit Price</th>
+              <th>Return Qty</th>
+              <th>Return Amount</th>
+            </tr>
+          </thead>
+          <tbody id="srProductsBody"></tbody>
+        </table>
+      </div>
+      <div class="bb-sr-total-row">
+        <span>Total Sale Return</span>
+        <strong id="srTotalAmount">$0.00</strong>
+      </div>
+    </div>
+
+    <div id="srDetailsCard" class="card bb-sr-details-card" style="display:none;">
+      <div class="section-title">Return Details</div>
+      <div class="grid-2">
+        <div>
+          <label for="srReturnDate">Return Date</label>
+          <input type="date" id="srReturnDate">
+        </div>
+        <div>
+          <label for="srReturnType">Return Type</label>
+          <select id="srReturnType">
+            <option value="Customer Return">Customer Return</option>
+            <option value="Damaged Return">Damaged Return</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="srReason">Reason</label>
+        <input type="text" id="srReason" placeholder="Why is the product being returned?">
+      </div>
+      <div>
+        <label for="srNote">Note</label>
+        <textarea id="srNote" placeholder="Optional note for this sale return..."></textarea>
+      </div>
+    </div>
+
+    <div id="srActions" class="bb-sr-actions no-print" style="display:none;">
+      <button type="button" class="clear-btn" onclick="clearSaleReturn()">Clear</button>
+      <button type="button" class="complete-btn" id="srSaveBtn" onclick="saveSaleReturn()">✓ Save Sale Return</button>
+    </div>
+  </section>
 
   <!-- INVOICE INFORMATION -->
   <div class="card invoice-card">
@@ -5373,4 +5559,474 @@ document.addEventListener("DOMContentLoaded", function () {
   handlePaymentMethodChange();
   if (typeof calculate === "function") calculate();
 });
+
+
+/* ==========================================
+   BIG BROTHER MODULE SWITCHING
+========================================== */
+function showBBModule(module) {
+  const invoiceBtn = document.getElementById("bbInvoiceModuleBtn");
+  const returnBtn = document.getElementById("bbSaleReturnModuleBtn");
+  const returnPanel = document.getElementById("saleReturnPanel");
+
+  const isReturn = module === "saleReturn";
+  document.body.classList.toggle("bb-sale-return-mode", isReturn);
+
+  if (returnPanel) returnPanel.style.display = isReturn ? "block" : "none";
+  if (invoiceBtn) invoiceBtn.classList.toggle("active", !isReturn);
+  if (returnBtn) returnBtn.classList.toggle("active", isReturn);
+
+  if (isReturn) {
+    loadRecentSaleReturnInvoices();
+  }
+
+  if (!isReturn) {
+    closeInvoicePreview();
+  }
+}
+
+/* ==========================================
+   SALE RETURN MODULE
+   Sales Database -> existing invoice + returns
+========================================== */
+let saleReturnInvoice = null;
+
+function setSaleReturnToday() {
+  const el = document.getElementById("srReturnDate");
+  if (!el) return;
+  const d = new Date();
+  el.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function setSaleReturnStatus(message, type) {
+  const el = document.getElementById("srStatus");
+  if (!el) return;
+  el.textContent = message;
+  el.style.color = type === "error" ? "#a12626" : type === "success" ? "#1f6b42" : "#657587";
+  el.style.background = type === "error" ? "#fff0f0" : type === "success" ? "#eefaf3" : "#f6f8fb";
+}
+
+let recentSaleReturnInvoices = [];
+let saleReturnInvoiceDropdownIndex = -1;
+let saleReturnInvoiceListLoaded = false;
+
+function renderSaleReturnInvoiceDropdown(filterText) {
+  const dropdown = document.getElementById("srInvoiceDropdown");
+  if (!dropdown) return;
+
+  const filter = String(filterText || "").trim().toLowerCase();
+  const matches = recentSaleReturnInvoices.filter(no =>
+    !filter || String(no).toLowerCase().includes(filter)
+  );
+
+  saleReturnInvoiceDropdownIndex = -1;
+
+  if (!matches.length) {
+    dropdown.innerHTML = '<div class="bb-sr-invoice-empty">No matching invoices.</div>';
+    return;
+  }
+
+  dropdown.innerHTML = matches.map((no, index) =>
+    '<div class="bb-sr-invoice-option" role="option" data-invoice-no="' +
+    escapeHtml(no) + '" data-dropdown-index="' + index + '">' +
+    escapeHtml(no) + '</div>'
+  ).join("");
+
+  dropdown.querySelectorAll(".bb-sr-invoice-option").forEach(option => {
+    option.addEventListener("mousedown", function(event) {
+      event.preventDefault();
+      const value = option.getAttribute("data-invoice-no") || "";
+      const input = document.getElementById("srInvoiceNo");
+      if (input) {
+        input.value = value;
+        input.focus();
+      }
+      closeSaleReturnInvoiceDropdown();
+    });
+  });
+}
+
+function openSaleReturnInvoiceDropdown() {
+  const dropdown = document.getElementById("srInvoiceDropdown");
+  if (!dropdown) return;
+  renderSaleReturnInvoiceDropdown(document.getElementById("srInvoiceNo")?.value || "");
+  dropdown.classList.add("open");
+}
+
+function closeSaleReturnInvoiceDropdown() {
+  const dropdown = document.getElementById("srInvoiceDropdown");
+  if (dropdown) dropdown.classList.remove("open");
+  saleReturnInvoiceDropdownIndex = -1;
+}
+
+function toggleSaleReturnInvoiceDropdown(event) {
+  if (event) event.stopPropagation();
+  const dropdown = document.getElementById("srInvoiceDropdown");
+  if (!dropdown) return;
+  if (dropdown.classList.contains("open")) {
+    closeSaleReturnInvoiceDropdown();
+  } else {
+    openSaleReturnInvoiceDropdown();
+    document.getElementById("srInvoiceNo")?.focus();
+  }
+}
+
+function loadRecentSaleReturnInvoices() {
+  if (saleReturnInvoiceListLoaded) return;
+
+  const dropdown = document.getElementById("srInvoiceDropdown");
+  if (dropdown) dropdown.innerHTML = '<div class="bb-sr-invoice-empty">Loading recent invoices...</div>';
+
+  const callbackName = "bbRecentSaleReturnInvoices_" + Date.now();
+  const script = document.createElement("script");
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  window[callbackName] = function(data) {
+    finish();
+    if (!data || !data.success) {
+      if (dropdown) dropdown.innerHTML = '<div class="bb-sr-invoice-empty">Could not load recent invoices.</div>';
+      return;
+    }
+
+    recentSaleReturnInvoices = Array.isArray(data.invoices) ? data.invoices.map(v => String(v || "").trim()).filter(Boolean) : [];
+    saleReturnInvoiceListLoaded = true;
+    renderSaleReturnInvoiceDropdown(document.getElementById("srInvoiceNo")?.value || "");
+  };
+
+  script.onerror = function() {
+    finish();
+    if (dropdown) dropdown.innerHTML = '<div class="bb-sr-invoice-empty">Could not connect to Sales Database.</div>';
+  };
+
+  script.src = SALES_DATABASE_API_URL +
+    "?action=getRecentInvoiceNumbers&limit=30" +
+    "&callback=" + encodeURIComponent(callbackName) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
+
+  setTimeout(function() {
+    if (!done) {
+      finish();
+      if (dropdown) dropdown.innerHTML = '<div class="bb-sr-invoice-empty">Invoice list lookup timed out.</div>';
+    }
+  }, 10000);
+}
+
+function handleSaleReturnInvoicePickerInput() {
+  openSaleReturnInvoiceDropdown();
+}
+
+function handleSaleReturnInvoicePickerKeydown(event) {
+  const dropdown = document.getElementById("srInvoiceDropdown");
+  const options = dropdown ? Array.from(dropdown.querySelectorAll(".bb-sr-invoice-option")) : [];
+
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    if (!dropdown?.classList.contains("open")) openSaleReturnInvoiceDropdown();
+    if (!options.length) return;
+    saleReturnInvoiceDropdownIndex = Math.min(saleReturnInvoiceDropdownIndex + 1, options.length - 1);
+    options.forEach((el, i) => el.classList.toggle("active", i === saleReturnInvoiceDropdownIndex));
+    options[saleReturnInvoiceDropdownIndex]?.scrollIntoView({block:"nearest"});
+  } else if (event.key === "ArrowUp") {
+    event.preventDefault();
+    if (!dropdown?.classList.contains("open")) openSaleReturnInvoiceDropdown();
+    if (!options.length) return;
+    saleReturnInvoiceDropdownIndex = Math.max(saleReturnInvoiceDropdownIndex - 1, 0);
+    options.forEach((el, i) => el.classList.toggle("active", i === saleReturnInvoiceDropdownIndex));
+    options[saleReturnInvoiceDropdownIndex]?.scrollIntoView({block:"nearest"});
+  } else if (event.key === "Enter" && dropdown?.classList.contains("open") && saleReturnInvoiceDropdownIndex >= 0) {
+    event.preventDefault();
+    options[saleReturnInvoiceDropdownIndex]?.dispatchEvent(new MouseEvent("mousedown", {bubbles:true}));
+  } else if (event.key === "Escape") {
+    closeSaleReturnInvoiceDropdown();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  const input = document.getElementById("srInvoiceNo");
+  if (input) {
+    input.addEventListener("input", handleSaleReturnInvoicePickerInput);
+    input.addEventListener("focus", openSaleReturnInvoiceDropdown);
+    input.addEventListener("keydown", handleSaleReturnInvoicePickerKeydown);
+  }
+
+  document.addEventListener("mousedown", function(event) {
+    const picker = document.getElementById("srInvoicePicker");
+    if (picker && !picker.contains(event.target)) closeSaleReturnInvoiceDropdown();
+  });
+});
+
+function loadSaleReturnInvoice() {
+  const invoiceNo = String(document.getElementById("srInvoiceNo")?.value || "").trim();
+  if (!invoiceNo) {
+    alert("Please enter an Invoice No.");
+    return;
+  }
+
+  setSaleReturnStatus("Loading invoice from Sales Database...", "normal");
+  const callbackName = "bbSaleReturnInvoice_" + Date.now();
+  const script = document.createElement("script");
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  window[callbackName] = function(data) {
+    finish();
+    if (!data || !data.success) {
+      saleReturnInvoice = null;
+      hideSaleReturnResults();
+      setSaleReturnStatus(data?.error || "Invoice was not found in Sales Database.", "error");
+      return;
+    }
+
+    saleReturnInvoice = data;
+    renderSaleReturnInvoice(data);
+    setSaleReturnStatus("Invoice loaded. Enter the quantity you want to return.", "success");
+  };
+
+  script.onerror = function() {
+    finish();
+    saleReturnInvoice = null;
+    hideSaleReturnResults();
+    setSaleReturnStatus("Could not connect to Sales Database.", "error");
+  };
+
+  script.src = SALES_DATABASE_API_URL +
+    "?action=getInvoiceForReturn&invoiceNo=" + encodeURIComponent(invoiceNo) +
+    "&callback=" + encodeURIComponent(callbackName) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
+
+  setTimeout(function() {
+    if (!done) {
+      finish();
+      saleReturnInvoice = null;
+      hideSaleReturnResults();
+      setSaleReturnStatus("Invoice lookup timed out. Please try again.", "error");
+    }
+  }, 10000);
+}
+
+function hideSaleReturnResults() {
+  ["srInvoiceInfo","srProductsCard","srDetailsCard","srActions"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+  const body = document.getElementById("srProductsBody");
+  if (body) body.innerHTML = "";
+}
+
+function moneyForSaleReturn(value) {
+  const currency = saleReturnInvoice?.invoice?.currency || "USD";
+  const n = Number(value) || 0;
+  if (currency === "KHR") return "៛" + Math.round(n).toLocaleString("en-US");
+  return "$" + n.toFixed(2);
+}
+
+function renderSaleReturnInvoice(data) {
+  const inv = data.invoice || {};
+  document.getElementById("srInfoInvoiceNo").textContent = inv.invoiceNo || "-";
+  document.getElementById("srInfoDate").textContent = inv.invoiceDate || "-";
+  document.getElementById("srInfoCustomer").textContent = inv.customer || "-";
+  document.getElementById("srInfoLocation").textContent = inv.locationCode || "-";
+  document.getElementById("srInfoSalesperson").textContent = inv.salesperson || "-";
+  document.getElementById("srInfoCurrency").textContent = inv.currency || "-";
+
+  const tbody = document.getElementById("srProductsBody");
+  tbody.innerHTML = "";
+
+  const items = Array.isArray(data.items) ? data.items : [];
+  if (!items.length) {
+    tbody.innerHTML = `<tr><td colspan="7">No products were found on this invoice.</td></tr>`;
+  } else {
+    items.forEach((item, index) => {
+      const tr = document.createElement("tr");
+      const sold = Number(item.soldQty) || 0;
+      const returned = Number(item.returnedQty) || 0;
+      const available = Math.max(0, Number(item.availableQty) || 0);
+      const price = Number(item.unitPrice) || 0;
+      tr.innerHTML = `
+        <td>${escapeHtml(item.productName || item.productCode || "")}</td>
+        <td>${sold}</td>
+        <td>${returned}</td>
+        <td class="bb-sr-available">${available}</td>
+        <td>${moneyForSaleReturn(price)}</td>
+        <td><input type="number" min="0" max="${available}" step="0.01" value="0" data-sr-index="${index}" data-available="${available}" data-price="${price}" oninput="calculateSaleReturnTotal()" ${available <= 0 ? "disabled" : ""}></td>
+        <td class="bb-sr-return-amount" id="srAmount_${index}">${moneyForSaleReturn(0)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("srInvoiceInfo").style.display = "block";
+  document.getElementById("srProductsCard").style.display = "block";
+  document.getElementById("srDetailsCard").style.display = "block";
+  document.getElementById("srActions").style.display = "flex";
+  setSaleReturnToday();
+  calculateSaleReturnTotal();
+}
+
+function calculateSaleReturnTotal() {
+  let total = 0;
+  document.querySelectorAll("#srProductsBody input[data-sr-index]").forEach(input => {
+    const index = Number(input.dataset.srIndex);
+    const available = Number(input.dataset.available) || 0;
+    const price = Number(input.dataset.price) || 0;
+    let qty = Number(input.value) || 0;
+    if (qty < 0) qty = 0;
+    if (qty > available) { qty = available; input.value = available; }
+    const amount = qty * price;
+    total += amount;
+    const amountEl = document.getElementById("srAmount_" + index);
+    if (amountEl) amountEl.textContent = moneyForSaleReturn(amount);
+  });
+
+  const totalEl = document.getElementById("srTotalAmount");
+  if (totalEl) totalEl.textContent = moneyForSaleReturn(total);
+  return total;
+}
+
+function buildSaleReturnRows() {
+  if (!saleReturnInvoice) return [];
+  const items = Array.isArray(saleReturnInvoice.items) ? saleReturnInvoice.items : [];
+  const rows = [];
+  document.querySelectorAll("#srProductsBody input[data-sr-index]").forEach(input => {
+    const index = Number(input.dataset.srIndex);
+    const qty = Number(input.value) || 0;
+    if (qty <= 0 || !items[index]) return;
+    const item = items[index];
+    rows.push({
+      invoiceId: saleReturnInvoice.invoice.invoiceId,
+      invoiceNo: saleReturnInvoice.invoice.invoiceNo,
+      returnDate: document.getElementById("srReturnDate")?.value || "",
+      customer: saleReturnInvoice.invoice.customer || "",
+      locationCode: saleReturnInvoice.invoice.locationCode || "",
+      salesperson: saleReturnInvoice.invoice.salesperson || "",
+      productCode: item.productCode || "",
+      productName: item.productName || item.productCode || "",
+      qty,
+      unitPrice: Number(item.unitPrice) || 0,
+      returnType: document.getElementById("srReturnType")?.value || "Customer Return",
+      reason: document.getElementById("srReason")?.value.trim() || "",
+      note: document.getElementById("srNote")?.value.trim() || ""
+    });
+  });
+  return rows;
+}
+
+function postSalesReturn(row) {
+  return new Promise((resolve, reject) => {
+    const iframeName = "bbSaleReturnSaveFrame_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    const iframe = document.createElement("iframe");
+    iframe.name = iframeName;
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = SALES_DATABASE_API_URL;
+    form.target = iframeName;
+    form.style.display = "none";
+
+    const actionInput = document.createElement("input");
+    actionInput.type = "hidden";
+    actionInput.name = "action";
+    actionInput.value = "saveReturn";
+    form.appendChild(actionInput);
+
+    const dataInput = document.createElement("input");
+    dataInput.type = "hidden";
+    dataInput.name = "returnData";
+    dataInput.value = JSON.stringify(row);
+    form.appendChild(dataInput);
+
+    document.body.appendChild(form);
+    let settled = false;
+    const finish = (ok, error) => {
+      if (settled) return;
+      settled = true;
+      setTimeout(() => { form.remove(); iframe.remove(); }, 800);
+      if (ok) resolve(); else reject(error || new Error("Sale Return save timed out."));
+    };
+
+    try { form.submit(); } catch (error) { finish(false, error); return; }
+    setTimeout(() => finish(true, null), 2200);
+  });
+}
+
+async function saveSaleReturn() {
+  if (!saleReturnInvoice) {
+    alert("Please load an existing invoice first.");
+    return;
+  }
+
+  const rows = buildSaleReturnRows();
+  if (!rows.length) {
+    alert("Please enter Return Qty for at least one product.");
+    return;
+  }
+
+  const returnDate = document.getElementById("srReturnDate")?.value || "";
+  if (!returnDate) {
+    alert("Please select the Return Date.");
+    return;
+  }
+
+  const total = calculateSaleReturnTotal();
+  const confirmed = confirm(
+    "Save this Sale Return?\n\n" +
+    "Invoice No.: " + saleReturnInvoice.invoice.invoiceNo + "\n" +
+    "Products returned: " + rows.length + "\n" +
+    "Return Amount: " + moneyForSaleReturn(total)
+  );
+  if (!confirmed) return;
+
+  const button = document.getElementById("srSaveBtn");
+  if (button) { button.disabled = true; button.innerHTML = "⏳ Saving..."; }
+
+  try {
+    for (const row of rows) {
+      await postSalesReturn(row);
+    }
+
+    setSaleReturnStatus(
+      "Sale Return saved successfully. Return ID(s) were created in Sales Database.",
+      "success"
+    );
+    alert("Sale Return saved successfully.\n\nOriginal invoice was not changed.");
+    clearSaleReturn(true);
+  } catch (error) {
+    console.error("Sale Return save failed:", error);
+    setSaleReturnStatus("Sale Return could not be fully saved. Please check the Returns sheet.", "error");
+    alert("Could not save the Sale Return.\n\n" + (error?.message || "Please try again."));
+  } finally {
+    if (button) { button.disabled = false; button.innerHTML = "✓ Save Sale Return"; }
+  }
+}
+
+function clearSaleReturn(keepStatus) {
+  saleReturnInvoice = null;
+  const ids = ["srInvoiceNo","srReason","srNote"];
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  const type = document.getElementById("srReturnType");
+  if (type) type.value = "Customer Return";
+  setSaleReturnToday();
+  hideSaleReturnResults();
+  if (!keepStatus) setSaleReturnStatus("Enter an Invoice No. and load the original sale.", "normal");
+}
+
+setSaleReturnToday();
 </script>
