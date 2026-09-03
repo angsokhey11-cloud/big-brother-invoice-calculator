@@ -1861,6 +1861,122 @@ body.bb-sale-return-mode .calculator > *:not(.header-main):not(.bb-module-nav):n
 .bb-sr-details-card textarea { min-height:72px; resize:vertical; }
 .bb-sr-actions { display:flex; justify-content:flex-end; gap:8px; margin:12px 0 20px; }
 .bb-sr-actions button { min-width:130px; }
+
+/* ==========================================
+   SALE RETURN PRODUCTS — COMPACT LIKE + ADD PRODUCT
+   Easy to view without horizontal scrolling
+========================================== */
+.bb-sr-product-list {
+  margin-top:7px;
+  border:1px solid #c8d5e6;
+  border-radius:9px;
+  overflow:hidden;
+  background:#fff;
+}
+.bb-sr-product-head {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 52px 58px 62px 72px 82px;
+  gap:5px;
+  align-items:center;
+  padding:6px 8px;
+  background:#edf3fa;
+  color:#173f73;
+  font-size:10px;
+  font-weight:800;
+  text-align:center;
+}
+.bb-sr-product-head span:first-child { text-align:left; }
+.bb-sr-product-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 52px 58px 62px 72px 82px;
+  gap:5px;
+  align-items:center;
+  min-height:48px;
+  padding:5px 8px;
+  border-top:1px solid #c8d5e6;
+  border-left:3px solid #2867d7;
+  background:#fff;
+}
+.bb-sr-product-name {
+  min-width:0;
+  font-size:12px;
+  line-height:1.15;
+  font-weight:700;
+  color:#173f73;
+}
+.bb-sr-product-code {
+  display:block;
+  margin-top:2px;
+  font-size:9px;
+  font-weight:600;
+  color:#7a8999;
+}
+.bb-sr-product-price {
+  display:block;
+  margin-top:2px;
+  font-size:10px;
+  font-weight:700;
+  color:#56687b;
+}
+.bb-sr-product-stat {
+  text-align:center;
+  font-size:12px;
+  color:#33475b;
+}
+.bb-sr-product-stat.available { font-weight:800; color:#173f73; }
+.bb-sr-return-input {
+  width:100%;
+  height:31px;
+  min-height:31px;
+  padding:4px 5px;
+  box-sizing:border-box;
+  border:1px solid #b9cbe0;
+  border-radius:6px;
+  text-align:center;
+  font-size:12px;
+  font-weight:700;
+  background:#fff;
+}
+.bb-sr-return-input:focus {
+  outline:none;
+  border-color:#2867d7;
+  box-shadow:0 0 0 2px rgba(40,103,215,.10);
+}
+.bb-sr-return-input:disabled { background:#f1f4f7; color:#9aa6b2; }
+.bb-sr-return-amount {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-align:right;
+  font-size:12px;
+  font-weight:800;
+  color:#173f73;
+}
+.bb-sr-empty-row {
+  padding:14px 10px;
+  text-align:center;
+  color:#718096;
+  font-size:12px;
+}
+.bb-sr-total-row {
+  padding:8px 2px 2px;
+}
+@media (max-width:600px) {
+  .bb-sr-product-head {
+    grid-template-columns:minmax(0,1fr) 43px 50px 54px 64px 72px;
+    gap:3px; padding:5px 6px; font-size:9px;
+  }
+  .bb-sr-product-row {
+    grid-template-columns:minmax(0,1fr) 43px 50px 54px 64px 72px;
+    gap:3px; padding:5px 6px; min-height:44px;
+  }
+  .bb-sr-product-name { font-size:11px; }
+  .bb-sr-product-code { font-size:8px; }
+  .bb-sr-product-price { font-size:9px; }
+  .bb-sr-product-stat, .bb-sr-return-amount { font-size:11px; }
+  .bb-sr-return-input { height:29px; min-height:29px; font-size:11px; }
+}
 @media (max-width:700px) {
   .bb-module-nav { flex-direction:column; }
   .bb-sr-search-grid { grid-template-columns:1fr; }
@@ -1945,21 +2061,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <div id="srProductsCard" class="card bb-sr-products-card" style="display:none;">
       <div class="section-title">Products Sold</div>
-      <div class="bb-sr-table-wrap">
-        <table class="bb-sr-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Sold Qty</th>
-              <th>Returned</th>
-              <th>Available</th>
-              <th>Unit Price</th>
-              <th>Return Qty</th>
-              <th>Return Amount</th>
-            </tr>
-          </thead>
-          <tbody id="srProductsBody"></tbody>
-        </table>
+      <div class="bb-sr-product-list">
+        <div class="bb-sr-product-head">
+          <span>Product</span>
+          <span>Sold</span>
+          <span>Returned</span>
+          <span>Available</span>
+          <span>Return Qty</span>
+          <span>Amount</span>
+        </div>
+        <div id="srProductsBody"></div>
       </div>
       <div class="bb-sr-total-row">
         <span>Total Sale Return</span>
@@ -5837,10 +5948,31 @@ function moneyForSaleReturn(value) {
   return "$" + n.toFixed(2);
 }
 
+function formatSaleReturnInvoiceDate(value) {
+  if (!value) return "-";
+
+  const raw = String(value).trim();
+
+  // If the backend already returns YYYY-MM-DD, format it directly
+  // so there is no timezone conversion.
+  const ymd = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (ymd) {
+    return `${ymd[3]}/${ymd[2]}/${ymd[1].slice(-2)}`;
+  }
+
+  const date = new Date(raw);
+  if (Number.isNaN(date.getTime())) return raw;
+
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yy = String(date.getFullYear()).slice(-2);
+  return `${dd}/${mm}/${yy}`;
+}
+
 function renderSaleReturnInvoice(data) {
   const inv = data.invoice || {};
   document.getElementById("srInfoInvoiceNo").textContent = inv.invoiceNo || "-";
-  document.getElementById("srInfoDate").textContent = inv.invoiceDate || "-";
+  document.getElementById("srInfoDate").textContent = formatSaleReturnInvoiceDate(inv.invoiceDate);
   document.getElementById("srInfoCustomer").textContent = inv.customer || "-";
   document.getElementById("srInfoLocation").textContent = inv.locationCode || "-";
   document.getElementById("srInfoSalesperson").textContent = inv.salesperson || "-";
@@ -5851,23 +5983,27 @@ function renderSaleReturnInvoice(data) {
 
   const items = Array.isArray(data.items) ? data.items : [];
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="7">No products were found on this invoice.</td></tr>`;
+    tbody.innerHTML = `<div class="bb-sr-empty-row">No products were found on this invoice.</div>`;
   } else {
     items.forEach((item, index) => {
-      const tr = document.createElement("tr");
+      const row = document.createElement("div");
+      row.className = "bb-sr-product-row";
       const sold = Number(item.soldQty) || 0;
       const returned = Number(item.returnedQty) || 0;
       const available = Math.max(0, Number(item.availableQty) || 0);
       const price = Number(item.unitPrice) || 0;
-      tr.innerHTML = `
-        <td>${escapeHtml(item.productName || item.productCode || "")}</td>
-        <td>${sold}</td>
-        <td>${returned}</td>
-        <td class="bb-sr-available">${available}</td>
-        <td>${moneyForSaleReturn(price)}</td>
-        <td><input type="number" min="0" max="${available}" step="0.01" value="0" data-sr-index="${index}" data-available="${available}" data-price="${price}" oninput="calculateSaleReturnTotal()" ${available <= 0 ? "disabled" : ""}></td>
-        <td class="bb-sr-return-amount" id="srAmount_${index}">${moneyForSaleReturn(0)}</td>`;
-      tbody.appendChild(tr);
+      row.innerHTML = `
+        <div class="bb-sr-product-name">
+          ${escapeHtml(item.productName || item.productCode || "")}
+          <span class="bb-sr-product-code">${escapeHtml(item.productCode || "")}</span>
+          <span class="bb-sr-product-price">${moneyForSaleReturn(price)} / unit</span>
+        </div>
+        <div class="bb-sr-product-stat">${sold}</div>
+        <div class="bb-sr-product-stat">${returned}</div>
+        <div class="bb-sr-product-stat available">${available}</div>
+        <div><input class="bb-sr-return-input" type="number" min="0" max="${available}" step="0.01" value="0" data-sr-index="${index}" data-available="${available}" data-price="${price}" oninput="calculateSaleReturnTotal()" ${available <= 0 ? "disabled" : ""} aria-label="Return quantity for ${escapeHtml(item.productName || item.productCode || "product")}"></div>
+        <div class="bb-sr-return-amount" id="srAmount_${index}">${moneyForSaleReturn(0)}</div>`;
+      tbody.appendChild(row);
     });
   }
 
