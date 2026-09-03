@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BIG BROTHER MASTER ACCOUNTANT FINAL: Master DB for reference data; Sales DB for executed transactions. -->
+<!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="bb-template" content="Invoice Item: Invoice ID + Invoice No + Product Code groups (QTY | Price | Total)">
-<title>BIG BROTHER — MASTER ACCOUNTANT</title>
-
-<style>
-* { box-sizing: border-box; }
+ <head>
+  <title>
+   BIG BROTHER — Invoice Generator
+  </title>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <style>
+   * { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -1787,624 +1787,346 @@ input:focus {
 
 
 
-/* ==========================================
-   BIG BROTHER MODULE NAV + SALE RETURN
-========================================== */
-.bb-module-nav {
-  display:flex;
-  gap:8px;
-  margin:10px 0 12px;
-  padding:6px;
-  background:#eef3f8;
-  border:1px solid #d7e0ea;
-  border-radius:12px;
-}
-.bb-module-btn {
-  flex:1;
-  border:0;
-  border-radius:9px;
-  padding:11px 12px;
-  background:transparent;
-  color:#23415f;
-  font-weight:800;
-  cursor:pointer;
-}
-.bb-module-btn.active {
-  background:#173f73;
-  color:#fff;
-}
-body.bb-sale-return-mode .header-currency { display:none; }
-body.bb-sale-return-mode .calculator > *:not(.header-main):not(.bb-module-nav):not(#saleReturnPanel) { display:none !important; }
-.bb-sale-return-panel { margin-top:4px; }
-.bb-sr-title-row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin-bottom:10px;
-}
-.bb-sr-subtitle { font-size:12px; color:#66788b; margin-top:-5px; }
-.bb-sr-badge {
-  padding:6px 9px; border-radius:999px; background:#e7f0fb; color:#173f73;
-  font-size:10px; font-weight:900; letter-spacing:.5px; white-space:nowrap;
-}
-.bb-sr-search-grid { display:grid; grid-template-columns:minmax(0,1fr) 170px; gap:10px; align-items:end; }
-.bb-sr-invoice-picker-wrap { position:relative; min-width:0; }
-.bb-sr-invoice-picker { position:relative; display:flex; width:100%; }
-.bb-sr-invoice-picker input { width:100%; padding-right:42px; }
-.bb-sr-dropdown-btn { position:absolute; right:0; top:0; width:40px; height:100%; border:0; border-left:1px solid #d9e1ea; border-radius:0 8px 8px 0; background:#f6f8fb; color:#173f73; font-size:18px; font-weight:900; cursor:pointer; z-index:2; }
-.bb-sr-dropdown-btn:hover { background:#eaf0f7; }
-.bb-sr-invoice-dropdown { display:none; position:absolute; z-index:50; left:0; right:0; top:calc(100% + 4px); background:#fff; border:1px solid #cfd9e4; border-radius:9px; box-shadow:0 8px 22px rgba(24,52,82,.14); max-height:190px; overflow-y:auto; }
-.bb-sr-invoice-dropdown.open { display:block; }
-.bb-sr-invoice-option { min-height:38px; display:flex; align-items:center; padding:8px 12px; border-bottom:1px solid #edf1f5; color:#1d2e42; font-size:13px; font-weight:700; cursor:pointer; }
-.bb-sr-invoice-option:last-child { border-bottom:0; }
-.bb-sr-invoice-option:hover, .bb-sr-invoice-option.active { background:#edf3fa; color:#173f73; }
-.bb-sr-invoice-empty { padding:10px 12px; color:#718096; font-size:12px; }
-.bb-sr-search-action { display:flex; }
-.bb-sr-search-btn { width:100%; min-height:42px; border:0; border-radius:9px; background:#173f73; color:#fff; font-weight:800; cursor:pointer; }
-.bb-sr-status { margin-top:9px; padding:8px 10px; border-radius:8px; background:#f6f8fb; color:#657587; font-size:12px; }
-.bb-sr-info-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
-.bb-sr-info-grid > div { padding:8px 10px; border:1px solid #e0e6ed; border-radius:8px; background:#fafbfd; }
-.bb-sr-info-grid span { display:block; font-size:10px; color:#718096; margin-bottom:3px; }
-.bb-sr-info-grid strong { display:block; font-size:13px; color:#1d2e42; word-break:break-word; }
-.bb-sr-table-wrap { overflow-x:auto; }
-.bb-sr-table { width:100%; border-collapse:collapse; min-width:760px; font-size:12px; }
-.bb-sr-table th, .bb-sr-table td { border:1px solid #dce4ec; padding:7px 6px; text-align:center; }
-.bb-sr-table th { background:#edf3fa; color:#173f73; font-weight:800; }
-.bb-sr-table td:first-child { text-align:left; font-weight:700; }
-.bb-sr-table input { width:78px; min-height:32px; padding:4px 6px; text-align:center; }
-.bb-sr-available { font-weight:800; }
-.bb-sr-return-amount { font-weight:800; }
-.bb-sr-total-row { display:flex; justify-content:flex-end; gap:18px; align-items:center; margin-top:10px; font-size:14px; }
-.bb-sr-total-row strong { font-size:18px; color:#173f73; }
-.bb-sr-details-card > div + div { margin-top:10px; }
-.bb-sr-details-card textarea { min-height:72px; resize:vertical; }
-.bb-sr-actions { display:flex; justify-content:flex-end; gap:8px; margin:12px 0 20px; }
-.bb-sr-actions button { min-width:130px; }
-
-/* ==========================================
-   SALE RETURN PRODUCTS — COMPACT LIKE + ADD PRODUCT
-   Easy to view without horizontal scrolling
-========================================== */
-.bb-sr-product-list {
-  margin-top:7px;
-  border:1px solid #c8d5e6;
-  border-radius:9px;
-  overflow:hidden;
-  background:#fff;
-}
-.bb-sr-product-head {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 52px 58px 62px 72px 82px;
-  gap:5px;
-  align-items:center;
-  padding:6px 8px;
-  background:#edf3fa;
-  color:#173f73;
-  font-size:10px;
-  font-weight:800;
-  text-align:center;
-}
-.bb-sr-product-head span:first-child { text-align:left; }
-.bb-sr-product-row {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 52px 58px 62px 72px 82px;
-  gap:5px;
-  align-items:center;
-  min-height:48px;
-  padding:5px 8px;
-  border-top:1px solid #c8d5e6;
-  border-left:3px solid #2867d7;
-  background:#fff;
-}
-.bb-sr-product-name {
-  min-width:0;
-  font-size:12px;
-  line-height:1.15;
-  font-weight:700;
-  color:#173f73;
-}
-.bb-sr-product-code {
-  display:block;
-  margin-top:2px;
-  font-size:9px;
-  font-weight:600;
-  color:#7a8999;
-}
-.bb-sr-product-price {
-  display:block;
-  margin-top:2px;
-  font-size:10px;
-  font-weight:700;
-  color:#56687b;
-}
-.bb-sr-product-stat {
-  text-align:center;
-  font-size:12px;
-  color:#33475b;
-}
-.bb-sr-product-stat.available { font-weight:800; color:#173f73; }
-.bb-sr-return-input {
-  width:100%;
-  height:31px;
-  min-height:31px;
-  padding:4px 5px;
-  box-sizing:border-box;
-  border:1px solid #b9cbe0;
-  border-radius:6px;
-  text-align:center;
-  font-size:12px;
-  font-weight:700;
-  background:#fff;
-}
-.bb-sr-return-input:focus {
-  outline:none;
-  border-color:#2867d7;
-  box-shadow:0 0 0 2px rgba(40,103,215,.10);
-}
-.bb-sr-return-input:disabled { background:#f1f4f7; color:#9aa6b2; }
-.bb-sr-return-amount {
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  text-align:right;
-  font-size:12px;
-  font-weight:800;
-  color:#173f73;
-}
-.bb-sr-empty-row {
-  padding:14px 10px;
-  text-align:center;
-  color:#718096;
-  font-size:12px;
-}
-.bb-sr-total-row {
-  padding:8px 2px 2px;
-}
-@media (max-width:600px) {
-  .bb-sr-product-head {
-    grid-template-columns:minmax(0,1fr) 43px 50px 54px 64px 72px;
-    gap:3px; padding:5px 6px; font-size:9px;
-  }
-  .bb-sr-product-row {
-    grid-template-columns:minmax(0,1fr) 43px 50px 54px 64px 72px;
-    gap:3px; padding:5px 6px; min-height:44px;
-  }
-  .bb-sr-product-name { font-size:11px; }
-  .bb-sr-product-code { font-size:8px; }
-  .bb-sr-product-price { font-size:9px; }
-  .bb-sr-product-stat, .bb-sr-return-amount { font-size:11px; }
-  .bb-sr-return-input { height:29px; min-height:29px; font-size:11px; }
-}
-@media (max-width:700px) {
-  /* Keep the main module buttons side-by-side on mobile. */
-  .bb-module-nav {
-    flex-direction:row;
-    gap:4px;
-  }
-  .bb-module-btn {
-    flex:1 1 0;
-    min-width:0;
-    padding:10px 6px;
-    font-size:12px;
-    white-space:nowrap;
-  }
-  .bb-sr-search-grid { grid-template-columns:1fr; }
-  .bb-sr-info-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .bb-sr-title-row { align-items:flex-start; }
-}
-@media (max-width:450px) {
-  .bb-sr-info-grid { grid-template-columns:1fr; }
-}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
-/* Keep optional financial sections hidden when invoice opens. */
+ </head>
+ <body>
+  <div class="calculator">
+   <div class="header-main">
+    <h1>
+     BIG BROTHER
+    </h1>
+    <div class="header-currency">
+     <select aria-label="Currency" id="currency">
+      <option value="USD">
+       USD
+      </option>
+      <option value="KHR">
+       KHR
+      </option>
+     </select>
+     <div class="header-rate">
+      <span>
+       1 USD =
+      </span>
+      <input aria-label="Exchange rate" id="exchangeRate" inputmode="decimal" min="1" type="number" value="4060"/>
+      <span>
+       KHR
+      </span>
+     </div>
+    </div>
+   </div>
+<div class="card invoice-card">
+    <div class="section-title">
+     Invoice Information
+    </div>
+    <div class="grid-2 invoice-grid">
+     <div>
+      <label for="invoiceNumber">
+       Invoice No.
+      </label>
+      <input autocomplete="off" id="invoiceNumber" inputmode="numeric" type="text" value="Loading..."/>
+     </div>
+     <div>
+      <label for="mainLocation">
+       Main Location
+      </label>
+      <select id="mainLocation" onchange="handleLocationChange()">
+       <option value="">
+        Loading locations...
+       </option>
+      </select>
+     </div>
+     <div>
+      <label for="invoiceDateDisplay">
+       Invoice Date
+      </label>
+      <div class="date-input-wrap">
+       <input id="invoiceDateDisplay" placeholder="01-Sep-2026" readonly="" type="text" value=""/>
+       <input aria-hidden="true" id="invoiceDate" onchange="updateInvoiceDate()" tabindex="-1" type="date"/>
+      </div>
+     </div>
+     <div>
+      <label for="dueDateDisplay">
+       Due Date
+      </label>
+      <div class="date-input-wrap">
+       <input id="dueDateDisplay" placeholder="01-Oct-2026" readonly="" type="text" value=""/>
+       <input aria-hidden="true" id="dueDate" onchange="updateDueDate()" tabindex="-1" type="date"/>
+      </div>
+     </div>
+     <div>
+      <label for="batchNumber">
+       Batch Number
+      </label>
+      <input id="batchNumber" placeholder="Enter Batch Number" type="text"/>
+     </div>
+    </div>
+    <div class="grid-2 customer-field">
+     <div>
+      <label for="customerName">
+       Customer Name
+      </label>
+      <div class="customer-autocomplete">
+       <input autocomplete="off" id="customerName" placeholder="Type or select customer" type="text"/>
+       <div class="customer-options" id="customerOptions">
+       </div>
+      </div>
+     </div>
+     <div>
+      <label for="customerPhone">
+       Phone
+      </label>
+      <input id="customerPhone" placeholder="Enter phone number" type="tel"/>
+     </div>
+    </div>
+    <div class="customer-field">
+     <label for="customerAddress">
+      Address
+     </label>
+     <input id="customerAddress" placeholder="Enter address" type="text"/>
+    </div>
+    <div class="customer-status" id="customerStatus">
+     Loading customers...
+    </div>
+   </div>
+   <button class="add-btn no-print" onclick="showProductSelector(event)" type="button">
+    ＋ Add Product
+   </button>
+   <div class="product-selector no-print" id="productSelector">
+    <select id="productChoice" onchange="addSelectedProduct()">
+     <option value="">
+      Select Product
+     </option>
+    </select>
+   </div>
+   <div class="product-table-head no-print">
+    <span>
+     Item Name
+    </span>
+    <span>
+     QTY
+    </span>
+    <span>
+     Price
+    </span>
+    <span>
+     Total Price
+    </span>
+   </div>
+   <div class="product-list" id="productList">
+   </div>
+   <div class="optional-menu no-print">
+    <button aria-expanded="false" class="optional-menu-btn" onclick="toggleOptionalMenu()" type="button">
+     <span>
+      ☰ More Options
+     </span>
+     <span id="optionalMenuArrow">
+      ▼
+     </span>
+    </button>
+    <div class="optional-menu-panel" id="optionalMenuPanel">
+     <label class="optional-check">
+      <input id="showDiscount" onchange="toggleOptionalSection('discount')" type="checkbox"/>
+      <span>
+       Discount
+      </span>
+     </label>
+     <label class="optional-check">
+      <input id="showPayment" onchange="toggleOptionalSection('payment')" type="checkbox"/>
+      <span>
+       Amount Paid &amp; Credit Amount
+      </span>
+     </label>
+     <label class="optional-check">
+      <input id="showExchange" onchange="toggleOptionalSection('exchange')" type="checkbox"/>
+      <span>
+       Exchange Calculation
+      </span>
+     </label>
+    </div>
+   </div>
+   <div class="totals-box">
+    <div class="total-row">
+     <span>
+      Subtotal
+     </span>
+     <span id="subtotal">
+      $0.00
+     </span>
+    </div>
+    <!-- HIDDEN UNTIL CHECKED -->
+    <div class="optional-payment-details" id="optionalPaymentDetails">
+     <div class="total-row discount-row">
+      <span>
+       Discount
+      </span>
+      <div class="discount-input-wrap">
+       <span id="discountCurrencySymbol">
+        $
+       </span>
+       <input id="discount" inputmode="decimal" min="0" oninput="calculate()" step="0.01" type="number" value="0"/>
+      </div>
+     </div>
+     <div class="total-row grand-total">
+      <span>
+       Grand Total
+      </span>
+      <span id="grandTotal">
+       $0.00
+      </span>
+     </div>
+     <div class="total-row payment-row">
+      <span>
+       Amount Paid
+      </span>
+      <input id="amountPaid" inputmode="decimal" min="0" oninput="calculate()" step="0.01" type="number" value="0"/>
+     </div>
+     <div class="total-row change-row">
+      <span id="changeLabel">
+       Credit Amount
+      </span>
+      <span id="changeAmount">
+       $0.00
+      </span>
+     </div>
+    </div>
+   </div>
+   <div class="convert-box optional-exchange" id="exchangeCalculationBox">
+    <div class="section-title">
+     Exchange Calculation
+    </div>
+    <div class="convert-result" id="convertResult">
+     $0.00 = ៛0
+    </div>
+   </div>
+   <div class="card transaction-details">
+    <div class="grid-2">
+     <div>
+      <label for="salesName">
+       Sale Person
+      </label>
+      <input autocomplete="off" id="salesName" placeholder="Sale person" type="text"/>
+     </div>
+     <div>
+      <label for="paymentMethod">
+       Payment Method
+      </label>
+      <select id="paymentMethod" onchange="handlePaymentMethodChange()">
+       <option value="Cash">
+        Cash
+       </option>
+       <option value="Bank">
+        Bank
+       </option>
+       <option value="Credit">
+        Credit
+       </option>
+       <option value="Partially Paid in Cash">
+        Partially Paid in Cash
+       </option>
+       <option value="Partially Paid in Bank">
+        Partially Paid in Bank
+       </option>
+      </select>
+     </div>
+     <div id="paymentBankRow" style="display:none;">
+      <label for="paymentBank">
+       Payment Bank
+      </label>
+      <select id="paymentBank">
+       <option value="">
+        Select Bank
+       </option>
+       <option value="ABA">
+        ABA
+       </option>
+       <option value="ACLEDA">
+        ACLEDA
+       </option>
+       <option value="Other">
+        Other
+       </option>
+      </select>
+     </div>
+     <div id="bankReferenceRow" style="display:none;">
+      <label for="bankReference">
+       Bank Reference
+      </label>
+      <input id="bankReference" placeholder="Enter Bank Reference" type="text"/>
+     </div>
+    </div>
+   </div>
+   <div class="card note-card no-print">
+    <label for="noteTemplate">
+     Note:
+    </label>
+    <select disabled="" id="noteTemplate">
+     <option value="">
+      Loading notes...
+     </option>
+    </select>
+    <textarea id="invoiceNote" placeholder="Select a saved note or type your own note..."></textarea>
+   </div>
+   <div class="card banking-input-card no-print">
+    <label for="bankingDetails">
+     Banking Details
+    </label>
+    <select disabled="" id="bankingDetails">
+     <option value="">
+      Loading banking details...
+     </option>
+    </select>
+    <div class="banking-preview" id="bankingPreview">
+     Select a banking detail
+    </div>
+   </div>
+   <div class="actions no-print">
+    <button class="action-btn print-btn" onclick="printInvoice(event)" type="button">
+     🖨 Print / Save PDF
+    </button>
+    <button class="action-btn share-btn" onclick="shareInvoice(event)" type="button">
+     ✈️ Share to Telegram
+    </button>
+    <button class="action-btn save-btn" onclick="saveToPhone(event)" type="button">
+     📱 Save to Phone
+    </button>
+    <button class="action-btn save-btn" onclick="saveToDrive(event)" type="button">
+     ☁️ Save to Drive
+    </button>
+   </div>
+   <div class="bottom-action-row no-print">
+    <button class="clear-btn preview-btn" onclick="previewInvoice(event)" type="button">
+     👁 Invoice Preview
+    </button>
+    <button class="clear-btn complete-btn" onclick="completeInvoice(event)" type="button">
+     ✓ Complete
+    </button>
+   </div>
+   <div aria-hidden="true" class="invoice-preview-modal no-print" id="invoicePreviewModal">
+    <div class="invoice-preview-dialog">
+     <div class="invoice-preview-header">
+      <strong>
+       Invoice Preview
+      </strong>
+      <button class="invoice-preview-close" onclick="closeInvoicePreview()" type="button">
+       ×
+      </button>
+     </div>
+     <div class="invoice-preview-content" id="invoicePreviewContent">
+     </div>
+    </div>
+   </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+  </script>
+  <script>
+   /* Keep optional financial sections hidden when invoice opens. */
 document.addEventListener("DOMContentLoaded", function () {
   togglePaymentDetails();
 });
-
-</script>
-</head>
-
-<body>
-<div class="calculator">
-
-  <div class="header-main">
-    <h1>BIG BROTHER</h1>
-    <div class="header-currency">
-      <select id="currency" aria-label="Currency">
-        <option value="USD">USD</option>
-        <option value="KHR">KHR</option>
-      </select>
-      <div class="header-rate">
-        <span>1 USD =</span>
-        <input id="exchangeRate" type="number" min="1" value="4060" inputmode="decimal" aria-label="Exchange rate">
-        <span>KHR</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- BIG BROTHER MODULE NAVIGATION -->
-  <div class="bb-module-nav no-print">
-    <button type="button" class="bb-module-btn active" id="bbInvoiceModuleBtn" onclick="showBBModule('invoice')">🧾 Invoice Generator</button>
-    <button type="button" class="bb-module-btn" id="bbSaleReturnModuleBtn" onclick="showBBModule('saleReturn')">🔄 Sale Return</button>
-  </div>
-
-  <!-- SALE RETURN MODULE -->
-  <section id="saleReturnPanel" class="bb-sale-return-panel no-print" style="display:none;">
-    <div class="bb-sr-title-row">
-      <div>
-        <div class="section-title">Sale Return</div>
-        <div class="bb-sr-subtitle">Return products from an existing Sales Database invoice.</div>
-      </div>
-      <div class="bb-sr-badge">SALES DATABASE</div>
-    </div>
-
-    <div class="card bb-sr-search-card">
-      <div class="bb-sr-search-grid">
-        <div class="bb-sr-invoice-picker-wrap">
-          <label for="srInvoiceNo">Invoice No.</label>
-          <div class="bb-sr-invoice-picker" id="srInvoicePicker">
-            <input type="text" id="srInvoiceNo" placeholder="Select or type invoice number" autocomplete="off" spellcheck="false">
-            <button type="button" class="bb-sr-dropdown-btn" id="srInvoiceDropdownBtn" aria-label="Show recent invoices" title="Show recent invoices" onclick="toggleSaleReturnInvoiceDropdown(event)">▾</button>
-            <div class="bb-sr-invoice-dropdown" id="srInvoiceDropdown" role="listbox" aria-label="Recent invoices"></div>
-          </div>
-        </div>
-        <div class="bb-sr-search-action">
-          <button type="button" class="bb-sr-search-btn" onclick="loadSaleReturnInvoice()">🔎 Load Invoice</button>
-        </div>
-      </div>
-      <div id="srStatus" class="bb-sr-status">Enter an Invoice No. and load the original sale.</div>
-    </div>
-
-    <div id="srInvoiceInfo" class="card bb-sr-info-card" style="display:none;">
-      <div class="section-title">Original Invoice</div>
-      <div class="bb-sr-info-grid">
-        <div><span>Invoice No.</span><strong id="srInfoInvoiceNo">-</strong></div>
-        <div><span>Invoice Date</span><strong id="srInfoDate">-</strong></div>
-        <div><span>Customer</span><strong id="srInfoCustomer">-</strong></div>
-        <div><span>Location</span><strong id="srInfoLocation">-</strong></div>
-        <div><span>Sale Person</span><strong id="srInfoSalesperson">-</strong></div>
-        <div><span>Currency</span><strong id="srInfoCurrency">-</strong></div>
-      </div>
-    </div>
-
-    <div id="srProductsCard" class="card bb-sr-products-card" style="display:none;">
-      <div class="section-title">Products Sold</div>
-      <div class="bb-sr-product-list">
-        <div class="bb-sr-product-head">
-          <span>Product</span>
-          <span>Sold</span>
-          <span>Returned</span>
-          <span>Available</span>
-          <span>Return Qty</span>
-          <span>Amount</span>
-        </div>
-        <div id="srProductsBody"></div>
-      </div>
-      <div class="bb-sr-total-row">
-        <span>Total Sale Return</span>
-        <strong id="srTotalAmount">$0.00</strong>
-      </div>
-    </div>
-
-    <div id="srDetailsCard" class="card bb-sr-details-card" style="display:none;">
-      <div class="section-title">Return Details</div>
-      <div class="grid-2">
-        <div>
-          <label for="srReturnDate">Return Date</label>
-          <input type="date" id="srReturnDate">
-        </div>
-        <div>
-          <label for="srReturnType">Return Type</label>
-          <select id="srReturnType">
-            <option value="Customer Return">Customer Return</option>
-            <option value="Damaged Return">Damaged Return</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label for="srReason">Reason</label>
-        <input type="text" id="srReason" placeholder="Why is the product being returned?">
-      </div>
-      <div>
-        <label for="srNote">Note</label>
-        <textarea id="srNote" placeholder="Optional note for this sale return..."></textarea>
-      </div>
-    </div>
-
-    <div id="srActions" class="bb-sr-actions no-print" style="display:none;">
-      <button type="button" class="clear-btn" onclick="clearSaleReturn()">Clear</button>
-      <button type="button" class="complete-btn" id="srSaveBtn" onclick="saveSaleReturn()">✓ Save Sale Return</button>
-    </div>
-  </section>
-
-  <!-- INVOICE INFORMATION -->
-  <div class="card invoice-card">
-    <div class="section-title">Invoice Information</div>
-
-    <div class="grid-2 invoice-grid">
-      <div>
-        <label for="invoiceNumber">Invoice No.</label>
-        <input type="text" id="invoiceNumber" value="Loading..." autocomplete="off" inputmode="numeric">
-      </div>
-
-      <div>
-        <label for="mainLocation">Main Location</label>
-        <select id="mainLocation" onchange="handleLocationChange()">
-          <option value="">Loading locations...</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="invoiceDateDisplay">Invoice Date</label>
-        <div class="date-input-wrap">
-          <input type="text" id="invoiceDateDisplay" value="" placeholder="01-Sep-2026" readonly>
-          <input type="date" id="invoiceDate" onchange="updateInvoiceDate()" aria-hidden="true" tabindex="-1">
-        </div>
-      </div>
-
-      <div>
-        <label for="dueDateDisplay">Due Date</label>
-        <div class="date-input-wrap">
-          <input type="text" id="dueDateDisplay" value="" placeholder="01-Oct-2026" readonly>
-          <input type="date" id="dueDate" onchange="updateDueDate()" aria-hidden="true" tabindex="-1">
-        </div>
-      </div>
-
-      <div>
-        <label for="batchNumber">Batch Number</label>
-        <input type="text" id="batchNumber" placeholder="Enter Batch Number">
-      </div>
-    </div>
-
-    <div class="grid-2 customer-field">
-      <div>
-        <label for="customerName">Customer Name</label>
-        <div class="customer-autocomplete">
-          <input type="text" id="customerName" placeholder="Type or select customer" autocomplete="off">
-          <div id="customerOptions" class="customer-options"></div>
-        </div>
-      </div>
-
-      <div>
-        <label for="customerPhone">Phone</label>
-        <input type="tel" id="customerPhone" placeholder="Enter phone number">
-      </div>
-    </div>
-
-    <div class="customer-field">
-      <label for="customerAddress">Address</label>
-      <input type="text" id="customerAddress" placeholder="Enter address">
-    </div>
-
-    <div id="customerStatus" class="customer-status">Loading customers...</div>
-  </div>
-
-  <!-- ADD PRODUCT -->
-  <button type="button" class="add-btn no-print" onclick="showProductSelector(event)">
-    ＋ Add Product
-  </button>
-
-  <div id="productSelector" class="product-selector no-print">
-    <select id="productChoice" onchange="addSelectedProduct()">
-      <option value="">Select Product</option>
-    </select>
-  </div>
-
-  <!-- PRODUCTS -->
-  <div class="product-table-head no-print">
-    <span>Item Name</span>
-    <span>QTY</span>
-    <span>Price</span>
-    <span>Total Price</span>
-  </div>
-  <div id="productList" class="product-list"></div>
-
-  <!-- TOTALS -->
-  
-<!-- MORE OPTIONS -->
-<div class="optional-menu no-print">
-  <button type="button"
-          class="optional-menu-btn"
-          onclick="toggleOptionalMenu()"
-          aria-expanded="false">
-    <span>☰ More Options</span>
-    <span id="optionalMenuArrow">▼</span>
-  </button>
-
-  <div id="optionalMenuPanel" class="optional-menu-panel">
-    <label class="optional-check">
-      <input type="checkbox"
-             id="showDiscount"
-             onchange="toggleOptionalSection('discount')">
-      <span>Discount</span>
-    </label>
-
-    <label class="optional-check">
-      <input type="checkbox"
-             id="showPayment"
-             onchange="toggleOptionalSection('payment')">
-      <span>Amount Paid & Credit Amount</span>
-    </label>
-
-    <label class="optional-check">
-      <input type="checkbox"
-             id="showExchange"
-             onchange="toggleOptionalSection('exchange')">
-      <span>Exchange Calculation</span>
-    </label>
-  </div>
-</div>
-
-<div class="totals-box">
-
-    <div class="total-row">
-      <span>Subtotal</span>
-      <span id="subtotal">$0.00</span>
-    </div>
-
-    <!-- HIDDEN UNTIL CHECKED -->
-    <div id="optionalPaymentDetails" class="optional-payment-details">
-
-      <div class="total-row discount-row">
-        <span>Discount</span>
-        <div class="discount-input-wrap">
-          <span id="discountCurrencySymbol">$</span>
-          <input
-            type="number"
-            id="discount"
-            min="0"
-            value="0"
-            step="0.01"
-            inputmode="decimal"
-            oninput="calculate()"
-          >
-        </div>
-      </div>
-
-      <div class="total-row grand-total">
-        <span>Grand Total</span>
-        <span id="grandTotal">$0.00</span>
-      </div>
-
-      <div class="total-row payment-row">
-        <span>Amount Paid</span>
-        <input
-          type="number"
-          id="amountPaid"
-          min="0"
-          value="0"
-          step="0.01"
-          inputmode="decimal"
-          oninput="calculate()"
-        >
-      </div>
-
-      <div class="total-row change-row">
-        <span id="changeLabel">Credit Amount</span>
-        <span id="changeAmount">$0.00</span>
-      </div>
-
-    </div>
-
-  </div>
-
-  
-
-
-<!-- EXCHANGE CALCULATION -->
-  <div
-    id="exchangeCalculationBox"
-    class="convert-box optional-exchange"
-  >
-    <div class="section-title">Exchange Calculation</div>
-
-    <div id="convertResult" class="convert-result">
-      $0.00 = ៛0
-    </div>
-  </div>
-
-  <!-- SALE PERSON & PAYMENT METHOD -->
-  <div class="card transaction-details">
-    <div class="grid-2">
-      <div>
-        <label for="salesName">Sale Person</label>
-        <input type="text" id="salesName" placeholder="Sale person" autocomplete="off">
-      </div>
-
-      <div>
-        <label for="paymentMethod">Payment Method</label>
-        <select id="paymentMethod" onchange="handlePaymentMethodChange()">
-          <option value="Cash">Cash</option>
-          <option value="Bank">Bank</option>
-          <option value="Credit">Credit</option>
-          <option value="Partially Paid in Cash">Partially Paid in Cash</option>
-          <option value="Partially Paid in Bank">Partially Paid in Bank</option>
-        </select>
-      </div>
-
-      <div id="paymentBankRow" style="display:none;">
-        <label for="paymentBank">Payment Bank</label>
-        <select id="paymentBank">
-          <option value="">Select Bank</option>
-          <option value="ABA">ABA</option>
-          <option value="ACLEDA">ACLEDA</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-
-      <div id="bankReferenceRow" style="display:none;">
-        <label for="bankReference">Bank Reference</label>
-        <input type="text" id="bankReference" placeholder="Enter Bank Reference">
-      </div>
-    </div>
-  </div>
-
-  <!-- NOTE -->
-  <div class="card note-card no-print">
-    <label for="noteTemplate">Note:</label>
-    <select id="noteTemplate" disabled>
-      <option value="">Loading notes...</option>
-    </select>
-    <textarea id="invoiceNote" placeholder="Select a saved note or type your own note..."></textarea>
-  </div>
-
-  <!-- BANKING DETAILS -->
-  <div class="card banking-input-card no-print">
-    <label for="bankingDetails">Banking Details</label>
-    <select id="bankingDetails" disabled>
-      <option value="">Loading banking details...</option>
-    </select>
-    <div id="bankingPreview" class="banking-preview">Select a banking detail</div>
-  </div>
-
-  <!-- ACTIONS -->
-  <div class="actions no-print">
-    <button type="button" class="action-btn print-btn" onclick="printInvoice(event)">
-      🖨 Print / Save PDF
-    </button>
-
-    <button type="button" class="action-btn share-btn" onclick="shareInvoice(event)">
-      ✈️ Share to Telegram
-    </button>
-
-    <button type="button" class="action-btn save-btn" onclick="saveToPhone(event)">
-      📱 Save to Phone
-    </button>
-
-    <button type="button" class="action-btn save-btn" onclick="saveToDrive(event)">
-      ☁️ Save to Drive
-    </button>
-  </div>
-
-  <div class="bottom-action-row no-print">
-    <button type="button" class="clear-btn preview-btn" onclick="previewInvoice(event)">
-      👁 Invoice Preview
-    </button>
-    <button type="button" class="clear-btn complete-btn" onclick="completeInvoice(event)">
-      ✓ Complete
-    </button>
-  </div>
-
-  <div id="invoicePreviewModal" class="invoice-preview-modal no-print" aria-hidden="true">
-    <div class="invoice-preview-dialog">
-      <div class="invoice-preview-header">
-        <strong>Invoice Preview</strong>
-        <button type="button" class="invoice-preview-close" onclick="closeInvoicePreview()">×</button>
-      </div>
-      <div id="invoicePreviewContent" class="invoice-preview-content"></div>
-    </div>
-  </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-<script>
-/* ==========================================
+  </script>
+  <script>
+   /* ==========================================
    TODAY'S DATE
 ========================================== */
 
@@ -5631,14 +5353,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   updateDiscountCurrency();
 });
-
-</script>
-
-</body>
-</html>
-
-<script>
-/* ==========================================
+  </script>
+  <script>
+   /* ==========================================
    DUE DATE INITIALIZATION
    Default due date = invoice date.
    User may change it manually, especially for Credit.
@@ -5668,512 +5385,6 @@ document.addEventListener("DOMContentLoaded", () => {
     dueDisplay.addEventListener("click", openDueDatePicker);
   }
 });
-</script>
-
-
-<script>
-// Ensure payment method rules are active when the page loads.
-document.addEventListener("DOMContentLoaded", function () {
-  const paymentMethod = document.getElementById("paymentMethod");
-  if (paymentMethod) {
-    paymentMethod.addEventListener("change", handlePaymentMethodChange);
-  }
-  handlePaymentMethodChange();
-  if (typeof calculate === "function") calculate();
-});
-
-
-/* ==========================================
-   BIG BROTHER MODULE SWITCHING
-========================================== */
-function showBBModule(module) {
-  const invoiceBtn = document.getElementById("bbInvoiceModuleBtn");
-  const returnBtn = document.getElementById("bbSaleReturnModuleBtn");
-  const returnPanel = document.getElementById("saleReturnPanel");
-
-  const isReturn = module === "saleReturn";
-  document.body.classList.toggle("bb-sale-return-mode", isReturn);
-
-  if (returnPanel) returnPanel.style.display = isReturn ? "block" : "none";
-  if (invoiceBtn) invoiceBtn.classList.toggle("active", !isReturn);
-  if (returnBtn) returnBtn.classList.toggle("active", isReturn);
-
-  if (isReturn) {
-    loadRecentSaleReturnInvoices();
-  }
-
-  if (!isReturn) {
-    closeInvoicePreview();
-  }
-}
-
-/* ==========================================
-   SALE RETURN MODULE
-   Sales Database -> existing invoice + returns
-========================================== */
-let saleReturnInvoice = null;
-
-function setSaleReturnToday() {
-  const el = document.getElementById("srReturnDate");
-  if (!el) return;
-  const d = new Date();
-  el.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-}
-
-function setSaleReturnStatus(message, type) {
-  const el = document.getElementById("srStatus");
-  if (!el) return;
-  el.textContent = message;
-  el.style.color = type === "error" ? "#a12626" : type === "success" ? "#1f6b42" : "#657587";
-  el.style.background = type === "error" ? "#fff0f0" : type === "success" ? "#eefaf3" : "#f6f8fb";
-}
-
-let recentSaleReturnInvoices = [];
-let saleReturnInvoiceDropdownIndex = -1;
-let saleReturnInvoiceListLoaded = false;
-
-function renderSaleReturnInvoiceDropdown(filterText) {
-  const dropdown = document.getElementById("srInvoiceDropdown");
-  if (!dropdown) return;
-
-  const filter = String(filterText || "").trim().toLowerCase();
-  const matches = recentSaleReturnInvoices.filter(no =>
-    !filter || String(no).toLowerCase().includes(filter)
-  );
-
-  saleReturnInvoiceDropdownIndex = -1;
-
-  if (!matches.length) {
-    dropdown.innerHTML = '<div class="bb-sr-invoice-empty">No matching invoices.</div>';
-    return;
-  }
-
-  dropdown.innerHTML = matches.map((no, index) =>
-    '<div class="bb-sr-invoice-option" role="option" data-invoice-no="' +
-    escapeHtml(no) + '" data-dropdown-index="' + index + '">' +
-    escapeHtml(no) + '</div>'
-  ).join("");
-
-  dropdown.querySelectorAll(".bb-sr-invoice-option").forEach(option => {
-    option.addEventListener("mousedown", function(event) {
-      event.preventDefault();
-      const value = option.getAttribute("data-invoice-no") || "";
-      const input = document.getElementById("srInvoiceNo");
-      if (input) {
-        input.value = value;
-        input.focus();
-      }
-      closeSaleReturnInvoiceDropdown();
-    });
-  });
-}
-
-function openSaleReturnInvoiceDropdown() {
-  const dropdown = document.getElementById("srInvoiceDropdown");
-  if (!dropdown) return;
-  renderSaleReturnInvoiceDropdown(document.getElementById("srInvoiceNo")?.value || "");
-  dropdown.classList.add("open");
-}
-
-function closeSaleReturnInvoiceDropdown() {
-  const dropdown = document.getElementById("srInvoiceDropdown");
-  if (dropdown) dropdown.classList.remove("open");
-  saleReturnInvoiceDropdownIndex = -1;
-}
-
-function toggleSaleReturnInvoiceDropdown(event) {
-  if (event) event.stopPropagation();
-  const dropdown = document.getElementById("srInvoiceDropdown");
-  if (!dropdown) return;
-  if (dropdown.classList.contains("open")) {
-    closeSaleReturnInvoiceDropdown();
-  } else {
-    openSaleReturnInvoiceDropdown();
-    document.getElementById("srInvoiceNo")?.focus();
-  }
-}
-
-function loadRecentSaleReturnInvoices() {
-  if (saleReturnInvoiceListLoaded) return;
-
-  const dropdown = document.getElementById("srInvoiceDropdown");
-  if (dropdown) dropdown.innerHTML = '<div class="bb-sr-invoice-empty">Loading recent invoices...</div>';
-
-  const callbackName = "bbRecentSaleReturnInvoices_" + Date.now();
-  const script = document.createElement("script");
-  let done = false;
-
-  function finish() {
-    if (done) return;
-    done = true;
-    delete window[callbackName];
-    if (script.parentNode) script.parentNode.removeChild(script);
-  }
-
-  window[callbackName] = function(data) {
-    finish();
-    if (!data || !data.success) {
-      if (dropdown) dropdown.innerHTML = '<div class="bb-sr-invoice-empty">Could not load recent invoices.</div>';
-      return;
-    }
-
-    recentSaleReturnInvoices = Array.isArray(data.invoices) ? data.invoices.map(v => String(v || "").trim()).filter(Boolean) : [];
-    saleReturnInvoiceListLoaded = true;
-    renderSaleReturnInvoiceDropdown(document.getElementById("srInvoiceNo")?.value || "");
-  };
-
-  script.onerror = function() {
-    finish();
-    if (dropdown) dropdown.innerHTML = '<div class="bb-sr-invoice-empty">Could not connect to Sales Database.</div>';
-  };
-
-  script.src = SALES_DATABASE_API_URL +
-    "?action=getRecentInvoiceNumbers&limit=30" +
-    "&callback=" + encodeURIComponent(callbackName) +
-    "&t=" + Date.now();
-
-  document.body.appendChild(script);
-
-  setTimeout(function() {
-    if (!done) {
-      finish();
-      if (dropdown) dropdown.innerHTML = '<div class="bb-sr-invoice-empty">Invoice list lookup timed out.</div>';
-    }
-  }, 10000);
-}
-
-function handleSaleReturnInvoicePickerInput() {
-  openSaleReturnInvoiceDropdown();
-}
-
-function handleSaleReturnInvoicePickerKeydown(event) {
-  const dropdown = document.getElementById("srInvoiceDropdown");
-  const options = dropdown ? Array.from(dropdown.querySelectorAll(".bb-sr-invoice-option")) : [];
-
-  if (event.key === "ArrowDown") {
-    event.preventDefault();
-    if (!dropdown?.classList.contains("open")) openSaleReturnInvoiceDropdown();
-    if (!options.length) return;
-    saleReturnInvoiceDropdownIndex = Math.min(saleReturnInvoiceDropdownIndex + 1, options.length - 1);
-    options.forEach((el, i) => el.classList.toggle("active", i === saleReturnInvoiceDropdownIndex));
-    options[saleReturnInvoiceDropdownIndex]?.scrollIntoView({block:"nearest"});
-  } else if (event.key === "ArrowUp") {
-    event.preventDefault();
-    if (!dropdown?.classList.contains("open")) openSaleReturnInvoiceDropdown();
-    if (!options.length) return;
-    saleReturnInvoiceDropdownIndex = Math.max(saleReturnInvoiceDropdownIndex - 1, 0);
-    options.forEach((el, i) => el.classList.toggle("active", i === saleReturnInvoiceDropdownIndex));
-    options[saleReturnInvoiceDropdownIndex]?.scrollIntoView({block:"nearest"});
-  } else if (event.key === "Enter" && dropdown?.classList.contains("open") && saleReturnInvoiceDropdownIndex >= 0) {
-    event.preventDefault();
-    options[saleReturnInvoiceDropdownIndex]?.dispatchEvent(new MouseEvent("mousedown", {bubbles:true}));
-  } else if (event.key === "Escape") {
-    closeSaleReturnInvoiceDropdown();
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-  const input = document.getElementById("srInvoiceNo");
-  if (input) {
-    input.addEventListener("input", handleSaleReturnInvoicePickerInput);
-    input.addEventListener("focus", openSaleReturnInvoiceDropdown);
-    input.addEventListener("keydown", handleSaleReturnInvoicePickerKeydown);
-  }
-
-  document.addEventListener("mousedown", function(event) {
-    const picker = document.getElementById("srInvoicePicker");
-    if (picker && !picker.contains(event.target)) closeSaleReturnInvoiceDropdown();
-  });
-});
-
-function loadSaleReturnInvoice() {
-  const invoiceNo = String(document.getElementById("srInvoiceNo")?.value || "").trim();
-  if (!invoiceNo) {
-    alert("Please enter an Invoice No.");
-    return;
-  }
-
-  setSaleReturnStatus("Loading invoice from Sales Database...", "normal");
-  const callbackName = "bbSaleReturnInvoice_" + Date.now();
-  const script = document.createElement("script");
-  let done = false;
-
-  function finish() {
-    if (done) return;
-    done = true;
-    delete window[callbackName];
-    if (script.parentNode) script.parentNode.removeChild(script);
-  }
-
-  window[callbackName] = function(data) {
-    finish();
-    if (!data || !data.success) {
-      saleReturnInvoice = null;
-      hideSaleReturnResults();
-      setSaleReturnStatus(data?.error || "Invoice was not found in Sales Database.", "error");
-      return;
-    }
-
-    saleReturnInvoice = data;
-    renderSaleReturnInvoice(data);
-    setSaleReturnStatus("Invoice loaded. Enter the quantity you want to return.", "success");
-  };
-
-  script.onerror = function() {
-    finish();
-    saleReturnInvoice = null;
-    hideSaleReturnResults();
-    setSaleReturnStatus("Could not connect to Sales Database.", "error");
-  };
-
-  script.src = SALES_DATABASE_API_URL +
-    "?action=getInvoiceForReturn&invoiceNo=" + encodeURIComponent(invoiceNo) +
-    "&callback=" + encodeURIComponent(callbackName) +
-    "&t=" + Date.now();
-
-  document.body.appendChild(script);
-
-  setTimeout(function() {
-    if (!done) {
-      finish();
-      saleReturnInvoice = null;
-      hideSaleReturnResults();
-      setSaleReturnStatus("Invoice lookup timed out. Please try again.", "error");
-    }
-  }, 10000);
-}
-
-function hideSaleReturnResults() {
-  ["srInvoiceInfo","srProductsCard","srDetailsCard","srActions"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = "none";
-  });
-  const body = document.getElementById("srProductsBody");
-  if (body) body.innerHTML = "";
-}
-
-function moneyForSaleReturn(value) {
-  const currency = saleReturnInvoice?.invoice?.currency || "USD";
-  const n = Number(value) || 0;
-  if (currency === "KHR") return "៛" + Math.round(n).toLocaleString("en-US");
-  return "$" + n.toFixed(2);
-}
-
-function formatSaleReturnInvoiceDate(value) {
-  if (!value) return "-";
-
-  const raw = String(value).trim();
-
-  // If the backend already returns YYYY-MM-DD, format it directly
-  // so there is no timezone conversion.
-  const ymd = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (ymd) {
-    return `${ymd[3]}/${ymd[2]}/${ymd[1].slice(-2)}`;
-  }
-
-  const date = new Date(raw);
-  if (Number.isNaN(date.getTime())) return raw;
-
-  const dd = String(date.getDate()).padStart(2, "0");
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const yy = String(date.getFullYear()).slice(-2);
-  return `${dd}/${mm}/${yy}`;
-}
-
-function renderSaleReturnInvoice(data) {
-  const inv = data.invoice || {};
-  document.getElementById("srInfoInvoiceNo").textContent = inv.invoiceNo || "-";
-  document.getElementById("srInfoDate").textContent = formatSaleReturnInvoiceDate(inv.invoiceDate);
-  document.getElementById("srInfoCustomer").textContent = inv.customer || "-";
-  document.getElementById("srInfoLocation").textContent = inv.locationCode || "-";
-  document.getElementById("srInfoSalesperson").textContent = inv.salesperson || "-";
-  document.getElementById("srInfoCurrency").textContent = inv.currency || "-";
-
-  const tbody = document.getElementById("srProductsBody");
-  tbody.innerHTML = "";
-
-  const items = Array.isArray(data.items) ? data.items : [];
-  if (!items.length) {
-    tbody.innerHTML = `<div class="bb-sr-empty-row">No products were found on this invoice.</div>`;
-  } else {
-    items.forEach((item, index) => {
-      const row = document.createElement("div");
-      row.className = "bb-sr-product-row";
-      const sold = Number(item.soldQty) || 0;
-      const returned = Number(item.returnedQty) || 0;
-      const available = Math.max(0, Number(item.availableQty) || 0);
-      const price = Number(item.unitPrice) || 0;
-      row.innerHTML = `
-        <div class="bb-sr-product-name">
-          ${escapeHtml(item.productName || item.productCode || "")}
-          <span class="bb-sr-product-code">${escapeHtml(item.productCode || "")}</span>
-          <span class="bb-sr-product-price">${moneyForSaleReturn(price)} / unit</span>
-        </div>
-        <div class="bb-sr-product-stat">${sold}</div>
-        <div class="bb-sr-product-stat">${returned}</div>
-        <div class="bb-sr-product-stat available">${available}</div>
-        <div><input class="bb-sr-return-input" type="number" min="0" max="${available}" step="0.01" value="0" data-sr-index="${index}" data-available="${available}" data-price="${price}" oninput="calculateSaleReturnTotal()" ${available <= 0 ? "disabled" : ""} aria-label="Return quantity for ${escapeHtml(item.productName || item.productCode || "product")}"></div>
-        <div class="bb-sr-return-amount" id="srAmount_${index}">${moneyForSaleReturn(0)}</div>`;
-      tbody.appendChild(row);
-    });
-  }
-
-  document.getElementById("srInvoiceInfo").style.display = "block";
-  document.getElementById("srProductsCard").style.display = "block";
-  document.getElementById("srDetailsCard").style.display = "block";
-  document.getElementById("srActions").style.display = "flex";
-  setSaleReturnToday();
-  calculateSaleReturnTotal();
-}
-
-function calculateSaleReturnTotal() {
-  let total = 0;
-  document.querySelectorAll("#srProductsBody input[data-sr-index]").forEach(input => {
-    const index = Number(input.dataset.srIndex);
-    const available = Number(input.dataset.available) || 0;
-    const price = Number(input.dataset.price) || 0;
-    let qty = Number(input.value) || 0;
-    if (qty < 0) qty = 0;
-    if (qty > available) { qty = available; input.value = available; }
-    const amount = qty * price;
-    total += amount;
-    const amountEl = document.getElementById("srAmount_" + index);
-    if (amountEl) amountEl.textContent = moneyForSaleReturn(amount);
-  });
-
-  const totalEl = document.getElementById("srTotalAmount");
-  if (totalEl) totalEl.textContent = moneyForSaleReturn(total);
-  return total;
-}
-
-function buildSaleReturnRows() {
-  if (!saleReturnInvoice) return [];
-  const items = Array.isArray(saleReturnInvoice.items) ? saleReturnInvoice.items : [];
-  const rows = [];
-  document.querySelectorAll("#srProductsBody input[data-sr-index]").forEach(input => {
-    const index = Number(input.dataset.srIndex);
-    const qty = Number(input.value) || 0;
-    if (qty <= 0 || !items[index]) return;
-    const item = items[index];
-    rows.push({
-      invoiceId: saleReturnInvoice.invoice.invoiceId,
-      invoiceNo: saleReturnInvoice.invoice.invoiceNo,
-      returnDate: document.getElementById("srReturnDate")?.value || "",
-      customer: saleReturnInvoice.invoice.customer || "",
-      locationCode: saleReturnInvoice.invoice.locationCode || "",
-      salesperson: saleReturnInvoice.invoice.salesperson || "",
-      productCode: item.productCode || "",
-      productName: item.productName || item.productCode || "",
-      qty,
-      unitPrice: Number(item.unitPrice) || 0,
-      returnType: document.getElementById("srReturnType")?.value || "Customer Return",
-      reason: document.getElementById("srReason")?.value.trim() || "",
-      note: document.getElementById("srNote")?.value.trim() || ""
-    });
-  });
-  return rows;
-}
-
-function postSalesReturn(row) {
-  return new Promise((resolve, reject) => {
-    const iframeName = "bbSaleReturnSaveFrame_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-    const iframe = document.createElement("iframe");
-    iframe.name = iframeName;
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
-
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = SALES_DATABASE_API_URL;
-    form.target = iframeName;
-    form.style.display = "none";
-
-    const actionInput = document.createElement("input");
-    actionInput.type = "hidden";
-    actionInput.name = "action";
-    actionInput.value = "saveReturn";
-    form.appendChild(actionInput);
-
-    const dataInput = document.createElement("input");
-    dataInput.type = "hidden";
-    dataInput.name = "returnData";
-    dataInput.value = JSON.stringify(row);
-    form.appendChild(dataInput);
-
-    document.body.appendChild(form);
-    let settled = false;
-    const finish = (ok, error) => {
-      if (settled) return;
-      settled = true;
-      setTimeout(() => { form.remove(); iframe.remove(); }, 800);
-      if (ok) resolve(); else reject(error || new Error("Sale Return save timed out."));
-    };
-
-    try { form.submit(); } catch (error) { finish(false, error); return; }
-    setTimeout(() => finish(true, null), 2200);
-  });
-}
-
-async function saveSaleReturn() {
-  if (!saleReturnInvoice) {
-    alert("Please load an existing invoice first.");
-    return;
-  }
-
-  const rows = buildSaleReturnRows();
-  if (!rows.length) {
-    alert("Please enter Return Qty for at least one product.");
-    return;
-  }
-
-  const returnDate = document.getElementById("srReturnDate")?.value || "";
-  if (!returnDate) {
-    alert("Please select the Return Date.");
-    return;
-  }
-
-  const total = calculateSaleReturnTotal();
-  const confirmed = confirm(
-    "Save this Sale Return?\n\n" +
-    "Invoice No.: " + saleReturnInvoice.invoice.invoiceNo + "\n" +
-    "Products returned: " + rows.length + "\n" +
-    "Return Amount: " + moneyForSaleReturn(total)
-  );
-  if (!confirmed) return;
-
-  const button = document.getElementById("srSaveBtn");
-  if (button) { button.disabled = true; button.innerHTML = "⏳ Saving..."; }
-
-  try {
-    for (const row of rows) {
-      await postSalesReturn(row);
-    }
-
-    setSaleReturnStatus(
-      "Sale Return saved successfully. Return ID(s) were created in Sales Database.",
-      "success"
-    );
-    alert("Sale Return saved successfully.\n\nOriginal invoice was not changed.");
-    clearSaleReturn(true);
-  } catch (error) {
-    console.error("Sale Return save failed:", error);
-    setSaleReturnStatus("Sale Return could not be fully saved. Please check the Returns sheet.", "error");
-    alert("Could not save the Sale Return.\n\n" + (error?.message || "Please try again."));
-  } finally {
-    if (button) { button.disabled = false; button.innerHTML = "✓ Save Sale Return"; }
-  }
-}
-
-function clearSaleReturn(keepStatus) {
-  saleReturnInvoice = null;
-  const ids = ["srInvoiceNo","srReason","srNote"];
-  ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
-  const type = document.getElementById("srReturnType");
-  if (type) type.value = "Customer Return";
-  setSaleReturnToday();
-  hideSaleReturnResults();
-  if (!keepStatus) setSaleReturnStatus("Enter an Invoice No. and load the original sale.", "normal");
-}
-
-setSaleReturnToday();
-</script>
+  </script>
+ </body>
+</html>
