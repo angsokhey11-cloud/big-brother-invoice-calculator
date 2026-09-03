@@ -80,6 +80,17 @@ label {
   margin-bottom: 5px;
 }
 
+.location-help {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #718096;
+}
+
+#invoiceNumber {
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
 .customer-status {
   font-size: 12px;
   color: #718096;
@@ -1809,7 +1820,14 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="grid-2 invoice-grid">
       <div>
         <label for="invoiceNumber">Invoice No.</label>
-        <input type="text" id="invoiceNumber" value="Loading..." readonly>
+        <input type="text" id="invoiceNumber" value="Loading..." autocomplete="off" inputmode="numeric">
+      </div>
+
+      <div>
+        <label for="mainLocation">Main Location</label>
+        <select id="mainLocation" onchange="handleLocationChange()">
+          <option value="">Loading locations...</option>
+        </select>
       </div>
 
       <div>
@@ -1986,9 +2004,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="grid-2">
       <div>
         <label for="salesName">Sale Person</label>
-        <select id="salesName" disabled>
-          <option value="">Loading salespersons...</option>
-        </select>
+        <input type="text" id="salesName" placeholder="Sale person" autocomplete="off">
       </div>
 
       <div>
@@ -2106,9 +2122,22 @@ setTodayDate();
 ========================================== */
 
 function setInvoiceNumber(number) {
-  const value = String(number || "INV-0001");
+  const value = String(number || "INV-0001").trim();
   const input = document.getElementById("invoiceNumber");
   if (input) input.value = value;
+}
+
+function incrementInvoiceNumber(invoiceNo) {
+  const value = String(invoiceNo || "").trim();
+  const match = value.match(/^(.*?)(\d+)$/);
+  if (!match) return "";
+
+  const prefix = match[1];
+  const digits = match[2];
+  const next = Number(digits) + 1;
+  if (!Number.isFinite(next)) return "";
+
+  return prefix + String(next).padStart(digits.length, "0");
 }
 
 function loadNextInvoiceNumber() {
@@ -2137,8 +2166,7 @@ function loadNextInvoiceNumber() {
 
   script.onerror = function() {
     finish();
-    if (input) input.value = "INV-0001";
-    setTimeout(loadNextInvoiceNumber, DB_RETRY_DELAY_MS);
+    setInvoiceNumber("INV-0001");
   };
 
   script.src =
@@ -2152,8 +2180,7 @@ function loadNextInvoiceNumber() {
   setTimeout(function() {
     if (!done) {
       finish();
-      if (input) input.value = "INV-0001";
-      setTimeout(loadNextInvoiceNumber, DB_RETRY_DELAY_MS);
+      setInvoiceNumber("INV-0001");
     }
   }, DB_REQUEST_TIMEOUT_MS);
 }
@@ -2164,15 +2191,23 @@ function loadNextInvoiceNumber() {
 ========================================== */
 
 const DRIVE_SAVE_API =
-  "https://script.google.com/macros/s/AKfycbyM5mUlz5SeMZ_oPJCo2FgLkPEcodAQ7wPl5wxAdrvfqLvsZLaHxiOtS02L1Q3ZRA3D/exec";
+  "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
 
 const DRIVE_FOLDER_ID =
   "1wgNyhkR7-QQphRAAou2v-etx0LinDl21";
 
 const CUSTOMER_API_URL =
-  "https://script.google.com/macros/s/AKfycbyM5mUlz5SeMZ_oPJCo2FgLkPEcodAQ7wPl5wxAdrvfqLvsZLaHxiOtS02L1Q3ZRA3D/exec";
+  "https://script.google.com/macros/s/AKfycbzIjs-cNehMxWTZs3ZPAosseGUu1nqACTPo3S4-onLLEYnEgqP6AUK7p3jwb6MaFr7H0w/exec";
 
 let customers = [];
+let locations = [];
+let currentLocationCode = "";
+let locationDatabaseLoaded = false;
+let locationCustomersLoaded = false;
+let locationRequestToken = 0;
+const LOCATION_CACHE_KEY = "bb_master_locations_v1";
+const CUSTOMER_CACHE_PREFIX = "bb_master_customers_location_v1_";
+const SALESPERSON_SESSION_KEY = "bb_invoice_salesperson_override_v1";
 
 /* ==========================================
    CUSTOMER-SPECIFIC PRICING
@@ -2306,6 +2341,7 @@ let bankingDatabaseLoaded = false;
 
 const DB_RETRY_DELAY_MS = 3000;
 const DB_REQUEST_TIMEOUT_MS = 12000;
+const LOCATION_REQUEST_TIMEOUT_MS = 4500;
 
 function retryDatabaseLoad(loadFunction, isLoadedFunction) {
   setTimeout(() => {
@@ -2416,14 +2452,50 @@ function updateBankingPreview() {
 }
 
 function loadSalespersons() {
-  const select = document.getElementById("salesName");
+  // Salesperson is intentionally a free-text field.
+  // The Main Location supplies the default salesperson, while the user may
+  // temporarily replace it for this session. The Master Database is never changed here.
+  const input = document.getElementById("salesName");
+  if (!input) return;
+
+  const savedOverride = sessionStorage.getItem(SALESPERSON_SESSION_KEY);
+  if (savedOverride) input.value = savedOverride;
+}
+
+function cacheSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+}
+
+function cacheGet(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function loadLocations() {
+  const select = document.getElementById("mainLocation");
   if (!select) return;
 
-  salespersonDatabaseLoaded = false;
-  select.disabled = true;
-  select.innerHTML = `<option value="">Loading salespersons...</option>`;
+  const cached = cacheGet(LOCATION_CACHE_KEY);
+  if (Array.isArray(cached) && cached.length) {
+    locations = cached;
+    locationDatabaseLoaded = true;
+    populateLocationSelect();
+  }
 
-  const callbackName = "bbSalespersons_" + Date.now();
+  // Cached locations are usable immediately. The server refresh runs in the background.
+  const hasCachedLocations = locations.length > 0;
+  select.disabled = !hasCachedLocations;
+  if (!hasCachedLocations) {
+    select.innerHTML = `<option value="">Loading locations...</option>`;
+  } else {
+    select.title = "Locations loaded from cache; refreshing in background...";
+  }
+
+  const callbackName = "bbLocations_" + Date.now();
   const script = document.createElement("script");
   let done = false;
 
@@ -2431,64 +2503,190 @@ function loadSalespersons() {
     if (done) return;
     done = true;
     delete window[callbackName];
-    if (script.parentNode) {
-      script.parentNode.removeChild(script);
-    }
+    if (script.parentNode) script.parentNode.removeChild(script);
   }
 
   window[callbackName] = function(data) {
-    if (!Array.isArray(data)) {
-      salespersons = [];
-      salespersonDatabaseLoaded = false;
-      select.innerHTML = `<option value="">Salesperson database unavailable</option>`;
-      select.disabled = true;
-      finish();
-      return;
-    }
-
-    salespersons = data
-      .map(row => ({
-        name: String(row.name || "").trim(),
+    if (Array.isArray(data)) {
+      locations = data.map(row => ({
+        locationCode: String(row.locationCode || row.code || "").trim(),
+        locationName: String(row.locationName || row.name || "").trim(),
+        salespersonName: String(row.salespersonName || row.salesperson || "").trim(),
         active: row.active === true || String(row.active).toLowerCase() === "true"
-      }))
-      .filter(person => person.name && person.active);
+      })).filter(x => x.locationCode && x.locationName && x.active !== false);
 
-    salespersonDatabaseLoaded = true;
-    select.innerHTML = `<option value="">Select salesperson</option>`;
-
-    salespersons.forEach(person => {
-      const option = document.createElement("option");
-      option.value = person.name;
-      option.textContent = person.name;
-      select.appendChild(option);
-    });
-
-    select.disabled = false;
+      locationDatabaseLoaded = locations.length > 0;
+      cacheSet(LOCATION_CACHE_KEY, locations);
+      populateLocationSelect();
+    }
     finish();
   };
 
   script.onerror = function() {
     finish();
-    select.innerHTML = `<option value="">Still loading salespersons... retrying</option>`;
-    select.disabled = true;
-    retryDatabaseLoad(loadSalespersons, () => salespersonDatabaseLoaded);
+    if (!locations.length) {
+      select.innerHTML = `<option value="">Location database unavailable</option>`;
+      select.disabled = true;
+    } else {
+      select.disabled = false;
+      select.title = "Using cached locations";
+    }
   };
 
-  script.src =
-    CUSTOMER_API_URL +
-    "?action=salespersons&callback=" +
-    encodeURIComponent(callbackName) +
+  script.src = CUSTOMER_API_URL +
+    "?action=getLocations&callback=" + encodeURIComponent(callbackName) +
     "&t=" + Date.now();
-
   document.body.appendChild(script);
 
   setTimeout(() => {
     if (!done) {
       finish();
-      select.innerHTML = `<option value="">Still loading salespersons... retrying</option>`;
-      retryDatabaseLoad(loadSalespersons, () => salespersonDatabaseLoaded);
+      if (!locations.length) {
+        select.innerHTML = `<option value="">Location loading timed out — refresh to retry</option>`;
+        select.disabled = true;
+      } else {
+        select.disabled = false;
+        select.title = "Using cached locations; server refresh timed out";
+      }
     }
-  }, DB_REQUEST_TIMEOUT_MS);
+  }, LOCATION_REQUEST_TIMEOUT_MS);
+}
+
+function populateLocationSelect() {
+  const select = document.getElementById("mainLocation");
+  if (!select) return;
+
+  const previous = currentLocationCode || select.value || "";
+  select.innerHTML = `<option value="">Select Main Location</option>`;
+  locations.forEach(location => {
+    const option = document.createElement("option");
+    option.value = location.locationCode;
+    option.textContent = `${location.locationCode} — ${location.locationName}`;
+    select.appendChild(option);
+  });
+
+  if (previous && locations.some(x => x.locationCode === previous)) {
+    select.value = previous;
+  }
+  select.disabled = false;
+
+  const savedLocation = sessionStorage.getItem("bb_invoice_location_code_v1");
+  if (!currentLocationCode && savedLocation && locations.some(x => x.locationCode === savedLocation)) {
+    select.value = savedLocation;
+    handleLocationChange(true);
+  }
+}
+
+function handleLocationChange(fromSession = false) {
+  const select = document.getElementById("mainLocation");
+  const code = String(select?.value || "").trim();
+  const location = locations.find(x => x.locationCode === code);
+  currentLocationCode = code;
+  locationCustomersLoaded = false;
+
+  if (code) sessionStorage.setItem("bb_invoice_location_code_v1", code);
+  else sessionStorage.removeItem("bb_invoice_location_code_v1");
+
+  const customerInput = document.getElementById("customerName");
+  if (customerInput) customerInput.value = "";
+  const phone = document.getElementById("customerPhone");
+  const address = document.getElementById("customerAddress");
+  if (phone) phone.value = "";
+  if (address) address.value = "";
+  const list = document.getElementById("customerOptions");
+  if (list) { list.innerHTML = ""; list.style.display = "none"; }
+
+  const status = document.getElementById("customerStatus");
+
+  if (!location) {
+    if (status) status.textContent = "Select a Main Location first.";
+    customers = [];
+    return;
+  }
+
+  const savedOverride = sessionStorage.getItem(SALESPERSON_SESSION_KEY);
+  const salesInput = document.getElementById("salesName");
+  if (salesInput && (!savedOverride || !fromSession)) {
+    // If the user had manually typed a replacement, keep it. Otherwise use the location default.
+    const lastDefault = salesInput.dataset.locationDefault || "";
+    const currentValue = salesInput.value.trim();
+    if (!currentValue || currentValue === lastDefault) {
+      salesInput.value = location.salespersonName || "";
+    }
+  }
+  if (salesInput && !savedOverride && !salesInput.value.trim()) {
+    salesInput.value = location.salespersonName || "";
+  }
+  if (salesInput) salesInput.dataset.locationDefault = location.salespersonName || "";
+
+  loadCustomersByLocation(code);
+}
+
+function loadCustomersByLocation(locationCode) {
+  const status = document.getElementById("customerStatus");
+  const list = document.getElementById("customerOptions");
+  const code = String(locationCode || "").trim();
+  const token = ++locationRequestToken;
+  if (!code) return;
+
+  const cached = cacheGet(CUSTOMER_CACHE_PREFIX + encodeURIComponent(code));
+  if (Array.isArray(cached)) {
+    customers = cached;
+    locationCustomersLoaded = true;
+    renderCustomerOptionsBase();
+    if (status) {
+      status.textContent = `${customers.length} customers loaded for ${code}`;
+      status.style.color = "#2f855a";
+    }
+  } else if (status) {
+    status.textContent = "Loading customers for this location...";
+    status.style.color = "#718096";
+  }
+
+  const callbackName = "bbLocationCustomers_" + Date.now() + "_" + Math.floor(Math.random()*10000);
+  const script = document.createElement("script");
+  let done = false;
+
+  function finish() {
+    if (done) return;
+    done = true;
+    delete window[callbackName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  window[callbackName] = function(data) {
+    if (token !== locationRequestToken) { finish(); return; }
+    if (Array.isArray(data)) {
+      customers = data.map(row => ({
+        name: String(row.name || "").trim(),
+        phone: String(row.phone || "").trim(),
+        address: String(row.address || "").trim(),
+        locationCode: String(row.locationCode || code).trim()
+      })).filter(row => row.name);
+      cacheSet(CUSTOMER_CACHE_PREFIX + encodeURIComponent(code), customers);
+      locationCustomersLoaded = true;
+      renderCustomerOptionsBase();
+      if (status) {
+        status.textContent = customers.length ? `${customers.length} customers loaded for ${code}` : "No customers found for this location.";
+        status.style.color = customers.length ? "#2f855a" : "#b7791f";
+      }
+    }
+    finish();
+  };
+
+  script.onerror = function() { finish(); };
+  script.src = CUSTOMER_API_URL +
+    "?action=getCustomersByLocation&locationCode=" + encodeURIComponent(code) +
+    "&callback=" + encodeURIComponent(callbackName) + "&t=" + Date.now();
+  document.body.appendChild(script);
+
+  setTimeout(() => { if (!done) finish(); }, DB_REQUEST_TIMEOUT_MS);
+}
+
+function renderCustomerOptionsBase() {
+  const list = document.getElementById("customerOptions");
+  if (!list) return;
+  list.innerHTML = "";
 }
 
 /* ==========================================
@@ -2498,117 +2696,17 @@ function loadSalespersons() {
 ========================================== */
 
 function loadCustomers() {
-  const status = document.getElementById("customerStatus");
-  const list = document.getElementById("customerOptions");
-
-  if (!status || !list) return;
-
-  status.textContent = "Loading customers...";
-  status.style.color = "#718096";
-
-  const callbackName =
-    "bbCustomers_" + Date.now();
-
-  const script =
-    document.createElement("script");
-
-  let done = false;
-
-  function finish(message, color) {
-    if (done) return;
-    done = true;
-
-    status.textContent = message;
-    status.style.color = color;
-
-    delete window[callbackName];
-
-    if (script.parentNode) {
-      script.parentNode.removeChild(script);
+  const select = document.getElementById("mainLocation");
+  if (select && select.value) {
+    loadCustomersByLocation(select.value);
+  } else {
+    const status = document.getElementById("customerStatus");
+    if (status) {
+      status.textContent = "Select a Main Location first.";
+      status.style.color = "#718096";
     }
   }
-
-  window[callbackName] = function(data) {
-    if (!Array.isArray(data)) {
-      customers = [];
-      finish(
-        "Customer database unavailable — you can still type manually.",
-        "#b7791f"
-      );
-      return;
-    }
-
-    customers = data
-      .map(row => ({
-        name: String(row.name || "").trim(),
-        phone: String(row.phone || "").trim(),
-        address: String(row.address || "").trim()
-      }))
-      .filter(row => row.name);
-
-    list.innerHTML = "";
-
-    customers.forEach(customer => {
-      const option = document.createElement("div");
-      option.className = "customer-option";
-      option.dataset.name = customer.name;
-
-      const name = document.createElement("div");
-      name.className = "customer-option-name";
-      name.textContent = customer.name;
-
-      const details = document.createElement("div");
-      details.className = "customer-option-details";
-      details.textContent =
-        [customer.phone, customer.address]
-          .filter(Boolean)
-          .join(" • ") || "No phone or address";
-
-      option.appendChild(name);
-      option.appendChild(details);
-
-      option.addEventListener("mousedown", function(event) {
-        event.preventDefault();
-        selectCustomer(customer);
-      });
-
-      list.appendChild(option);
-    });
-
-    finish(
-      customers.length
-        ? `${customers.length} customers loaded from Google Sheets`
-        : "No customers found — you can still type manually.",
-      customers.length ? "#2f855a" : "#b7791f"
-    );
-  };
-
-  script.onerror = function() {
-    finish();
-    status.textContent = "Still loading customers... retrying";
-    status.style.color = "#718096";
-    retryDatabaseLoad(loadCustomers, () => customers.length > 0);
-  };
-
-  script.src =
-    CUSTOMER_API_URL +
-    "?action=customers&callback=" +
-    encodeURIComponent(callbackName) +
-    "&t=" +
-    Date.now();
-
-  document.body.appendChild(script);
-
-  setTimeout(() => {
-    if (!done) {
-      finish();
-      status.textContent = "Still loading customers... retrying";
-      status.style.color = "#718096";
-      retryDatabaseLoad(loadCustomers, () => customers.length > 0);
-    }
-  }, DB_REQUEST_TIMEOUT_MS);
 }
-
 
 /* ==========================================
    CUSTOMER SELECTION / AUTO-FILL
@@ -2918,10 +3016,30 @@ document.addEventListener("click", function(event) {
   }
 });
 
-loadCustomers();
+loadLocations();
 loadSalespersons();
 loadNoteTemplates();
 loadBankingDetails();
+
+const invoiceNumberInput = document.getElementById("invoiceNumber");
+if (invoiceNumberInput) {
+  invoiceNumberInput.addEventListener("input", function() {
+    this.value = this.value.replace(/\s+/g, "");
+  });
+}
+
+const salespersonInput = document.getElementById("salesName");
+if (salespersonInput) {
+  salespersonInput.addEventListener("input", function() {
+    const value = this.value.trim();
+    const defaultValue = this.dataset.locationDefault || "";
+    if (value && value !== defaultValue) {
+      sessionStorage.setItem(SALESPERSON_SESSION_KEY, value);
+    } else if (!value) {
+      sessionStorage.removeItem(SALESPERSON_SESSION_KEY);
+    }
+  });
+}
 
 const noteTemplateSelect = document.getElementById("noteTemplate");
 if (noteTemplateSelect) {
@@ -3855,6 +3973,7 @@ function getFinalInvoiceState() {
     date: formatInvoiceDate(document.getElementById("invoiceDate")?.value || ""),
     dueDate: formatInvoiceDate(document.getElementById("dueDate")?.value || ""),
     batchNumber: document.getElementById("batchNumber")?.value.trim() || "",
+    locationCode: currentLocationCode || document.getElementById("mainLocation")?.value.trim() || "",
     customer: document.getElementById("customerName")?.value.trim() || "",
     phone: document.getElementById("customerPhone")?.value.trim() || "",
     address: document.getElementById("customerAddress")?.value.trim() || "",
@@ -4697,6 +4816,7 @@ function buildSalesInvoicePayload() {
     invoiceDate: document.getElementById("invoiceDate")?.value || "",
     dueDate: document.getElementById("dueDate")?.value || "",
     batchNumber: document.getElementById("batchNumber")?.value.trim() || "",
+    locationCode: state.locationCode,
     customer: state.customer,
     salesperson: state.salesperson,
     paymentMethod: state.paymentMethod,
@@ -4820,6 +4940,26 @@ async function completeInvoice(event) {
 
   const payload = buildSalesInvoicePayload();
 
+  if (!payload.locationCode) {
+    alert("Please select a Main Location before completing the invoice.");
+    return;
+  }
+
+  if (!payload.customer) {
+    alert("Please select or enter a customer before completing the invoice.");
+    return;
+  }
+
+  if (!payload.salesperson) {
+    alert("Please enter a Sale Person before completing the invoice.");
+    return;
+  }
+
+  if (!payload.invoiceNo || payload.invoiceNo === "Loading...") {
+    alert("Invoice No. is not ready yet.");
+    return;
+  }
+
   if (!payload.items.length) {
     alert("Please add at least one product before completing the invoice.");
     return;
@@ -4833,7 +4973,7 @@ async function completeInvoice(event) {
 
   const confirmed = confirm(
     "Complete this invoice?\n\n" +
-    "The Sales Database will assign the next unique Invoice No.\n" +
+    "Invoice No.: " + payload.invoiceNo + "\n" +
     "This will save the invoice to the Sales Data Google Sheet."
   );
 
@@ -4849,34 +4989,23 @@ async function completeInvoice(event) {
   }
 
   try {
-    // Check the displayed Invoice No. immediately before saving.
-    // If another invoice already uses it, replace it with the next
-    // available number and KEEP ALL entered invoice information.
+    // Check the exact number immediately before saving.
+    // Manual numbers are allowed, but the exact same Invoice No. may not be saved twice.
     const numberCheck = await checkInvoiceNumberAvailable(payload.invoiceNo);
 
     if (numberCheck.exists) {
-      const available = numberCheck.availableInvoiceNo || numberCheck.invoiceNo || "";
-      if (available) {
-        setInvoiceNumber(available);
-      }
-
       if (button) {
         button.disabled = false;
         button.innerHTML = oldText;
       }
-
       window.bbInvoiceSaving = false;
-
       alert(
-        "Invoice No. " + payload.invoiceNo + " is already used.\n\n" +
-        "The next available Invoice No. has been loaded: " + available +
-        "\n\nYour invoice information is still here.\nPlease click Complete again to save it."
+        "Invoice No. " + payload.invoiceNo + " already exists in Sales Database.\n\n" +
+        "Please check the hand-written invoice number.\n" +
+        "Your invoice information is still here."
       );
       return;
     }
-
-    // Keep the exact available Invoice No. that was checked.
-    payload.invoiceNo = numberCheck.invoiceNo || payload.invoiceNo;
 
     await postSalesInvoice(payload);
 
@@ -4973,11 +5102,12 @@ function clearAllAfterSuccessfulSave() {
   document.getElementById("discount").value = 0;
   document.getElementById("amountPaid").value = 0;
 
-  loadNextInvoiceNumber();
+  const nextInvoiceNo = incrementInvoiceNumber(document.getElementById("invoiceNumber")?.value || "");
+  if (nextInvoiceNo) setInvoiceNumber(nextInvoiceNo);
+  else loadNextInvoiceNumber();
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
-  document.getElementById("salesName").value = "";
   document.getElementById("paymentMethod").value = "Cash";
   const paymentBank = document.getElementById("paymentBank");
   const bankReference = document.getElementById("bankReference");
@@ -5017,12 +5147,13 @@ function clearAll() {
   document.getElementById("discount").value = 0;
   document.getElementById("amountPaid").value = 0;
 
-  // Automatically move to the next invoice number for the new invoice.
-  loadNextInvoiceNumber();
+  // Keep the session invoice sequence when clearing the form.
+  const nextInvoiceNo = incrementInvoiceNumber(document.getElementById("invoiceNumber")?.value || "");
+  if (nextInvoiceNo) setInvoiceNumber(nextInvoiceNo);
+  else loadNextInvoiceNumber();
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
-  document.getElementById("salesName").value = "";
   document.getElementById("paymentMethod").value = "Cash";
   const paymentBank = document.getElementById("paymentBank");
   const bankReference = document.getElementById("bankReference");
