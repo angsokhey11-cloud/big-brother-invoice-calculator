@@ -1754,6 +1754,62 @@ input:focus {
   min-height: 50px;
 }
 .final-transaction-label { font-weight: 800; margin-bottom: 4px; }
+
+/* =====================================================
+   FINAL INVOICE V2 — PAYMENT + CUSTOMER/SALE SIGNATURES
+   ===================================================== */
+.final-payment-box {
+  width: 48%;
+  margin-top: 14px;
+  border: 1px solid #999;
+  padding: 10px 12px;
+  min-height: 66px;
+  font-size: 12px;
+}
+.final-payment-box .final-transaction-label {
+  margin-bottom: 7px;
+}
+
+.final-signature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 42px;
+  margin-top: 28px;
+  padding-top: 4px;
+  font-size: 12px;
+}
+.final-signature-column {
+  min-width: 0;
+}
+.final-signature-name-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: end;
+  min-height: 24px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #777;
+}
+.final-signature-label {
+  font-weight: 800;
+  white-space: nowrap;
+}
+.final-signature-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.final-signature-line {
+  margin-top: 14px;
+}
+.final-signature-line-title {
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+.final-signature-blank {
+  height: 30px;
+  border-bottom: 1px solid #777;
+}
+
 .final-banking {
   border: 1px solid #999;
   margin-top: 12px;
@@ -1782,6 +1838,9 @@ input:focus {
   .final-table th:nth-child(5) { width: 72px; }
   .final-bottom-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .final-transaction { gap: 10px; }
+  .final-payment-box { width: 100%; }
+  .final-signature-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
+  .final-signature-name-row { grid-template-columns: 1fr; gap: 3px; }
 }
 
 
@@ -5034,15 +5093,9 @@ function buildFinalInvoiceHtml(state) {
         <div class="final-summary">${summaryRows.join("")}</div>
       </div>
 
-      <div class="final-transaction">
-        <div class="final-transaction-box">
-          <div class="final-transaction-label">Sale Person</div>
-          <div>${esc(state.salesperson || "")}</div>
-        </div>
-        <div class="final-transaction-box">
-          <div class="final-transaction-label">Payment Method</div>
-          <div>${esc(state.paymentMethod || "")}</div>
-        </div>
+      <div class="final-payment-box">
+        <div class="final-transaction-label">Payment Method</div>
+        <div>${esc(state.paymentMethod || "")}</div>
       </div>
 
       ${state.banking && state.banking.selected ? `
@@ -5051,6 +5104,31 @@ function buildFinalInvoiceHtml(state) {
         ${state.banking.bank ? `<div>${esc(state.banking.bank)}</div>` : ""}
         ${state.banking.account ? `<div>${esc(state.banking.account)}</div>` : ""}
       </div>` : ""}
+
+      <div class="final-signature-grid">
+        <div class="final-signature-column">
+          <div class="final-signature-name-row">
+            <div class="final-signature-label">Customer Name</div>
+            <div class="final-signature-value">${esc(state.customer || "")}</div>
+          </div>
+          <div class="final-signature-line">
+            <div class="final-signature-line-title">Signature</div>
+            <div class="final-signature-blank"></div>
+          </div>
+        </div>
+
+        <div class="final-signature-column">
+          <div class="final-signature-name-row">
+            <div class="final-signature-label">Sale Person</div>
+            <div class="final-signature-value">${esc(state.salesperson || "")}</div>
+          </div>
+          <div class="final-signature-line">
+            <div class="final-signature-line-title">Sale Signature</div>
+            <div class="final-signature-blank"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="final-footer-space"></div>
     </div>
   `;
