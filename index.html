@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
  <head>
   <title>
@@ -1787,6 +1786,340 @@ input:focus {
 
 
 
+
+/* =====================================================
+   BIG BROTHER INVOICE GENERATOR — DESKTOP UI V1
+   UI-only desktop redesign. Existing IDs/functions stay unchanged.
+   ===================================================== */
+@media (min-width: 901px) {
+  body {
+    padding: 0;
+    background: radial-gradient(circle at top left, rgba(40,103,215,.08), transparent 34%), #eef3f8;
+  }
+  .calculator {
+    max-width: 1380px !important;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0 auto !important;
+    padding: 22px 24px 80px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 14px;
+    align-items: start;
+  }
+  .header-main {
+    grid-column: 1 / -1;
+    margin: 0 0 6px !important;
+    padding: 10px 0 16px;
+    border-bottom: 1px solid #d9e4f2;
+  }
+  .header-main h1 {
+    text-align: left !important;
+    font-size: 26px !important;
+    margin: 0 !important;
+    letter-spacing: 2px;
+    color: #0e3f86;
+  }
+  .header-main h1::after {
+    content: "Create New Invoice";
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+    letter-spacing: 0;
+    color: #5f7087;
+    font-weight: 500;
+  }
+  .header-currency {
+    background: #fff;
+    border: 1px solid #d4dfed;
+    border-radius: 13px;
+    padding: 8px 10px;
+    box-shadow: 0 8px 20px rgba(23,59,112,.06);
+  }
+  .header-currency select {
+    height: 38px;
+    min-width: 82px !important;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .header-rate input {
+    height: 38px;
+    width: 86px !important;
+    border-radius: 9px;
+    font-weight: 700;
+  }
+  .card,.desktop-product-card,.totals-box,.convert-box {
+    background: rgba(255,255,255,.96) !important;
+    border: 1px solid #d7e1ee !important;
+    border-radius: 16px !important;
+    box-shadow: 0 12px 28px rgba(20,48,82,.07) !important;
+  }
+  .card { margin-bottom: 0 !important; }
+  .section-title,.desktop-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px !important;
+    color: #0f3f83 !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+  }
+  .section-title::before,.desktop-card-title::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: linear-gradient(135deg,#1f6ce7,#0f4ca7);
+    box-shadow: 0 0 0 5px rgba(31,108,231,.11);
+  }
+  .invoice-card {
+    grid-column: 1 / -1;
+    padding: 16px 18px !important;
+    border-top: 3px solid #2466d1 !important;
+  }
+  .invoice-card .invoice-grid {
+    grid-template-columns: 1fr 1.35fr 1fr 1fr 1fr !important;
+    gap: 12px !important;
+  }
+  .invoice-card .customer-field.grid-2 {
+    grid-template-columns: 1.4fr 1fr !important;
+    gap: 12px !important;
+  }
+  .invoice-card input,.invoice-card select,.transaction-details input,.transaction-details select,
+  .note-card select,.note-card textarea,.banking-input-card select {
+    min-height: 40px;
+    border-radius: 10px !important;
+    border: 1px solid #cdd8e7 !important;
+    font-size: 14px !important;
+    padding: 9px 11px !important;
+    box-shadow: none !important;
+  }
+  label {
+    color: #304c6e;
+    font-size: 12px !important;
+    font-weight: 800;
+  }
+  .customer-status {
+    margin-top: 8px;
+    color: #198754 !important;
+    font-weight: 700;
+  }
+  .desktop-product-card {
+    grid-column: 1 / 2;
+    padding: 14px 16px 16px;
+    min-height: 310px;
+  }
+  .desktop-product-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 170px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .desktop-product-hint {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border: 1px solid #d5dfeb;
+    border-radius: 10px;
+    color: #8492a6;
+    background: #f9fbfe;
+    font-size: 13px;
+  }
+  .add-btn {
+    margin: 0 !important;
+    min-height: 42px;
+    padding: 10px 14px !important;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg,#1f6ce7,#0d4fb8) !important;
+    box-shadow: 0 9px 18px rgba(31,108,231,.22) !important;
+    font-size: 14px !important;
+  }
+  .product-selector {
+    margin: 0 0 10px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  #productChoice {
+    width: 100% !important;
+    min-height: 42px;
+    border-radius: 10px !important;
+    border: 1px solid #cdd8e7 !important;
+    font-size: 14px;
+  }
+  .product-table-head {
+    grid-template-columns: minmax(260px,1fr) 86px 110px 125px !important;
+    margin-top: 0 !important;
+    padding: 9px 12px !important;
+    border-color: #d9e4f2 !important;
+    background: #f4f8fd !important;
+    color: #3b5676 !important;
+    border-radius: 11px 11px 0 0 !important;
+  }
+  .product {
+    grid-template-columns: minmax(260px,1fr) 86px 110px 125px !important;
+    min-height: 48px !important;
+    padding: 8px 12px !important;
+    border-color: #e1e8f2 !important;
+    border-left: 0 !important;
+  }
+  .product-name { font-size: 13px !important; }
+  .product-input-cell input {
+    height: 34px !important;
+    border-radius: 8px !important;
+  }
+  .product-total-cell { font-size: 13px !important; }
+  .optional-menu { margin-top: 12px !important; }
+  .optional-menu-btn {
+    min-height: 40px !important;
+    border-radius: 10px !important;
+    background: #f7fbff !important;
+  }
+  .totals-box {
+    grid-column: 2 / 3;
+    grid-row: 3 / span 4;
+    position: sticky;
+    top: 14px;
+    margin: 0 !important;
+    padding: 16px !important;
+    border-top: 4px solid #16a163 !important;
+  }
+  .totals-box::before {
+    content: "Payment Summary";
+    display: block;
+    color: #0f3f83;
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 13px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dfe7f1;
+  }
+  .total-row {
+    font-size: 14px !important;
+    padding: 9px 0 !important;
+  }
+  .grand-total {
+    padding-top: 14px !important;
+    margin-top: 8px !important;
+    font-size: 17px !important;
+    color: #0d4fb8 !important;
+  }
+  #grandTotal {
+    font-size: 22px;
+    color: #0d63d8;
+  }
+  .discount-input-wrap {
+    width: 130px !important;
+    min-height: 36px !important;
+  }
+  .payment-row input {
+    max-width: 140px !important;
+    min-height: 36px !important;
+  }
+  .transaction-details {
+    grid-column: 1 / 2;
+    padding: 14px 16px !important;
+  }
+  .transaction-details::before {
+    content: "Sale & Payment";
+    display: flex;
+    color: #0f3f83;
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .transaction-details .grid-2 {
+    grid-template-columns: 1fr 1fr 1fr 1fr !important;
+    gap: 12px !important;
+  }
+  .note-card {
+    grid-column: 1 / 2;
+    padding: 14px 16px !important;
+  }
+  .note-card label::before {
+    content: "Note";
+    display: block;
+    color: #0f3f83;
+    font-size: 15px;
+    margin-bottom: 11px;
+  }
+  .note-card > label { font-size: 0 !important; }
+  .note-card textarea { min-height: 70px !important; }
+  .banking-input-card {
+    grid-column: 1 / 2;
+    padding: 14px 16px !important;
+  }
+  .banking-input-card label {
+    display: block;
+    color: #0f3f83;
+    font-size: 15px !important;
+    margin-bottom: 10px;
+  }
+  .banking-preview {
+    border-radius: 10px !important;
+    background: #f7fbff !important;
+    border-color: #d9e4f2 !important;
+  }
+  .convert-box {
+    grid-column: 1 / 2;
+    margin: 0 !important;
+    padding: 14px 16px !important;
+  }
+  .actions {
+    grid-column: 1 / -1;
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px !important;
+    margin: 0 !important;
+    padding: 14px 0 0;
+  }
+  .actions .action-btn {
+    width: auto !important;
+    min-width: 150px;
+    padding: 12px 16px !important;
+    border-radius: 11px !important;
+    font-size: 14px !important;
+  }
+  .bottom-action-row {
+    grid-column: 1 / -1;
+    display: flex !important;
+    justify-content: flex-end;
+    gap: 10px !important;
+    margin: 0 !important;
+    padding: 0 0 6px;
+  }
+  .bottom-action-row .clear-btn {
+    width: auto !important;
+    min-width: 175px;
+    margin: 0 !important;
+    border-radius: 11px !important;
+    font-size: 14px !important;
+  }
+  .complete-btn {
+    background: linear-gradient(135deg,#0d63d8,#004bad) !important;
+    color: #fff !important;
+    border-color: #0d63d8 !important;
+  }
+  .invoice-preview-modal { grid-column: 1 / -1; }
+  .customer-options { border-radius: 10px !important; }
+}
+@media (min-width: 901px) and (max-width: 1160px) {
+  .calculator { grid-template-columns: 1fr; }
+  .invoice-card,.desktop-product-card,.totals-box,.transaction-details,.note-card,
+  .banking-input-card,.convert-box,.actions,.bottom-action-row {
+    grid-column: 1 / -1 !important;
+  }
+  .totals-box { position: static; grid-row: auto; }
+  .invoice-card .invoice-grid,.transaction-details .grid-2 {
+    grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+  }
+}
+
 </style>
  </head>
  <body>
@@ -1889,61 +2222,68 @@ input:focus {
      Loading customers...
     </div>
    </div>
-   <button class="add-btn no-print" onclick="showProductSelector(event)" type="button">
-    ＋ Add Product
-   </button>
-   <div class="product-selector no-print" id="productSelector">
-    <select id="productChoice" onchange="addSelectedProduct()">
-     <option value="">
-      Select Product
-     </option>
-    </select>
-   </div>
-   <div class="product-table-head no-print">
-    <span>
-     Item Name
-    </span>
-    <span>
-     QTY
-    </span>
-    <span>
-     Price
-    </span>
-    <span>
-     Total Price
-    </span>
-   </div>
-   <div class="product-list" id="productList">
-   </div>
-   <div class="optional-menu no-print">
-    <button aria-expanded="false" class="optional-menu-btn" onclick="toggleOptionalMenu()" type="button">
-     <span>
-      ☰ More Options
-     </span>
-     <span id="optionalMenuArrow">
-      ▼
-     </span>
-    </button>
-    <div class="optional-menu-panel" id="optionalMenuPanel">
-     <label class="optional-check">
-      <input id="showDiscount" onchange="toggleOptionalSection('discount')" type="checkbox"/>
-      <span>
-       Discount
-      </span>
-     </label>
-     <label class="optional-check">
-      <input id="showPayment" onchange="toggleOptionalSection('payment')" type="checkbox"/>
-      <span>
-       Amount Paid &amp; Credit Amount
-      </span>
-     </label>
-     <label class="optional-check">
-      <input id="showExchange" onchange="toggleOptionalSection('exchange')" type="checkbox"/>
-      <span>
-       Exchange Calculation
-      </span>
-     </label>
+   <div class="desktop-product-card">
+    <div class="desktop-card-title">Product / Items</div>
+     <div class="desktop-product-toolbar no-print">
+      <div class="desktop-product-hint">Search/select product from database, then enter quantity and price.</div>
+      <button class="add-btn no-print" onclick="showProductSelector(event)" type="button">
+       ＋ Add Product
+      </button>
+     </div>
+    <div class="product-selector no-print" id="productSelector">
+     <select id="productChoice" onchange="addSelectedProduct()">
+      <option value="">
+       Select Product
+      </option>
+     </select>
     </div>
+    <div class="product-table-head no-print">
+     <span>
+      Item Name
+     </span>
+     <span>
+      QTY
+     </span>
+     <span>
+      Price
+     </span>
+     <span>
+      Total Price
+     </span>
+    </div>
+    <div class="product-list" id="productList">
+    </div>
+    <div class="optional-menu no-print">
+     <button aria-expanded="false" class="optional-menu-btn" onclick="toggleOptionalMenu()" type="button">
+      <span>
+       ☰ More Options
+      </span>
+      <span id="optionalMenuArrow">
+       ▼
+      </span>
+     </button>
+     <div class="optional-menu-panel" id="optionalMenuPanel">
+      <label class="optional-check">
+       <input id="showDiscount" onchange="toggleOptionalSection('discount')" type="checkbox"/>
+       <span>
+        Discount
+       </span>
+      </label>
+      <label class="optional-check">
+       <input id="showPayment" onchange="toggleOptionalSection('payment')" type="checkbox"/>
+       <span>
+        Amount Paid &amp; Credit Amount
+       </span>
+      </label>
+      <label class="optional-check">
+       <input id="showExchange" onchange="toggleOptionalSection('exchange')" type="checkbox"/>
+       <span>
+        Exchange Calculation
+       </span>
+      </label>
+     </div>
+    </div>
+
    </div>
    <div class="totals-box">
     <div class="total-row">
