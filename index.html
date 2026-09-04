@@ -2120,6 +2120,487 @@ input:focus {
   }
 }
 
+
+/* =====================================================
+   BIG BROTHER — INVOICE GENERATOR PC UI V3
+   Matches approved desktop concept while preserving functions.
+   ===================================================== */
+@media (min-width: 901px) {
+  body {
+    padding: 0 !important;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(41,110,216,.08), transparent 30%),
+      #eef3f8 !important;
+  }
+
+  .calculator {
+    display: block !important;
+    width: 100% !important;
+    max-width: 1460px !important;
+    margin: 0 auto !important;
+    padding: 18px 22px 42px !important;
+  }
+
+  .header-main {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 14px !important;
+    padding: 0 0 14px !important;
+    border-bottom: 1px solid #d8e2ef;
+  }
+
+  .header-main h1 {
+    margin: 0 !important;
+    text-align: left !important;
+    font-size: 26px !important;
+    letter-spacing: 1.6px !important;
+    color: #0e438e !important;
+  }
+
+  .header-main h1::after {
+    content: "Create New Invoice";
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: #6e7e93;
+  }
+
+  .header-currency {
+    display: flex !important;
+    align-items: center;
+    gap: 7px !important;
+    padding: 8px 10px;
+    border: 1px solid #d6e0ec;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(24,52,88,.06);
+  }
+
+  .header-currency select {
+    min-width: 82px !important;
+    height: 38px;
+    padding: 6px 9px !important;
+    border-radius: 9px !important;
+    font-size: 13px !important;
+    font-weight: 700;
+  }
+
+  .header-rate input {
+    width: 84px !important;
+    height: 38px;
+    padding: 6px !important;
+    border-radius: 9px !important;
+    font-weight: 700;
+  }
+
+  .bb-desktop-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 370px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .bb-left-column,
+  .bb-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .card,
+  .desktop-product-card,
+  .totals-box,
+  .convert-box,
+  .bb-action-card {
+    margin: 0 !important;
+    background: rgba(255,255,255,.98) !important;
+    border: 1px solid #d7e2ef !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 26px rgba(21,49,83,.065) !important;
+  }
+
+  .invoice-card {
+    padding: 15px 17px !important;
+    border-top: 3px solid #2266d4 !important;
+  }
+
+  .section-title,
+  .desktop-card-title {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px !important;
+    color: #0e438e !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+  }
+
+  .section-title::before,
+  .desktop-card-title::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    flex: 0 0 9px;
+    border-radius: 999px;
+    background: #1f6de2;
+    box-shadow: 0 0 0 5px rgba(31,109,226,.10);
+  }
+
+  .invoice-card .invoice-grid {
+    grid-template-columns: 1fr 1.25fr 1fr 1fr 1fr !important;
+    gap: 10px 12px !important;
+  }
+
+  .invoice-card .customer-field.grid-2 {
+    grid-template-columns: 1.45fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  label {
+    margin-bottom: 5px !important;
+    color: #294a70 !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+  }
+
+  .invoice-card input,
+  .invoice-card select,
+  .transaction-details input,
+  .transaction-details select,
+  .note-card select,
+  .note-card textarea,
+  .banking-input-card select {
+    min-height: 40px !important;
+    padding: 8px 11px !important;
+    border: 1px solid #cbd8e7 !important;
+    border-radius: 9px !important;
+    font-size: 14px !important;
+  }
+
+  /* Large easy-click date controls */
+  .bb-date-control {
+    position: relative !important;
+    min-height: 42px;
+    border: 1px solid #b9cce5;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+
+  .bb-date-control:hover {
+    border-color: #3175de;
+    background: #f9fbff;
+  }
+
+  .bb-date-control:focus,
+  .bb-date-control:focus-within {
+    outline: none;
+    border-color: #2167d5;
+    box-shadow: 0 0 0 3px rgba(33,103,213,.14);
+  }
+
+  .bb-date-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    font-size: 17px;
+    pointer-events: none;
+  }
+
+  .bb-date-control #invoiceDateDisplay,
+  .bb-date-control #dueDateDisplay {
+    width: 100% !important;
+    min-height: 40px !important;
+    padding: 8px 10px 8px 38px !important;
+    border: 0 !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+    pointer-events: none;
+  }
+
+  .bb-date-control #invoiceDate,
+  .bb-date-control #dueDate {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    cursor: pointer !important;
+    z-index: 2 !important;
+  }
+
+  .customer-status {
+    margin-top: 7px !important;
+    min-height: 14px !important;
+    color: #11864c !important;
+    font-size: 11px !important;
+    font-weight: 700;
+  }
+
+  .desktop-product-card {
+    padding: 14px 16px !important;
+  }
+
+  .desktop-product-toolbar {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) 160px;
+    gap: 10px;
+    margin-bottom: 9px !important;
+  }
+
+  .desktop-product-hint {
+    min-height: 40px !important;
+    display: flex;
+    align-items: center;
+    padding: 0 11px;
+    border: 1px solid #d4dfec;
+    border-radius: 9px;
+    background: #fbfcfe;
+    color: #7f8ea3;
+    font-size: 12px;
+  }
+
+  .add-btn {
+    min-height: 40px !important;
+    padding: 9px 13px !important;
+    border-radius: 9px !important;
+    background: linear-gradient(135deg,#1f6de2,#0b51bb) !important;
+    box-shadow: 0 7px 16px rgba(31,109,226,.20) !important;
+    font-size: 13px !important;
+  }
+
+  .product-selector {
+    margin: 0 0 9px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  #productChoice {
+    width: 100% !important;
+    min-height: 40px !important;
+    border: 1px solid #cbd8e7 !important;
+    border-radius: 9px !important;
+  }
+
+  .product-table-head {
+    grid-template-columns: minmax(260px,1fr) 86px 110px 125px !important;
+    margin-top: 0 !important;
+    padding: 8px 11px !important;
+    border-color: #dce5f0 !important;
+    background: #f4f8fd !important;
+    color: #294a70 !important;
+  }
+
+  .product {
+    grid-template-columns: minmax(260px,1fr) 86px 110px 125px !important;
+    min-height: 46px !important;
+    padding: 7px 11px !important;
+    border-color: #e0e8f2 !important;
+    border-left: 0 !important;
+  }
+
+  .product-name { font-size: 12.5px !important; }
+  .product-input-cell input {
+    height: 33px !important;
+    border-radius: 8px !important;
+  }
+
+  .optional-menu { margin: 10px 0 0 !important; }
+  .optional-menu-btn {
+    min-height: 39px !important;
+    border-radius: 9px !important;
+    background: #f8fbff !important;
+  }
+
+  .totals-box {
+    position: static !important;
+    padding: 15px !important;
+    border-top: 4px solid #18a05d !important;
+  }
+
+  .totals-box::before {
+    content: "Payment Summary";
+    display: block;
+    padding-bottom: 11px;
+    margin-bottom: 7px;
+    border-bottom: 1px solid #dfe7f1;
+    color: #0e438e;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  .total-row {
+    padding: 8px 0 !important;
+    font-size: 13px !important;
+  }
+
+  .grand-total {
+    margin-top: 6px !important;
+    padding-top: 12px !important;
+  }
+
+  #grandTotal {
+    color: #159454 !important;
+    font-size: 22px !important;
+  }
+
+  .transaction-details {
+    padding: 14px 15px !important;
+  }
+
+  .transaction-details::before {
+    content: "▣  Sale & Payment";
+    display: block;
+    margin-bottom: 12px;
+    color: #0e438e;
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .transaction-details .grid-2 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .note-card {
+    padding: 14px 15px !important;
+  }
+
+  .note-card > label {
+    font-size: 0 !important;
+  }
+
+  .note-card > label::before {
+    content: "▣  Note";
+    display: block;
+    margin-bottom: 10px;
+    color: #0e438e;
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .note-card textarea {
+    min-height: 60px !important;
+    resize: vertical;
+  }
+
+  .banking-input-card {
+    padding: 14px 15px !important;
+  }
+
+  .banking-input-card > label {
+    color: #0e438e !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+  }
+
+  .banking-input-card {
+    display: grid !important;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 8px 12px;
+    align-items: end;
+  }
+
+  .banking-input-card > label {
+    grid-column: 1 / -1;
+    margin-bottom: 0 !important;
+  }
+
+  .banking-input-card #bankingDetails {
+    width: 100% !important;
+  }
+
+  .banking-input-card .banking-preview {
+    margin: 0 !important;
+    min-height: 40px !important;
+    padding: 9px 11px !important;
+    border-radius: 9px !important;
+    background: #f8fbff !important;
+  }
+
+  .convert-box {
+    padding: 13px 15px !important;
+  }
+
+  .bb-action-card {
+    padding: 14px !important;
+  }
+
+  .bb-action-title {
+    margin-bottom: 11px;
+    color: #0e438e;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  .bb-action-card .actions,
+  .bb-action-card .bottom-action-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .bb-action-card .bottom-action-row {
+    margin-top: 8px !important;
+  }
+
+  .bb-action-card .action-btn,
+  .bb-action-card .clear-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 40px !important;
+    margin: 0 !important;
+    padding: 9px 12px !important;
+    border-radius: 9px !important;
+    font-size: 13px !important;
+  }
+
+  .bb-action-card .print-btn { background: #08264d !important; }
+  .bb-action-card .share-btn { background: #18a052 !important; }
+  .bb-action-card .save-btn { background: #2868d7 !important; }
+
+  .bb-action-card .preview-btn {
+    background: #f6f9fd !important;
+    color: #1556b4 !important;
+    border: 1px solid #adc5e6 !important;
+  }
+
+  .bb-action-card .complete-btn {
+    background: linear-gradient(135deg,#126bdc,#0050b8) !important;
+    color: #fff !important;
+    border: 1px solid #126bdc !important;
+    box-shadow: 0 7px 16px rgba(18,107,220,.18) !important;
+  }
+
+  .invoice-preview-modal {
+    position: fixed !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .bb-desktop-workspace {
+    grid-template-columns: minmax(0,1fr) 330px;
+  }
+  .invoice-card .invoice-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+  }
+}
+
+
 </style>
  </head>
  <body>
@@ -2148,6 +2629,9 @@ input:focus {
      </div>
     </div>
    </div>
+
+   <div class="bb-desktop-workspace">
+    <div class="bb-left-column">
 <div class="card invoice-card">
     <div class="section-title">
      Invoice Information
@@ -2222,7 +2706,7 @@ input:focus {
      Loading customers...
     </div>
    </div>
-   <div class="desktop-product-card">
+<div class="desktop-product-card">
     <div class="desktop-card-title">Product / Items</div>
      <div class="desktop-product-toolbar no-print">
       <div class="desktop-product-hint">Search/select product from database, then enter quantity and price.</div>
@@ -2285,7 +2769,30 @@ input:focus {
     </div>
 
    </div>
-   <div class="totals-box">
+<div class="convert-box optional-exchange" id="exchangeCalculationBox">
+    <div class="section-title">
+     Exchange Calculation
+    </div>
+    <div class="convert-result" id="convertResult">
+     $0.00 = ៛0
+    </div>
+   </div>
+<div class="card banking-input-card no-print">
+    <label for="bankingDetails">
+     Banking Details
+    </label>
+    <select disabled="" id="bankingDetails">
+     <option value="">
+      Loading banking details...
+     </option>
+    </select>
+    <div class="banking-preview" id="bankingPreview">
+     Select a banking detail
+    </div>
+   </div>
+    </div>
+    <div class="bb-right-column">
+<div class="totals-box">
     <div class="total-row">
      <span>
       Subtotal
@@ -2331,15 +2838,7 @@ input:focus {
      </div>
     </div>
    </div>
-   <div class="convert-box optional-exchange" id="exchangeCalculationBox">
-    <div class="section-title">
-     Exchange Calculation
-    </div>
-    <div class="convert-result" id="convertResult">
-     $0.00 = ៛0
-    </div>
-   </div>
-   <div class="card transaction-details">
+<div class="card transaction-details">
     <div class="grid-2">
      <div>
       <label for="salesName">
@@ -2399,7 +2898,7 @@ input:focus {
      </div>
     </div>
    </div>
-   <div class="card note-card no-print">
+<div class="card note-card no-print">
     <label for="noteTemplate">
      Note:
     </label>
@@ -2410,20 +2909,9 @@ input:focus {
     </select>
     <textarea id="invoiceNote" placeholder="Select a saved note or type your own note..."></textarea>
    </div>
-   <div class="card banking-input-card no-print">
-    <label for="bankingDetails">
-     Banking Details
-    </label>
-    <select disabled="" id="bankingDetails">
-     <option value="">
-      Loading banking details...
-     </option>
-    </select>
-    <div class="banking-preview" id="bankingPreview">
-     Select a banking detail
-    </div>
-   </div>
-   <div class="actions no-print">
+     <div class="bb-action-card no-print">
+      <div class="bb-action-title">⚡ Quick Actions</div>
+<div class="actions no-print">
     <button class="action-btn print-btn" onclick="printInvoice(event)" type="button">
      🖨 Print / Save PDF
     </button>
@@ -2437,7 +2925,7 @@ input:focus {
      ☁️ Save to Drive
     </button>
    </div>
-   <div class="bottom-action-row no-print">
+<div class="bottom-action-row no-print">
     <button class="clear-btn preview-btn" onclick="previewInvoice(event)" type="button">
      👁 Invoice Preview
     </button>
@@ -2445,6 +2933,10 @@ input:focus {
      ✓ Complete
     </button>
    </div>
+     </div>
+    </div>
+   </div>
+
    <div aria-hidden="true" class="invoice-preview-modal no-print" id="invoicePreviewModal">
     <div class="invoice-preview-dialog">
      <div class="invoice-preview-header">
@@ -2469,7 +2961,32 @@ document.addEventListener("DOMContentLoaded", function () {
 });
   </script>
   <script>
-   /* ==========================================
+   
+function openBBDatePicker(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  try {
+    if (typeof input.showPicker === "function") {
+      input.showPicker();
+    } else {
+      input.focus();
+      input.click();
+    }
+  } catch (error) {
+    input.focus();
+    input.click();
+  }
+}
+
+function handleBBDateKey(event, inputId) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    openBBDatePicker(inputId);
+  }
+}
+
+/* ==========================================
    TODAY'S DATE
 ========================================== */
 
