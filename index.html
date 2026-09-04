@@ -4776,6 +4776,9 @@ function updateInvoiceDate() {
   if (picker && display) {
     display.value = formatInvoiceDate(picker.value);
   }
+
+  // Default Due Date always follows Invoice Date + 4 days.
+  setDueDateFromInvoiceDate();
 }
 
 function openDueDatePicker() {
@@ -4811,9 +4814,19 @@ function setDueDateFromInvoiceDate() {
 
   if (!invoicePicker.value) return;
 
-  // Default: due date = invoice date.
-  // User can change it manually for Credit invoices.
-  duePicker.value = invoicePicker.value;
+  // Default Due Date = Invoice Date + 4 calendar days.
+  // User can still change Due Date manually afterward.
+  const parts = invoicePicker.value.split("-").map(Number);
+  if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return;
+
+  const dueDate = new Date(parts[0], parts[1] - 1, parts[2]);
+  dueDate.setDate(dueDate.getDate() + 4);
+
+  const yyyy = dueDate.getFullYear();
+  const mm = String(dueDate.getMonth() + 1).padStart(2, "0");
+  const dd = String(dueDate.getDate()).padStart(2, "0");
+
+  duePicker.value = `${yyyy}-${mm}-${dd}`;
   updateDueDate();
 }
 
@@ -4822,10 +4835,9 @@ function syncDueDateWithInvoiceDate() {
   const duePicker = document.getElementById("dueDate");
   if (!invoicePicker || !duePicker) return;
 
-  // If no due date exists yet, use the invoice date.
+  // If no Due Date exists yet, use Invoice Date + 4 days.
   if (!duePicker.value) {
-    duePicker.value = invoicePicker.value;
-    updateDueDate();
+    setDueDateFromInvoiceDate();
   }
 }
 
