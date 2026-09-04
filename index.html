@@ -2352,6 +2352,9 @@ input:focus {
        Payment Method
       </label>
       <select id="paymentMethod" onchange="handlePaymentMethodChange()">
+       <option value="" selected>
+        Select Payment Method
+       </option>
        <option value="Cash">
         Cash
        </option>
@@ -3774,11 +3777,26 @@ function createProduct(name, defaultUsdPrice) {
 
   container.appendChild(div);
 
+  const productInputs = div.querySelectorAll("input");
+  const qtyInput = productInputs[0];
+  const priceInput = productInputs[1];
+
+  if (qtyInput) {
+    qtyInput.addEventListener("keydown", function(event) {
+      handleProductInputEnter(event, "qty");
+    });
+  }
+
+  if (priceInput) {
+    priceInput.addEventListener("keydown", function(event) {
+      handleProductInputEnter(event, "price");
+    });
+  }
+
   /*
    * After selecting the product, immediately move the user
    * into QTY. No extra button or click is required.
    */
-  const qtyInput = div.querySelectorAll("input")[0];
   if (qtyInput) {
     setTimeout(() => qtyInput.focus(), 80);
   }
@@ -3810,6 +3828,43 @@ function priceChanged(input) {
   calculate();
 }
 
+
+function handleProductInputEnter(event, fieldType) {
+  if (event.key !== "Enter") return;
+
+  event.preventDefault();
+
+  const productRow = event.target.closest(".product");
+  if (!productRow) return;
+
+  const inputs = productRow.querySelectorAll("input");
+  const qtyInput = inputs[0];
+  const priceInput = inputs[1];
+
+  if (fieldType === "qty") {
+    if (priceInput) {
+      priceInput.focus();
+      priceInput.select();
+    }
+    return;
+  }
+
+  calculate();
+
+  /*
+   * After Qty + Price are finished, pressing Enter on Price
+   * opens the product selector for the next item.
+   */
+  showProductSelector();
+
+  setTimeout(() => {
+    const productChoice = document.getElementById("productChoice");
+    if (productChoice) {
+      productChoice.value = "";
+      productChoice.focus();
+    }
+  }, 80);
+}
 
 /* ==========================================
    REMOVE PRODUCT
@@ -3941,7 +3996,7 @@ function calculate() {
   /* PAYMENT / CREDIT AMOUNT */
 
   const paymentMethod =
-    document.getElementById("paymentMethod")?.value || "Cash";
+    document.getElementById("paymentMethod")?.value || "";
 
   const amountPaidInput = document.getElementById("amountPaid");
   const enteredAmountPaid =
@@ -4004,7 +4059,7 @@ function calculate() {
 ========================================== */
 
 function handlePaymentMethodChange() {
-  const paymentMethod = document.getElementById("paymentMethod")?.value || "Cash";
+  const paymentMethod = document.getElementById("paymentMethod")?.value || "";
   const needsBank =
     paymentMethod === "Bank" ||
     paymentMethod === "Partially Paid in Bank";
@@ -4028,6 +4083,8 @@ function handlePaymentMethodChange() {
       const currentGrandTotal = document.getElementById("grandTotal")?.textContent || "";
       amountPaidInput.value = Number(currentGrandTotal.replace(/[^0-9.-]/g, "")) || 0;
     } else if (paymentMethod === "Credit") {
+      amountPaidInput.value = 0;
+    } else if (!paymentMethod) {
       amountPaidInput.value = 0;
     }
   }
@@ -4308,7 +4365,7 @@ function getFinalInvoiceState() {
   const discount = Number(document.getElementById("discount")?.value) || 0;
   const grandTotal = Math.max(0, subtotal - discount);
 
-  const paymentMethod = document.getElementById("paymentMethod")?.value || "Cash";
+  const paymentMethod = document.getElementById("paymentMethod")?.value || "";
   const enteredAmountPaid = Number(document.getElementById("amountPaid")?.value) || 0;
 
   let amountPaid = enteredAmountPaid;
@@ -5343,6 +5400,11 @@ async function completeInvoice(event) {
     return;
   }
 
+  if (!payload.paymentMethod) {
+    alert("Please select a Payment Method before completing the invoice.");
+    return;
+  }
+
   if (!payload.invoiceNo || payload.invoiceNo === "Loading...") {
     alert("Invoice No. is not ready yet.");
     return;
@@ -5582,7 +5644,7 @@ function clearAllAfterSuccessfulSave() {
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
-  document.getElementById("paymentMethod").value = "Cash";
+  document.getElementById("paymentMethod").value = "";
   const paymentBank = document.getElementById("paymentBank");
   const bankReference = document.getElementById("bankReference");
   if (paymentBank) paymentBank.value = "";
@@ -5628,7 +5690,7 @@ function clearAll() {
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
-  document.getElementById("paymentMethod").value = "Cash";
+  document.getElementById("paymentMethod").value = "";
   const paymentBank = document.getElementById("paymentBank");
   const bankReference = document.getElementById("bankReference");
   if (paymentBank) paymentBank.value = "";
