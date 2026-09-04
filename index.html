@@ -2391,11 +2391,11 @@ input:focus {
        </option>
       </select>
      </div>
-     <div id="bankReferenceRow" style="display:none;">
-      <label for="bankReference">
-       Bank Reference
+     <div id="transactionIdRow" style="display:none;">
+      <label for="transactionId">
+       Transaction ID
       </label>
-      <input id="bankReference" placeholder="Enter Bank Reference" type="text"/>
+      <input autocomplete="off" id="transactionId" placeholder="Enter Bank Transaction ID" type="text"/>
      </div>
     </div>
    </div>
@@ -4065,16 +4065,16 @@ function handlePaymentMethodChange() {
     paymentMethod === "Partially Paid in Bank";
 
   const bankRow = document.getElementById("paymentBankRow");
-  const referenceRow = document.getElementById("bankReferenceRow");
+  const transactionRow = document.getElementById("transactionIdRow");
   const bankSelect = document.getElementById("paymentBank");
-  const referenceInput = document.getElementById("bankReference");
+  const transactionInput = document.getElementById("transactionId");
 
   if (bankRow) bankRow.style.display = needsBank ? "" : "none";
-  if (referenceRow) referenceRow.style.display = needsBank ? "" : "none";
+  if (transactionRow) transactionRow.style.display = needsBank ? "" : "none";
 
   if (!needsBank) {
     if (bankSelect) bankSelect.value = "";
-    if (referenceInput) referenceInput.value = "";
+    if (transactionInput) transactionInput.value = "";
   }
 
   const amountPaidInput = document.getElementById("amountPaid");
@@ -4410,7 +4410,8 @@ function getFinalInvoiceState() {
     salesperson: document.getElementById("salesName")?.value.trim() || "",
     paymentMethod: document.getElementById("paymentMethod")?.value || "",
     paymentBank: document.getElementById("paymentBank")?.value || "",
-    bankReference: document.getElementById("bankReference")?.value.trim() || "",
+    transactionId: document.getElementById("transactionId")?.value.trim() || "",
+    bankReference: document.getElementById("transactionId")?.value.trim() || "",
     note: document.getElementById("invoiceNote")?.value.trim() || "",
     banking: (() => {
       const select = document.getElementById("bankingDetails");
@@ -5266,7 +5267,8 @@ function buildSalesInvoicePayload() {
     salesperson: state.salesperson,
     paymentMethod: state.paymentMethod,
     paymentBank: state.paymentBank,
-    bankReference: state.bankReference,
+    transactionId: state.transactionId,
+    bankReference: state.transactionId,
     currency: state.currency,
     exchangeRate: state.rate,
     subtotal: state.subtotal,
@@ -5371,6 +5373,76 @@ function checkInvoiceNumberAvailable(invoiceNo) {
   });
 }
 
+
+function checkPaymentTransactionIdAvailable(transactionId) {
+  return new Promise((resolve, reject) => {
+    const requested = String(transactionId || "").trim();
+
+    if (!requested) {
+      reject(new Error("Transaction ID is required for Bank payment."));
+      return;
+    }
+
+    const callbackName =
+      "bbCheckPaymentTx_" +
+      Date.now() +
+      "_" +
+      Math.random().toString(36).slice(2);
+
+    const script = document.createElement("script");
+    let done = false;
+
+    function finish() {
+      if (done) return;
+      done = true;
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[callbackName] = function(data) {
+      finish();
+
+      if (data && data.success) {
+        resolve(data);
+      } else {
+        reject(
+          new Error(
+            data?.error ||
+            "Could not check the Transaction ID."
+          )
+        );
+      }
+    };
+
+    script.onerror = function() {
+      finish();
+      reject(
+        new Error(
+          "Could not check the Transaction ID from Sales Data."
+        )
+      );
+    };
+
+    script.src =
+      SALES_DATABASE_API_URL +
+      "?action=checkPaymentTransactionId&transactionId=" +
+      encodeURIComponent(requested) +
+      "&callback=" +
+      encodeURIComponent(callbackName) +
+      "&t=" +
+      Date.now();
+
+    document.body.appendChild(script);
+
+    setTimeout(function() {
+      if (!done) {
+        finish();
+        reject(new Error("Transaction ID check timed out."));
+      }
+    }, DB_REQUEST_TIMEOUT_MS);
+  });
+}
+
 async function completeInvoice(event) {
   if (event) {
     event.preventDefault();
@@ -5402,6 +5474,21 @@ async function completeInvoice(event) {
 
   if (!payload.paymentMethod) {
     alert("Please select a Payment Method before completing the invoice.");
+    return;
+  }
+
+  const invoiceNeedsBank =
+    payload.paymentMethod === "Bank" ||
+    payload.paymentMethod === "Partially Paid in Bank";
+
+  if (invoiceNeedsBank && !payload.paymentBank) {
+    alert("Please select a Payment Bank before completing the invoice.");
+    return;
+  }
+
+  if (invoiceNeedsBank && !payload.transactionId) {
+    alert("Transaction ID is required for Bank payment.");
+    document.getElementById("transactionId")?.focus();
     return;
   }
 
@@ -5439,6 +5526,31 @@ async function completeInvoice(event) {
   }
 
   try {
+    // Bank Transaction ID is shared with all Invoice and A/R bank payments.
+    // Check it BEFORE saving the invoice so a duplicate cannot create
+    // an invoice without its matching payment row.
+    if (invoiceNeedsBank) {
+      const txCheck =
+        await checkPaymentTransactionIdAvailable(payload.transactionId);
+
+      if (txCheck.exists || txCheck.pending) {
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = oldText;
+        }
+
+        window.bbInvoiceSaving = false;
+
+        alert(
+          "Transaction ID already exists.\n\n" +
+          "Transaction ID: " + payload.transactionId + "\n" +
+          "Please check the bank transaction and enter a unique Transaction ID.\n\n" +
+          "Your invoice information is still here."
+        );
+        return;
+      }
+    }
+
     // Check the exact number immediately before saving.
     // Manual numbers are allowed, but the exact same Invoice No. may not be saved twice.
     const numberCheck = await checkInvoiceNumberAvailable(payload.invoiceNo);
@@ -5514,7 +5626,8 @@ function buildPaymentPayload(payload) {
     salesperson: payload.salesperson,
     paymentMethod: isBank ? "Bank" : "Cash",
     bankPayment: isBank ? payload.paymentBank : "",
-    bankReference: isBank ? payload.bankReference : "",
+    transactionId: isBank ? payload.transactionId : "",
+    bankReference: "",
     currency: payload.currency,
     exchangeRate: payload.exchangeRate,
     amount: Number(payload.amountPaid) || 0,
@@ -5646,9 +5759,9 @@ function clearAllAfterSuccessfulSave() {
   document.getElementById("customerAddress").value = "";
   document.getElementById("paymentMethod").value = "";
   const paymentBank = document.getElementById("paymentBank");
-  const bankReference = document.getElementById("bankReference");
+  const transactionId = document.getElementById("transactionId");
   if (paymentBank) paymentBank.value = "";
-  if (bankReference) bankReference.value = "";
+  if (transactionId) transactionId.value = "";
   handlePaymentMethodChange();
 
   const noteInput = document.getElementById("invoiceNote");
@@ -5692,9 +5805,9 @@ function clearAll() {
   document.getElementById("customerAddress").value = "";
   document.getElementById("paymentMethod").value = "";
   const paymentBank = document.getElementById("paymentBank");
-  const bankReference = document.getElementById("bankReference");
+  const transactionId = document.getElementById("transactionId");
   if (paymentBank) paymentBank.value = "";
-  if (bankReference) bankReference.value = "";
+  if (transactionId) transactionId.value = "";
   handlePaymentMethodChange();
   const noteInput = document.getElementById("invoiceNote");
   if (noteInput) noteInput.value = "";
