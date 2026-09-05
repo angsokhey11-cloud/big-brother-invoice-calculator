@@ -2738,6 +2738,10 @@ input:focus {
 /* PRODUCT BARCODE / NOTE / REPEAT PRODUCT */
 .product-description-editor{align-items:flex-start!important}.product-name-wrap{min-width:0;flex:1}.product-barcode{margin-top:3px;font-size:10.5px;color:#64748b;font-weight:600}.product-note-input{width:100%;margin-top:6px;min-height:30px;padding:6px 8px;border:1px solid #d7e0eb;border-radius:7px;font:inherit;font-size:11px;line-height:1.3;resize:vertical;background:#fbfdff;color:#334155}.product-qty-unit-cell{display:flex!important;align-items:center;gap:6px}.product-qty-unit-cell input{min-width:0}.product-unit-label{font-size:10px;color:#66758b;font-weight:700;white-space:nowrap}.final-barcode,.final-product-note{display:block;margin-top:3px;font-size:10.5px;color:#555;font-weight:400}.final-product-note{font-style:italic}.final-qty-unit{white-space:normal;font-weight:600}
 
+
+/* Shipping destination: manual field beside Address */
+.address-shipping-row{align-items:end}
+@media(max-width:720px){.address-shipping-row{grid-template-columns:1fr!important}}
 </style>
  </head>
  <body>
@@ -2835,11 +2839,19 @@ input:focus {
       <input id="customerPhone" placeholder="Enter phone number" type="tel"/>
      </div>
     </div>
-    <div class="customer-field">
-     <label for="customerAddress">
-      Address
-     </label>
-     <input id="customerAddress" placeholder="Enter address" type="text"/>
+    <div class="grid-2 customer-field address-shipping-row">
+     <div>
+      <label for="customerAddress">
+       Address
+      </label>
+      <input id="customerAddress" placeholder="Enter address" type="text"/>
+     </div>
+     <div>
+      <label for="shippingTo">
+       Shipping To
+      </label>
+      <input autocomplete="off" id="shippingTo" placeholder="Enter shipping destination" type="text"/>
+     </div>
     </div>
     <div class="customer-status" id="customerStatus">
      Loading customers...
@@ -5082,6 +5094,7 @@ function getFinalInvoiceState() {
     customer: document.getElementById("customerName")?.value.trim() || "",
     phone: document.getElementById("customerPhone")?.value.trim() || "",
     address: document.getElementById("customerAddress")?.value.trim() || "",
+    shippingTo: document.getElementById("shippingTo")?.value.trim() || "",
     salesperson: document.getElementById("salesName")?.value.trim() || "",
     paymentMethod: document.getElementById("paymentMethod")?.value || "",
     paymentBank: document.getElementById("paymentBank")?.value || "",
@@ -5959,6 +5972,7 @@ function buildSalesInvoicePayload() {
     batchNumber: document.getElementById("batchNumber")?.value.trim() || "",
     locationCode: state.locationCode,
     customer: state.customer,
+    shippingTo: state.shippingTo,
     salesperson: state.salesperson,
     paymentMethod: state.paymentMethod,
     paymentBank: state.paymentBank,
@@ -6457,6 +6471,8 @@ function clearAllAfterSuccessfulSave() {
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
+  const shippingTo = document.getElementById("shippingTo");
+  if (shippingTo) shippingTo.value = "";
   document.getElementById("paymentMethod").value = "";
   const paymentBank = document.getElementById("paymentBank");
   const transactionId = document.getElementById("transactionId");
@@ -6503,6 +6519,8 @@ function clearAll() {
   document.getElementById("customerName").value = "";
   document.getElementById("customerPhone").value = "";
   document.getElementById("customerAddress").value = "";
+  const shippingTo = document.getElementById("shippingTo");
+  if (shippingTo) shippingTo.value = "";
   document.getElementById("paymentMethod").value = "";
   const paymentBank = document.getElementById("paymentBank");
   const transactionId = document.getElementById("transactionId");
