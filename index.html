@@ -2734,6 +2734,10 @@ input:focus {
   z-index:2 !important;
 }
 
+
+/* PRODUCT BARCODE / NOTE / REPEAT PRODUCT */
+.product-description-editor{align-items:flex-start!important}.product-name-wrap{min-width:0;flex:1}.product-barcode{margin-top:3px;font-size:10.5px;color:#64748b;font-weight:600}.product-note-input{width:100%;margin-top:6px;min-height:30px;padding:6px 8px;border:1px solid #d7e0eb;border-radius:7px;font:inherit;font-size:11px;line-height:1.3;resize:vertical;background:#fbfdff;color:#334155}.product-qty-unit-cell{display:flex!important;align-items:center;gap:6px}.product-qty-unit-cell input{min-width:0}.product-unit-label{font-size:10px;color:#66758b;font-weight:700;white-space:nowrap}.final-barcode,.final-product-note{display:block;margin-top:3px;font-size:10.5px;color:#555;font-weight:400}.final-product-note{font-style:italic}.final-qty-unit{white-space:normal;font-weight:600}
+
 </style>
  </head>
  <body>
@@ -2861,7 +2865,7 @@ input:focus {
       Item Name
      </span>
      <span>
-      QTY
+      QTY / Unit
      </span>
      <span>
       Price
@@ -3902,7 +3906,8 @@ function applyCustomerPricesToProducts() {
   rows.forEach(row => {
     const code = row.dataset.productCode || "";
     const name = row.dataset.product || "";
-    const item = selectedProducts.find(p => p.id === name);
+    const lineId = row.dataset.lineId || "";
+    const item = selectedProducts.find(p => p.id === lineId);
     const product = products.find(p => p.code === code || p.name === name);
 
     if (!item || !product || item.manualPrice) return;
@@ -3911,7 +3916,7 @@ function applyCustomerPricesToProducts() {
     item.usdPrice = effectiveUsdPrice;
     row.dataset.usdPrice = effectiveUsdPrice;
 
-    const priceInput = row.querySelectorAll("input")[1];
+    const priceInput = row.querySelector(".product-price-input");
     if (priceInput) {
       priceInput.value = usdToSelected(effectiveUsdPrice, currency);
       priceInput.step = currency === "KHR" ? "1" : "0.01";
@@ -4181,7 +4186,9 @@ function loadProducts() {
         name: String(row.name || "").trim(),
         category: String(row.category || "").trim(),
         unit: String(row.unit || "").trim(),
-        usdPrice: Number(row.priceUSD) || 0,
+        barcode: String(row.productBarcode || row.barcode || "").trim(),
+        productBarcode: String(row.productBarcode || row.barcode || "").trim(),
+        usdPrice: Number(row.priceUSD ?? row.usdPrice) || 0,
         active: row.active === true || String(row.active).toLowerCase() === "true"
       }))
       .filter(product => product.name && product.active);
@@ -4240,15 +4247,11 @@ function showProductSelector(event) {
   const choice =
     document.getElementById("productChoice");
 
-  const availableProducts =
-    products.filter(product =>
-      !selectedProducts.some(
-        item => item.id === product.name
-      )
-    );
+  // Same product may be added as many times as needed.
+  const availableProducts = products.slice();
 
   if (availableProducts.length === 0) {
-    alert("All products have already been added.");
+    alert("No products are available.");
     return;
   }
 
@@ -4316,15 +4319,21 @@ function addSelectedProduct() {
    */
   const effectiveUsdPrice = getPriceForProduct(product);
 
+  const lineId =
+    "LINE-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+
   selectedProducts.push({
-    id: product.name,
+    id: lineId,
+    productName: product.name,
+    productCode: product.code,
     usdPrice: effectiveUsdPrice,
     manualPrice: false
   });
 
   createProduct(
     product.name,
-    effectiveUsdPrice
+    effectiveUsdPrice,
+    lineId
   );
 
   calculate();
@@ -4335,12 +4344,8 @@ function addSelectedProduct() {
    *
    * No need to press "+ Add Product" again.
    */
-  const availableProducts =
-    products.filter(product =>
-      !selectedProducts.some(
-        item => item.id === product.name
-      )
-    );
+  // Keep every product available, including products already used above.
+  const availableProducts = products.slice();
 
   choice.innerHTML = `
     <option value="">＋ Select another product</option>
@@ -4356,17 +4361,8 @@ function addSelectedProduct() {
     choice.appendChild(option);
   });
 
-  /*
-   * Keep the picker open if products remain.
-   * Hide it automatically when every product is used.
-   */
-  if (availableProducts.length === 0) {
-    document.getElementById(
-      "productSelector"
-    ).style.display = "none";
-  } else {
-    choice.focus();
-  }
+  // Keep the picker ready because products can be selected repeatedly.
+  choice.focus();
 }
 
 
@@ -4374,7 +4370,7 @@ function addSelectedProduct() {
    CREATE PRODUCT
 ========================================== */
 
-function createProduct(name, defaultUsdPrice) {
+function createProduct(name, defaultUsdPrice, lineId) {
   const container = document.getElementById("productList");
   const div = document.createElement("div");
   const productRecord = products.find(p => p.name === name);
@@ -4382,14 +4378,21 @@ function createProduct(name, defaultUsdPrice) {
   div.className = "product";
   div.dataset.product = name;
   div.dataset.productCode = productRecord ? productRecord.code : "";
+  div.dataset.productBarcode = productRecord ? (productRecord.productBarcode || productRecord.barcode || "") : "";
+  div.dataset.unit = productRecord ? (productRecord.unit || "") : "";
+  div.dataset.lineId = lineId || ("LINE-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8));
   div.dataset.usdPrice = defaultUsdPrice;
 
   const currency = getCurrency();
   const displayPrice = usdToSelected(defaultUsdPrice, currency);
 
   div.innerHTML = `
-    <div class="product-name-cell">
-      <div class="product-name">${escapeHtml(name)}</div>
+    <div class="product-name-cell product-description-editor">
+      <div class="product-name-wrap">
+        <div class="product-name">${escapeHtml(name)}</div>
+        ${productRecord && (productRecord.productBarcode || productRecord.barcode) ? `<div class="product-barcode">Barcode: ${escapeHtml(productRecord.productBarcode || productRecord.barcode)}</div>` : ""}
+        <textarea class="product-note-input no-print" rows="1" placeholder="Product note (optional)" aria-label="Product note for ${escapeHtml(name)}"></textarea>
+      </div>
       <button
         type="button"
         class="remove-btn no-print"
@@ -4398,8 +4401,9 @@ function createProduct(name, defaultUsdPrice) {
       >×</button>
     </div>
 
-    <div class="product-input-cell">
+    <div class="product-input-cell product-qty-unit-cell">
       <input
+        class="product-qty-input"
         type="number"
         min="0"
         value=""
@@ -4408,10 +4412,12 @@ function createProduct(name, defaultUsdPrice) {
         aria-label="Quantity for ${escapeHtml(name)}"
         oninput="calculate()"
       >
+      ${productRecord && productRecord.unit ? `<span class="product-unit-label">${escapeHtml(productRecord.unit)}</span>` : ""}
     </div>
 
     <div class="product-input-cell">
       <input
+        class="product-price-input"
         type="number"
         min="0"
         value="${displayPrice}"
@@ -4469,7 +4475,7 @@ function priceChanged(input) {
     selectedToUsd(enteredPrice, currency);
 
   const item = selectedProducts.find(
-    p => p.id === product.dataset.product
+    p => p.id === product.dataset.lineId
   );
 
   if (item) {
@@ -4489,9 +4495,8 @@ function handleProductInputEnter(event, fieldType) {
   const productRow = event.target.closest(".product");
   if (!productRow) return;
 
-  const inputs = productRow.querySelectorAll("input");
-  const qtyInput = inputs[0];
-  const priceInput = inputs[1];
+  const qtyInput = productRow.querySelector(".product-qty-input");
+  const priceInput = productRow.querySelector(".product-price-input");
 
   if (fieldType === "qty") {
     if (priceInput) {
@@ -4524,10 +4529,10 @@ function handleProductInputEnter(event, fieldType) {
 
 function removeProduct(button) {
   const product = button.closest(".product");
-  const name = product.dataset.product;
+  const lineId = product.dataset.lineId;
 
   selectedProducts =
-    selectedProducts.filter(item => item.id !== name);
+    selectedProducts.filter(item => item.id !== lineId);
 
   product.remove();
 
@@ -4611,10 +4616,11 @@ function calculate() {
 
   document.querySelectorAll(".product").forEach(product => {
 
-    const inputs = product.querySelectorAll("input");
+    const qtyInput = product.querySelector(".product-qty-input");
+    const priceInput = product.querySelector(".product-price-input");
 
-    const qty = Number(inputs[0].value) || 0;
-    const price = Number(inputs[1].value) || 0;
+    const qty = Number(qtyInput?.value) || 0;
+    const price = Number(priceInput?.value) || 0;
 
     const lineTotal = qty * price;
     total += lineTotal;
@@ -4975,7 +4981,7 @@ function printInvoice(event) {
   .final-table th:nth-child(1){width:48px;text-align:center}.final-table th:nth-child(3){width:82px;text-align:center}.final-table th:nth-child(4){width:105px;text-align:center}.final-table th:nth-child(5){width:110px;text-align:center}
   .final-table td { border:1px solid #999; padding:8px; vertical-align:top; height:42px; }
   .final-table td:first-child{text-align:center}.final-table td:nth-child(3),.final-table td:nth-child(4),.final-table td:nth-child(5){text-align:center}
-  .final-desc{font-weight:700}.final-unit{display:block;margin-top:4px;font-size:11px;color:#555;font-weight:400}
+  .final-desc{font-weight:700}.final-unit{display:block;margin-top:4px;font-size:11px;color:#555;font-weight:400}.final-barcode,.final-product-note{display:block;margin-top:3px;font-size:10.5px;color:#555;font-weight:400}.final-product-note{font-style:italic}.final-qty-unit{white-space:normal;font-weight:600}
   .final-bottom-grid{display:grid;grid-template-columns:1fr 330px;gap:28px;margin-top:14px;align-items:start}
   .final-notes{min-height:78px;border-top:1px solid #9aa8b8;padding-top:6px;font-size:12px;line-height:1.65}.final-notes-title{font-weight:800;margin-bottom:4px}.final-note-line{min-height:18px}
   .final-summary{width:100%;font-size:13px}.final-summary-row{display:flex;justify-content:space-between;gap:15px;padding:5px 8px;border-bottom:1px solid #bfc7d1}.final-summary-row.grand{background:#4472b9;color:#fff;font-size:15px;font-weight:800;border-bottom:0}.final-summary-row.change{color:#16733d;font-weight:700}.final-summary-label{font-weight:700}.final-summary-value{text-align:right;white-space:nowrap}
@@ -5006,23 +5012,28 @@ function getFinalInvoiceState() {
   const items = [];
 
   document.querySelectorAll(".product").forEach((product, index) => {
-    const inputs = product.querySelectorAll("input");
-    const qty = Number(inputs[0]?.value) || 0;
-    const price = Number(inputs[1]?.value) || 0;
+    const qty = Number(product.querySelector(".product-qty-input")?.value) || 0;
+    const price = Number(product.querySelector(".product-price-input")?.value) || 0;
     const lineTotal = qty * price;
     subtotal += lineTotal;
 
     const productCode = product.dataset.productCode ||
       products.find(p => p.name === product.dataset.product)?.code || "";
 
+    const productRecord = products.find(p => p.code === productCode || p.name === product.dataset.product) || {};
     items.push({
       no: index + 1,
+      lineId: product.dataset.lineId || "",
       productCode,
       name: product.dataset.product || product.querySelector(".product-name")?.textContent?.trim() || "Product",
+      productName: product.dataset.product || product.querySelector(".product-name")?.textContent?.trim() || "Product",
+      productBarcode: product.dataset.productBarcode || productRecord.productBarcode || productRecord.barcode || "",
+      barcode: product.dataset.productBarcode || productRecord.productBarcode || productRecord.barcode || "",
+      productNote: product.querySelector(".product-note-input")?.value.trim() || "",
       qty,
       price,
       total: lineTotal,
-      unit: products.find(p => p.code === productCode || p.name === product.dataset.product)?.unit || ""
+      unit: product.dataset.unit || productRecord.unit || ""
     });
   });
 
@@ -5097,9 +5108,10 @@ function buildFinalInvoiceHtml(state) {
         <td>${item.no}</td>
         <td>
           <div class="final-desc">${esc(item.name)}</div>
-          ${item.unit ? `<span class="final-unit">${esc(item.unit)}</span>` : ""}
+          ${item.productBarcode || item.barcode ? `<span class="final-barcode">Barcode: ${esc(item.productBarcode || item.barcode)}</span>` : ""}
+          ${item.productNote ? `<span class="final-product-note">Note: ${esc(item.productNote)}</span>` : ""}
         </td>
-        <td>${Number(item.qty).toLocaleString("en-US", {maximumFractionDigits: 2})}</td>
+        <td><div class="final-qty-unit">${Number(item.qty).toLocaleString("en-US", {maximumFractionDigits: 2})}${item.unit ? ` ${esc(item.unit)}` : ""}</div></td>
         <td>${money(item.price)}</td>
         <td>${money(item.total)}</td>
       </tr>
@@ -5165,7 +5177,7 @@ function buildFinalInvoiceHtml(state) {
           <tr>
             <th>N.o.</th>
             <th>Description</th>
-            <th>Qty</th>
+            <th>QTY / Unit</th>
             <th>Unit Price</th>
             <th>Amount</th>
           </tr>
@@ -5964,7 +5976,12 @@ function buildSalesInvoicePayload() {
     status: state.creditAmount > 0 ? (state.amountPaid > 0 ? "Processing" : "Unpaid") : "Paid",
     note: state.note,
     items: state.items.map(item => ({
+      lineId: item.lineId,
       productCode: item.productCode,
+      productName: item.productName || item.name,
+      productBarcode: item.productBarcode || item.barcode || "",
+      productNote: item.productNote || "",
+      unit: item.unit || "",
       qty: item.qty,
       unitPrice: item.price,
       amount: item.total
